@@ -1,43 +1,46 @@
 const mongoose = require('mongoose');
 
 const subscriptionSchema = new mongoose.Schema({
-  provider: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Provider', 
-    required: true, 
-    index: true 
+  provider: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Provider',
+    required: true
   },
-  planName: { 
-    type: String, 
-    required: true 
+  plan: {
+    type: String,
+    enum: ['free', 'premium'],
+    required: true
   },
-  price: { 
-    type: Number, 
-    required: true 
+  price: {
+    type: Number,
+    required: true,
+    min: [0, 'Price cannot be negative']
   },
-  durationDays: { 
-    type: Number, 
-    required: true 
+  startDate: {
+    type: Date,
+    required: true
   },
-  startDate: { 
-    type: Date, 
-    default: Date.now,
-    required: true 
+  endDate: {
+    type: Date,
+    required: true
   },
-  endDate: { 
-    type: Date, 
-    required: true, 
-    index: true 
+  isActive: {
+    type: Boolean,
+    default: true
   },
-  status: { 
-    type: String, 
-    enum: ['active', 'expired', 'cancelled'], 
-    default: 'active', 
-    index: true 
+  paymentRef: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment'
   },
-  razorpaySubscriptionId: { 
-    type: String, 
-    sparse: true 
+  features: {
+    type: [String]
+  },
+  autoRenew: {
+    type: Boolean,
+    default: false
+  },
+  cancelledAt: {
+    type: Date
   }
 }, {
   timestamps: true,
@@ -45,9 +48,18 @@ const subscriptionSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Virtual field to dynamically check if it's currently valid relative to real time
-subscriptionSchema.virtual('isValid').get(function() {
-  return this.status === 'active' && this.endDate > new Date();
+subscriptionSchema.index({ provider: 1, isActive: 1 });
+
+subscriptionSchema.post('save', async function() {
+  const providerId = this.provider;
+  
+  await mongoose.model('Provider').findByIdAndUpdate(providerId, {
+    'subscription.plan': this.plan,
+    'subscription.startDate': this.startDate,
+    'subscription.endDate': this.endDate,
+    'subscription.isActive': this.isActive
+  });
 });
 
-module.exports = mongoose.model('Subscription', subscriptionSchema);
+const Subscription = mongoose.model('Subscription', subscriptionSchema);
+module.exports = Subscription;

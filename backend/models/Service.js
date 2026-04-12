@@ -1,40 +1,63 @@
 const mongoose = require('mongoose');
 
 const serviceSchema = new mongoose.Schema({
-  category: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Category', 
-    required: true, 
-    index: true 
+  provider: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Provider',
+    required: true
   },
-  name: { 
-    type: String, 
-    required: true, 
-    trim: true 
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
   },
-  description: { 
+  title: {
     type: String,
-    maxLength: 500
+    required: [true, 'Service title is required'],
+    trim: true,
+    maxlength: [100, 'Title cannot exceed 100 characters']
   },
-  basePrice: { 
-    type: Number, 
+  description: {
+    type: String,
+    trim: true,
+    maxlength: [1000, 'Description cannot exceed 1000 characters']
+  },
+  price: {
+    type: Number,
     required: true,
-    min: 0
+    min: [0, 'Price cannot be negative']
   },
-  estimatedDuration: { 
-    type: Number, 
-    required: true // Time in minutes
+  priceType: {
+    type: String,
+    enum: ['fixed', 'starting_from', 'negotiable'],
+    required: true,
+    default: 'fixed'
   },
-  iconUrl: { 
-    type: String // Optional service specific icon
+  duration: {
+    type: Number,
+    required: true,
+    min: [1, 'Duration must be at least 1 minute']
   },
-  isActive: { 
-    type: Boolean, 
-    default: true, 
-    index: true 
+  images: {
+    type: [String],
+    validate: [(val) => val.length <= 5, '{PATH} exceeds the limit of 5 images']
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  bookingCount: {
+    type: Number,
+    default: 0
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-module.exports = mongoose.model('Service', serviceSchema);
+serviceSchema.index({ provider: 1 });
+serviceSchema.index({ category: 1 });
+
+const Service = mongoose.model('Service', serviceSchema);
+module.exports = Service;

@@ -1,73 +1,153 @@
 const mongoose = require('mongoose');
 
 const providerSchema = new mongoose.Schema({
-  user: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true, 
-    unique: true 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    unique: true
   },
-  bio: { 
-    type: String, 
-    maxLength: 500,
-    trim: true
+  businessName: {
+    type: String,
+    required: [true, 'Business name is required'],
+    trim: true,
+    maxlength: [100, 'Business name cannot exceed 100 characters']
   },
-  experienceYears: { 
-    type: Number, 
-    default: 0 
+  phone: {
+    type: String,
+    required: [true, 'Phone number is required'],
+    unique: true,
+    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number']
   },
-  servicesOffered: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Service' 
-  }],
-  aadhaarNumber: { 
-    type: String, 
-    unique: true, 
-    sparse: true, 
-    select: false // Keep sensitive info hidden by default
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
+  },
+  bio: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Bio cannot exceed 500 characters']
+  },
+  profileImage: {
+    type: String
+  },
+  gallery: {
+    type: [String],
+    validate: [arrayLimit, '{PATH} exceeds the limit of 6 images']
   },
   documents: [{
-    title: { type: String, required: true }, // E.g., 'Aadhaar Card', 'Trade Certificate'
-    url: { type: String, required: true }, // Cloudinary URL
-    isVerified: { type: Boolean, default: false }
+    docType: {
+      type: String,
+      enum: ['aadhaar', 'certificate', 'photo'],
+      required: true
+    },
+    url: { type: String, required: true },
+    publicId: { type: String },
+    verified: { type: Boolean, default: false },
+    verifiedAt: { type: Date },
+    verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   }],
-  isVerified: { 
-    type: Boolean, 
-    default: false, 
-    index: true // Overall provider KYC status
-  },
-  availability: {
-    isOnline: { type: Boolean, default: false, index: true },
-    currentLocation: {
-      type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], default: [0, 0] } // [longitude, latitude]
+  location: {
+    town: { type: String, trim: true },
+    district: { type: String, trim: true },
+    state: { type: String, trim: true },
+    pincode: { 
+      type: String,
+      match: [/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit PIN code'] 
+    },
+    coordinates: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0]
+      }
     }
   },
-  wallet: {
-    balance: { type: Number, default: 0 },
-    totalEarnings: { type: Number, default: 0 }
+  serviceRadius: {
+    type: Number,
+    default: 10,
+    min: [1, 'Service radius must be at least 1 km']
   },
-  bankDetails: {
-    accountNumber: { type: String, select: false },
-    ifscCode: { type: String, select: false },
-    bankName: { type: String },
-    upiId: { type: String, select: false }
+  pricing: {
+    basePrice: { type: Number, required: true, min: [0, 'Base price cannot be negative'] },
+    priceUnit: {
+      type: String,
+      enum: ['per_hour', 'per_job', 'negotiable'],
+      required: true
+    },
+    description: { type: String, maxlength: [200, 'Pricing description is too long'] }
+  },
+  availability: {
+    isAvailable: { type: Boolean, default: true },
+    schedule: [{
+      day: { type: Number, min: 0, max: 6, required: true },
+      startTime: { type: String, match: /^([01]\d|2[0-3]):([0-5]\d)$/, default: "09:00" },
+      endTime: { type: String, match: /^([01]\d|2[0-3]):([0-5]\d)$/, default: "18:00" },
+      isOff: { type: Boolean, default: false }
+    }]
   },
   rating: {
-    average: { type: Number, default: 0, index: true },
-    count: { type: Number, default: 0 }
+    average: { type: Number, default: 0.0, min: 0, max: 5 },
+    count: { type: Number, default: 0 },
+    breakdown: {
+      1: { type: Number, default: 0 },
+      2: { type: Number, default: 0 },
+      3: { type: Number, default: 0 },
+      4: { type: Number, default: 0 },
+      5: { type: Number, default: 0 }
+    }
   },
-  activeSubscription: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Subscription' 
-  }
+  stats: {
+    totalJobs: { type: Number, default: 0 },
+    completedJobs: { type: Number, default: 0 },
+    cancelledJobs: { type: Number, default: 0 },
+    totalEarnings: { type: Number, default: 0 }
+  },
+  subscription: {
+    plan: { type: String, enum: ['free', 'premium'], default: 'free' },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    isActive: { type: Boolean, default: false }
+  },
+  leadBalance: {
+    type: Number,
+    default: 0
+  },
+  isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  isBlocked: { type: Boolean, default: false },
+  rank: { type: Number, default: 0 }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// GeoJSON Index for finding nearby providers
-providerSchema.index({ 'availability.currentLocation': '2dsphere' });
+function arrayLimit(val) {
+  return val.length <= 6;
+}
 
-module.exports = mongoose.model('Provider', providerSchema);
+providerSchema.index({ category: 1 });
+providerSchema.index({ 'location.coordinates': '2dsphere' });
+providerSchema.index({ rank: -1 });
+
+providerSchema.pre('save', function(next) {
+  let computedRank = 0;
+  computedRank += this.rating.average * 10;
+  computedRank += Math.min(this.stats.completedJobs, 100) * 0.5;
+  
+  if (this.subscription.isActive && this.subscription.plan === 'premium') {
+    computedRank += 50;
+  }
+  
+  this.rank = computedRank;
+  next();
+});
+
+const Provider = mongoose.model('Provider', providerSchema);
+module.exports = Provider;

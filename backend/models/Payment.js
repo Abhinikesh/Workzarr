@@ -1,58 +1,79 @@
 const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
-  booking: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Booking', 
-    required: true, 
-    index: true 
+  booking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Booking',
+    required: true
   },
-  customer: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
+  payer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  provider: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Provider' 
+  payee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Provider',
+    required: true
   },
-  amount: { 
-    type: Number, 
-    required: true 
+  amount: {
+    type: Number,
+    required: true,
+    min: [0, 'Amount cannot be negative']
   },
-  currency: { 
-    type: String, 
-    default: 'INR' 
+  commission: {
+    type: Number,
+    required: true,
+    min: [0, 'Commission cannot be negative']
   },
-  method: { 
-    type: String, 
-    enum: ['upi', 'card', 'netbanking', 'cash'], 
-    required: true 
+  providerAmount: {
+    type: Number,
+    required: true,
+    min: [0, 'Provider amount cannot be negative']
   },
-  status: { 
-    type: String, 
-    enum: ['pending', 'completed', 'failed', 'refunded'], 
-    default: 'pending', 
-    index: true 
+  currency: {
+    type: String,
+    default: 'INR'
   },
-  razorpayOrderId: { 
-    type: String, 
-    index: true, 
-    sparse: true 
+  method: {
+    type: String,
+    enum: ['cash', 'upi', 'card', 'wallet'],
+    required: true
   },
-  razorpayPaymentId: { 
-    type: String, 
-    index: true, 
-    sparse: true 
+  gateway: {
+    type: String,
+    enum: ['razorpay', 'manual'],
+    required: true
   },
-  razorpaySignature: { 
-    type: String 
+  razorpayOrderId: {
+    type: String
   },
-  errorDetails: { 
-    type: String 
+  razorpayPaymentId: {
+    type: String
+  },
+  razorpaySignature: {
+    type: String
+  },
+  status: {
+    type: String,
+    enum: ['initiated', 'captured', 'failed', 'refunded'],
+    default: 'initiated'
+  },
+  refundId: { type: String },
+  refundAmount: { type: Number, min: 0 },
+  refundReason: { type: String },
+  metadata: {
+    type: mongoose.Schema.Types.Mixed
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-module.exports = mongoose.model('Payment', paymentSchema);
+paymentSchema.index({ booking: 1 });
+paymentSchema.index({ razorpayOrderId: 1 });
+paymentSchema.index({ razorpayPaymentId: 1 });
+
+const Payment = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;

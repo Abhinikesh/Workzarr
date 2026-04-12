@@ -1,30 +1,54 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const otpSchema = new mongoose.Schema({
-  phone: { 
-    type: String, 
-    required: true, 
-    index: true 
+  phone: {
+    type: String,
+    required: [true, 'Phone number is required'],
+    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number']
   },
-  otp: { 
-    type: String, 
-    required: true // We can optionally hash it if we want extra security
+  otp: {
+    type: String,
+    required: [true, 'OTP hash is required']
   },
-  attempts: { 
-    type: Number, 
-    default: 0 
+  purpose: {
+    type: String,
+    enum: ['login', 'register', 'reset'],
+    required: [true, 'Purpose is required']
   },
-  isVerified: { 
-    type: Boolean, 
-    default: false 
+  attempts: {
+    type: Number,
+    default: 0,
+    max: [5, 'Maximum attempts reached']
   },
-  expiresAt: { 
-    type: Date, 
-    required: true, 
-    index: { expires: 0 } // TTL index: document deletes itself when time hits expiresAt
+  expiresAt: {
+    type: Date,
+    required: true,
+    default: () => new Date(Date.now() + 10 * 60 * 1000)
+  },
+  isUsed: {
+    type: Boolean,
+    default: false
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-module.exports = mongoose.model('OTP', otpSchema);
+otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+otpSchema.pre('save', async function(next) {
+  if (this.isModified('otp')) {
+    const salt = await bcrypt.genSalt(10);
+    this.otp = await bcrypt.hash(this.otp, salt);
+  }
+  next();
+});
+
+otpSchema.methods.verifyOTP = async function(inputOtp) {
+  return await bcrypt.compare(inputOtp, this.otp);
+};
+
+const OTP = mongoose.model('OTP', otpSchema);
+module.exports = OTP;

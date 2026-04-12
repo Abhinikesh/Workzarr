@@ -1,42 +1,70 @@
 const mongoose = require('mongoose');
 
 const payoutSchema = new mongoose.Schema({
-  provider: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Provider', 
-    required: true, 
-    index: true 
+  provider: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Provider',
+    required: true
   },
-  amount: { 
-    type: Number, 
-    required: true 
+  amount: {
+    type: Number,
+    required: true,
+    min: [1, 'Amount must be greater than zero']
   },
-  status: { 
-    type: String, 
-    enum: ['pending', 'processing', 'completed', 'failed'], 
-    default: 'pending', 
-    index: true 
+  method: {
+    type: String,
+    enum: ['upi', 'bank_transfer'],
+    required: true
   },
-  method: { 
-    type: String, 
-    enum: ['bank_transfer', 'upi'], 
-    required: true 
+  upiId: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: function(v) {
+        if (this.method === 'upi' && (!v || v.trim().length === 0)) {
+          return false;
+        }
+        return true;
+      },
+      message: 'UPI ID is required when method is upi'
+    }
   },
-  payoutAccountId: { 
-    type: String // Razorpay Fund Account ID
+  bankDetails: {
+    accountNumber: { type: String, trim: true },
+    ifsc: { type: String, trim: true },
+    accountHolderName: { type: String, trim: true }
   },
-  referenceId: { 
-    type: String, 
-    index: true // Payout ID from Razorpay
+  status: {
+    type: String,
+    enum: ['requested', 'processing', 'completed', 'failed'],
+    default: 'requested'
   },
-  utr: { 
-    type: String // Unique Transaction Reference from bank
+  requestedAt: {
+    type: Date,
+    default: Date.now
   },
-  failureReason: { 
-    type: String 
+  processedAt: { type: Date },
+  transactionRef: { type: String },
+  failureReason: { type: String },
+  processedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-module.exports = mongoose.model('Payout', payoutSchema);
+payoutSchema.pre('validate', function(next) {
+  if (this.method === 'bank_transfer') {
+    const { bankDetails } = this;
+    if (!bankDetails || !bankDetails.accountNumber || !bankDetails.ifsc || !bankDetails.accountHolderName) {
+      this.invalidate('bankDetails', 'Bank details are required when method is bank_transfer');
+    }
+  }
+  next();
+});
+
+const Payout = mongoose.model('Payout', payoutSchema);
+module.exports = Payout;

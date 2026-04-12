@@ -1,33 +1,43 @@
 const mongoose = require('mongoose');
 
 const adminAuditSchema = new mongoose.Schema({
-  admin: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true, 
-    index: true 
+  admin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  action: { 
-    type: String, 
-    required: true, 
-    index: true // E.g., 'VERIFY_PROVIDER', 'DELETE_USER', 'REFUND_BOOKING'
+  action: {
+    type: String,
+    required: true,
+    index: true
   },
-  targetModel: { 
-    type: String, 
-    required: true // E.g., 'Provider', 'Booking'
+  targetModel: {
+    type: String,
+    required: true
   },
-  targetId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    required: true 
+  targetId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
-  description: { 
-    type: String // Optional extra details on the action taken
+  previousValue: {
+    type: mongoose.Schema.Types.Mixed
   },
-  ipAddress: { 
-    type: String 
+  newValue: {
+    type: mongoose.Schema.Types.Mixed
+  },
+  ipAddress: {
+    type: String
+  },
+  userAgent: {
+    type: String
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-module.exports = mongoose.model('AdminAudit', adminAuditSchema);
+adminAuditSchema.index({ targetModel: 1, targetId: 1 });
+
+const AdminAudit = mongoose.model('AdminAudit', adminAuditSchema);
+module.exports = AdminAudit;
