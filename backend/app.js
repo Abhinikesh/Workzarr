@@ -13,6 +13,9 @@ const authRoutes = require('./routes/auth.routes');
 const providerRoutes = require('./routes/provider.routes');
 const categoryRoutes = require('./routes/category.routes');
 const serviceRoutes = require('./routes/service.routes');
+const bookingRoutes = require('./routes/booking.routes');
+const reviewRoutes = require('./routes/review.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 const app = express();
 
@@ -36,7 +39,12 @@ app.use(cors({
   credentials: true
 }));
 
-// 3. express.json
+// 3. Webhook (Must be before express.json)
+const rawBodyMiddleware = require('./middleware/rawBody.middleware');
+const { handleWebhook } = require('./controllers/payment.controller');
+app.post('/api/v1/payments/webhook', rawBodyMiddleware, handleWebhook);
+
+// 4. express.json
 app.use(express.json({ limit: '10kb' }));
 
 // 4. express.urlencoded
@@ -61,6 +69,9 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/providers', providerRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/services', serviceRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 // 9. 404 handler
 app.all('*', (req, res, next) => {

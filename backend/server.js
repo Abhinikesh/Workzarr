@@ -2,9 +2,14 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const { createClient } = require('redis');
 const app = require('./app');
+const http = require('http');
+const { initializeSocket } = require('./socket/socket');
 const logger = require('./utils/logger');
 const redisClient = require('./config/redis');
 const { startAgenda, stopAgenda } = require('./jobs/providerRankJob');
+const { agenda: bookingAgenda } = require('./jobs/bookingJobs');
+const payoutQueue = require('./jobs/payoutQueue');
+const commissionEngine = require('./jobs/commissionEngine');
 
 // Handle uncaught exceptions gracefully
 process.on('uncaughtException', (err) => {
@@ -43,9 +48,22 @@ const startServer = async () => {
 
   // 3. Start Agenda Jobs
   await startAgenda();
+  await bookingAgenda.start();
+  
+  // Schedule daily payout batch
+  bookingAgenda.define('daily-payout-batch', async (job) => {
+    await payoutQueue.queueDailyBatch();
+  });
+  await bookingAgenda.every('0 10 * * *', 'daily-payout-batch');
+  
+  logger.info('Booking Agenda & Payout Queue started.');
 
-  // 4. Start Server
-  server = app.listen(PORT, () => {
+  // 4. Create HTTP & Socket server
+  server = http.createServer(app);
+  initializeSocket(server);
+
+  // 5. Start Server
+  server.listen(PORT, () => {
     logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   });
 };
@@ -73,6 +91,8 @@ const forceShutdown = async (signal) => {
     server.close(async () => {
       logger.info('HTTP server closed.');
       await stopAgenda();
+      await bookingAgenda.stop();
+      logger.info('Booking Agenda stopped.');
       await mongoose.connection.close(false);
       logger.info('MongoDB connection closed.');
       if (redisClient.isOpen) {
