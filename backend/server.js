@@ -4,6 +4,7 @@ const { createClient } = require('redis');
 const app = require('./app');
 const logger = require('./utils/logger');
 const redisClient = require('./config/redis');
+const { startAgenda, stopAgenda } = require('./jobs/providerRankJob');
 
 // Handle uncaught exceptions gracefully
 process.on('uncaughtException', (err) => {
@@ -40,7 +41,10 @@ const startServer = async () => {
     logger.info('Redis Connected.');
   }
 
-  // 3. Start Server
+  // 3. Start Agenda Jobs
+  await startAgenda();
+
+  // 4. Start Server
   server = app.listen(PORT, () => {
     logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   });
@@ -68,6 +72,7 @@ const forceShutdown = async (signal) => {
   if (server) {
     server.close(async () => {
       logger.info('HTTP server closed.');
+      await stopAgenda();
       await mongoose.connection.close(false);
       logger.info('MongoDB connection closed.');
       if (redisClient.isOpen) {

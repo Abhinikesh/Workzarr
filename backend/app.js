@@ -10,6 +10,9 @@ const ApiError = require('./utils/ApiError');
 
 // Import routes
 const authRoutes = require('./routes/auth.routes');
+const providerRoutes = require('./routes/provider.routes');
+const categoryRoutes = require('./routes/category.routes');
+const serviceRoutes = require('./routes/service.routes');
 
 const app = express();
 
@@ -55,6 +58,9 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // 8. Mount routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/providers', providerRoutes);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/services', serviceRoutes);
 
 // 9. 404 handler
 app.all('*', (req, res, next) => {
