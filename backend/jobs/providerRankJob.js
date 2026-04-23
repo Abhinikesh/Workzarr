@@ -1,6 +1,6 @@
 'use strict';
 
-const Agenda       = require('agenda');
+const Agenda = require('agenda');
 const mongoose     = require('mongoose');
 const logger       = require('../utils/logger');
 const redisClient  = require('../config/redis');
@@ -10,8 +10,7 @@ const User         = require('../models/User');
 
 // ─── Agenda instance (uses same MongoDB) ─────────────────────────────────────
 const agenda = new Agenda({
-  mongo:              mongoose.connection,
-  db:                 { collection: 'agendaJobs' },
+  db: { address: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/localserve', collection: 'agendaJobs' },
   processEvery:       '1 minute',
   maxConcurrency:     5,
   defaultConcurrency: 2

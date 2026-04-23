@@ -12,7 +12,7 @@ const standardHandler = (req, res, next, options) => {
 
 const createRedisStore = (prefix) => {
   return new RedisStore({
-    sendCommand: (...args) => redisClient.sendCommand(args),
+    sendCommand: (...args) => redisClient.call(...args),
     prefix: `rl_${prefix}:`
   });
 };
@@ -55,7 +55,7 @@ const apiLimiter = rateLimit({
   store: createRedisStore('api'),
   keyGenerator: (req) => {
     // Limit by user ID if logged in, otherwise IP
-    return req.user ? req.user._id.toString() : req.ip;
+    return req.user ? req.user._id.toString() : (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
   },
   handler: standardHandler,
   message: 'API rate limit exceeded. Please try again later.'

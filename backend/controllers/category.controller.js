@@ -1,7 +1,7 @@
 'use strict';
 
 const sanitizeHtml = require('sanitize-html');
-const asyncHandler = require('./asyncHandler');
+const asyncHandler = require('../middleware/asyncHandler');
 const ApiError     = require('../utils/ApiError');
 const ApiResponse  = require('../utils/ApiResponse');
 const logger       = require('../utils/logger');

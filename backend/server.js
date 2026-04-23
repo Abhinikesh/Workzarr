@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { createClient } = require('redis');
 const app = require('./app');
 const http = require('http');
 const { initializeSocket } = require('./socket/socket');
@@ -25,13 +24,11 @@ let server;
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
-    logger.error('Error connecting to MongoDB:', err.message);
+    logger.error('Error connecting to MongoDB:', err);
+    console.error(err);
     process.exit(1);
   }
 };
@@ -40,11 +37,7 @@ const startServer = async () => {
   // 1. Connect MongoDB
   await connectDB();
   
-  // 2. Connect Redis (if not already connected by config)
-  if (!redisClient.isOpen) {
-    await redisClient.connect();
-    logger.info('Redis Connected.');
-  }
+  // Redis is already connected automatically by ioredis upon instantiation.
 
   // 3. Start Agenda Jobs
   await startAgenda();

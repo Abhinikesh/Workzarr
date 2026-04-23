@@ -74,7 +74,7 @@ app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 
 // 9. 404 handler
-app.all('*', (req, res, next) => {
+app.use((req, res, next) => {
   next(ApiError.notFound(`Can't find ${req.originalUrl} on this server!`));
 });
 

@@ -8,8 +8,7 @@ const logger = require('../utils/logger');
 // at load time since models and helpers refer to each other.
 
 const agenda = new Agenda({
-  mongo: mongoose.connection,
-  db: { collection: 'agendaJobs' },
+  db: { address: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/localserve', collection: 'agendaJobs' },
   processEvery: '1 minute',
   maxConcurrency: 10,
   defaultConcurrency: 5
