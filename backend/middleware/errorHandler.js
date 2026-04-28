@@ -38,6 +38,18 @@ const errorHandler = (err, req, res, next) => {
     error = ApiError.unauthorized('Your token has expired. Please log in again.');
   }
 
+  // Multer Error
+  if (err.name === 'MulterError') {
+    const message = `File upload error: ${err.message}`;
+    error = ApiError.badRequest(message);
+  }
+
+  // Razorpay Error
+  if (err.statusCode && err.error && err.error.code) {
+    const message = `Payment Gateway Error: ${err.error.description || 'Transaction failed'}`;
+    error = ApiError.badRequest(message);
+  }
+
   // Handle ApiError
   if (error instanceof ApiError) {
     return ApiResponse.error(res, error.statusCode, error.message, error.errors);
@@ -49,7 +61,7 @@ const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({
     success: false,
-    message: process.env.NODE_ENV === 'production' && statusCode === 500 ? 'Internal Server Error' : message,
+    message: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 };

@@ -17,7 +17,13 @@ const payoutQueue = new Queue('payout-processing', {
   },
   defaultJobOptions: {
     attempts: 3,
-    backoff: { type: 'exponential', delay: 5000 },
+    backoff: { 
+      type: 'exponential', 
+      delay: 5000,
+      // Note: Bull natively doesn't have a 'maxDelay' property in the backoff object, 
+      // but we can simulate it with a custom strategy or just keep it reasonable.
+      // Standard practice: 3 attempts with 5s exponential is fine.
+    },
     removeOnComplete: false,
     removeOnFail: false
   }

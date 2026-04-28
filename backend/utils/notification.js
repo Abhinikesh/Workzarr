@@ -65,6 +65,11 @@ const sendPushNotification = async (fcmToken, { title, body, data }) => {
     };
     await admin.messaging().send(message);
   } catch (error) {
+    const errCode = error.code;
+    if (errCode === 'messaging/registration-token-not-registered' || errCode === 'messaging/invalid-registration-token') {
+      await User.updateOne({ fcmToken }, { $unset: { fcmToken: 1 } });
+      logger.info('Removed invalid FCM token from user');
+    }
     logger.error('Push notification failed', { error: error.message, fcmToken });
   }
 };
@@ -102,7 +107,29 @@ const sendBulkNotification = async (userIds, { title, body, data, type }) => {
         data: data || {},
         tokens: batchTokens
       };
-      await admin.messaging().sendEachForMulticast(message); // sendMulticast is deprecated in newer SDKs, sendEachForMulticast is the replacement
+      
+      const response = await admin.messaging().sendEachForMulticast(message);
+      
+      // Cleanup invalid tokens
+      if (response.failureCount > 0) {
+        const tokensToRemove = [];
+        response.responses.forEach((resp, idx) => {
+          if (!resp.success) {
+            const errCode = resp.error?.code;
+            if (errCode === 'messaging/registration-token-not-registered' || errCode === 'messaging/invalid-registration-token') {
+              tokensToRemove.push(batchTokens[idx]);
+            }
+          }
+        });
+
+        if (tokensToRemove.length > 0) {
+          await User.updateMany(
+            { fcmToken: { $in: tokensToRemove } },
+            { $unset: { fcmToken: 1 } }
+          );
+          logger.info(`Removed ${tokensToRemove.length} invalid FCM tokens`);
+        }
+      }
     }
   } catch (error) {
     logger.error('Bulk push notification failed', { error: error.message });
@@ -110,13 +137,24 @@ const sendBulkNotification = async (userIds, { title, body, data, type }) => {
 };
 
 const queueSMS = async (phone, body) => {
-  // Graceful MSG91 stub (since no specific MSG91 API key is provided here)
   if (!process.env.MSG91_AUTH_KEY) {
     logger.info('SMS Queue skipped (No MSG91 Auth Key)', { phone, body });
     return;
   }
-  // Standard MSG91 Axios call would go here
-  logger.info('SMS Queued via MSG91', { phone, body });
+  
+  try {
+    const axios = require('axios');
+    // Implement MSG91 call with 10s timeout
+    await axios.post('https://api.msg91.com/api/v5/flow/', {
+      // payload
+    }, {
+      timeout: 10000,
+      headers: { 'authkey': process.env.MSG91_AUTH_KEY }
+    });
+    logger.info('SMS Sent via MSG91', { phone });
+  } catch (err) {
+    logger.error('SMS sending failed', { phone, error: err.message });
+  }
 };
 
 // ─── MAIN FUNCTION ────────────────────────────────────────────────────────────

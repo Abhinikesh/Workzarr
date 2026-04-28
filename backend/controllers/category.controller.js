@@ -113,15 +113,15 @@ const createCategory = asyncHandler(async (req, res) => {
 
 // ─── 4. updateCategory (admin only) ───────────────────────────────────────────
 const updateCategory = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { categoryId } = req.params;
 
-  const category = await Category.findById(id);
+  const category = await Category.findById(categoryId);
   if (!category) throw ApiError.notFound('Category not found.');
 
   const { name, description, displayOrder } = req.body;
 
   if (name && name.trim() !== category.name) {
-    const duplicate = await Category.findOne({ name: name.trim(), _id: { $ne: id } });
+    const duplicate = await Category.findOne({ name: name.trim(), _id: { $ne: categoryId } });
     if (duplicate) throw ApiError.conflict('Another category already has this name.');
     category.name = name.trim();
     // slug auto-updated by pre('save') hook on the model
@@ -157,9 +157,9 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // ─── 5. toggleCategoryStatus (admin only) ─────────────────────────────────────
 const toggleCategoryStatus = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { categoryId } = req.params;
 
-  const category = await Category.findById(id);
+  const category = await Category.findById(categoryId);
   if (!category) throw ApiError.notFound('Category not found.');
 
   category.isActive = !category.isActive;

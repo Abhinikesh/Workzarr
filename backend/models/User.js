@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
     trim: true,
     minlength: [2, 'Name must be at least 2 characters long'],
     maxlength: [50, 'Name cannot exceed 50 characters']
@@ -76,6 +75,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isProfileComplete: {
+    type: Boolean,
+    default: false
+  },
   lastLogin: {
     type: Date
   }
@@ -89,12 +92,21 @@ userSchema.index({ phone: 1 });
 userSchema.index({ referralCode: 1 });
 userSchema.index({ 'location.coordinates': '2dsphere' });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function(next) {
   if (!this.referralCode) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let isUnique = false;
     let code = '';
-    for (let i = 0; i < 8; i++) {
+    
+    while (!isUnique) {
+      code = '';
+      for (let i = 0; i < 8; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const existingUser = await mongoose.model('User').findOne({ referralCode: code });
+      if (!existingUser) {
+        isUnique = true;
+      }
     }
     this.referralCode = code;
   }

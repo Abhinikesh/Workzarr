@@ -15,10 +15,8 @@ const {
 const router = express.Router();
 
 // ─── Webhook (Must use raw body, so no express.json() here) ───────────────────
-// Note: In app.js, this specific route must be mounted before global express.json()
-// We'll configure app.js to do: app.use('/api/v1/payments/webhook', rawBodyMiddleware, ctrl.handleWebhook);
-// But for completeness in the router if mounted directly:
-router.post('/webhook', rawBodyMiddleware, ctrl.handleWebhook);
+// Note: In app.js, this specific route is mounted before global express.json()
+// to handle signature verification correctly.
 
 // ─── Customer Routes ──────────────────────────────────────────────────────────
 router.post(

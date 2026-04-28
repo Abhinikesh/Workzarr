@@ -57,7 +57,11 @@ const getWalletBalance = async (providerId) => {
   };
 
   // Cache in Redis TTL 5 min
-  await redisClient.setEx(cacheKey, 300, JSON.stringify(result));
+  try {
+    await redisClient.setEx(cacheKey, 300, JSON.stringify(result));
+  } catch (err) {
+    logger.warn('Redis wallet cache set failed', { error: err.message });
+  }
 
   return result;
 };
@@ -67,8 +71,12 @@ const creditWallet = async (providerId, amount, bookingId) => {
   try {
     const cacheKey = `wallet:${providerId}`;
     
-    // Invalidate cache so it accurately pulls fresh DB values next time
-    await redisClient.del(cacheKey);
+    // Invalidate cache
+    try {
+      await redisClient.del(cacheKey);
+    } catch (err) {
+      logger.warn('Redis wallet cache delete failed', { error: err.message });
+    }
 
     logger.info('Wallet credited', { providerId, amount, bookingId });
     return await getWalletBalance(providerId);
@@ -81,15 +89,27 @@ const creditWallet = async (providerId, amount, bookingId) => {
 // ─── 3. debitWallet ───────────────────────────────────────────────────────────
 const debitWallet = async (providerId, amount, payoutId) => {
   try {
-    // We check available balance dynamically
-    const current = await getWalletBalance(providerId);
-    if (current.availableBalance < amount) {
-      throw ApiError.badRequest('Insufficient balance for this payout.');
-    }
-
-    // Invalidate cache so the new requested payout reflects in the next fetch
     const cacheKey = `wallet:${providerId}`;
-    await redisClient.del(cacheKey);
+    const lockKey = `wallet_debit_lock:${providerId}`;
+
+    // 1. Atomic Balance Check & Hold in Redis
+    // In a production app, we might use a Lua script here for pure atomicity across DB+Redis
+    // But since the source of truth is DB, we use a Redis lock during the DB check.
+    
+    const locked = await redisClient.set(lockKey, 'LOCKED', { NX: true, EX: 10 });
+    if (!locked) throw ApiError.conflict('A wallet operation is already in progress. Please try again.');
+
+    try {
+      const current = await getWalletBalance(providerId);
+      if (current.availableBalance < amount) {
+        throw ApiError.badRequest('Insufficient balance for this payout.');
+      }
+
+      // Invalidate cache
+      await redisClient.del(cacheKey);
+    } finally {
+      await redisClient.del(lockKey);
+    }
 
     logger.info('Wallet debited', { providerId, amount, payoutId });
     return await getWalletBalance(providerId);

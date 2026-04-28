@@ -216,6 +216,8 @@ const uploadProviderAvatar = asyncHandler(async (req, res) => {
     resource_type:  'image'
   });
 
+  if (!result.success) throw ApiError.internal(result.error);
+
   await Promise.all([
     Provider.findByIdAndUpdate(provider._id, { profileImage: result.url }),
     User.findByIdAndUpdate(provider.userId, { avatar: result.url })
@@ -253,6 +255,9 @@ const uploadGalleryImages = asyncHandler(async (req, res) => {
       })
     )
   );
+
+  const failed = uploads.filter(u => !u.success);
+  if (failed.length) throw ApiError.internal('Some gallery images failed to upload.');
 
   const newUrls   = uploads.map((u) => u.url);
   const updatedDoc = await Provider.findByIdAndUpdate(
@@ -322,6 +327,8 @@ const uploadProviderDocument = asyncHandler(async (req, res) => {
     transformation: resourceType === 'image' ? TRANSFORMATIONS.DOCUMENT : undefined,
     resource_type:  resourceType
   });
+
+  if (!result.success) throw ApiError.internal(result.error);
 
   const newDoc = {
     docType,

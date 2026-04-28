@@ -24,9 +24,9 @@ const adminRateLimiter = rateLimit({
 });
 
 // Apply to all admin routes
+router.use(adminRateLimiter);
 router.use(protect);
 router.use(restrictTo('admin', 'superAdmin'));
-router.use(adminRateLimiter);
 
 router.use('/dashboard', dashboardRoutes);
 router.use('/users', userRoutes);

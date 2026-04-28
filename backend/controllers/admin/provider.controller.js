@@ -129,7 +129,8 @@ exports.verifyProviderDocument = asyncHandler(async (req, res) => {
     userAgent: req.headers['user-agent']
   });
 
-  res.status(200).json(new ApiResponse(200, provider, `Document ${action}ed successfully`));
+  const updatedProvider = await Provider.findById(providerId).populate('user', 'name phone email').populate('category');
+  res.status(200).json(new ApiResponse(200, updatedProvider, `Document ${action}ed successfully`));
 });
 
 exports.verifyProvider = asyncHandler(async (req, res) => {

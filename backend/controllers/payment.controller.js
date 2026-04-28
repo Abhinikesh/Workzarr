@@ -64,7 +64,7 @@ const createPaymentOrder = asyncHandler(async (req, res) => {
     });
   }
 
-  const amountPaise = booking.price * 100;
+  const amountPaise = Math.round(booking.price * 100);
 
   const order = await createOrder({
     amount: amountPaise,
@@ -169,27 +169,33 @@ const verifyAndCapturePayment = asyncHandler(async (req, res) => {
 });
 
 // ─── 3. handleWebhook ─────────────────────────────────────────────────────────
-const handleWebhook = asyncHandler(async (req, res) => {
-  const signature = req.headers['x-razorpay-signature'];
-  const rawBody = req.rawBody; // Populated by rawBodyMiddleware
-
-  if (!signature || !rawBody) {
-    return res.status(400).send('Missing signature or body');
-  }
-
-  const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
-    .update(rawBody)
-    .digest('hex');
-
-  if (expectedSignature !== signature) {
-    logger.warn('Invalid webhook signature detected', { ip: req.ip });
-    return res.status(400).send('Invalid signature');
-  }
-
-  const event = JSON.parse(rawBody);
-
+const handleWebhook = async (req, res) => {
   try {
+    const signature = req.headers['x-razorpay-signature'];
+    const rawBody = req.rawBody; // Populated by rawBodyMiddleware
+
+    if (!signature || !rawBody) {
+      return res.status(200).json({ received: true });
+    }
+
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest('hex');
+
+    // Use timingSafeEqual to prevent timing attacks
+    const isSignatureValid = crypto.timingSafeEqual(
+      Buffer.from(expectedSignature),
+      Buffer.from(signature)
+    );
+
+    if (!isSignatureValid) {
+      logger.warn('Invalid webhook signature detected', { ip: req.ip });
+      return res.status(200).json({ received: true });
+    }
+
+    const event = JSON.parse(rawBody);
+
     switch (event.event) {
       case 'payment.captured': {
         const paymentData = event.payload.payment.entity;
@@ -284,12 +290,12 @@ const handleWebhook = asyncHandler(async (req, res) => {
       }
     }
   } catch (err) {
-    logger.error('Webhook processing error', { error: err.message, event: event.event });
+    logger.error('Webhook processing error', { error: err.message });
   }
 
   // Always return 200 to Razorpay
-  res.status(200).send('OK');
-});
+  res.status(200).json({ received: true });
+};
 
 // ─── 4. requestPayout ─────────────────────────────────────────────────────────
 const requestPayout = asyncHandler(async (req, res) => {

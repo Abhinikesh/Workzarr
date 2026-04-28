@@ -1,11 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "LocalServe Backend - Production Grade Local Services Marketplace",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -13,17 +14,20 @@
   "type": "commonjs",
   "dependencies": {
     "agenda": "^4.4.0",
-    "bcrypt": "^6.0.0",
+    "axios": "^1.7.9",
     "bcryptjs": "^3.0.3",
     "bull": "^4.16.5",
     "cloudinary": "^2.9.0",
+    "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.4.0",
     "firebase-admin": "^13.8.0",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "ioredis": "^5.10.1",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
@@ -36,7 +40,12 @@
     "sanitize-html": "^2.17.3",
     "socket.io": "^4.8.3",
     "streamifier": "^0.1.1",
+    "uuid": "^11.1.0",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.9"
   }
 }

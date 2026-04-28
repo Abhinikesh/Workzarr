@@ -50,6 +50,10 @@ const createReview = asyncHandler(async (req, res) => {
         })
       )
     );
+
+    const failed = uploads.filter(u => !u.success);
+    if (failed.length) throw ApiError.internal('Some review images failed to upload.');
+
     imageUrls = uploads.map(u => u.url);
   }
 
@@ -66,17 +70,7 @@ const createReview = asyncHandler(async (req, res) => {
   booking.customerReviewed = true;
   await booking.save();
 
-  // Update Provider rating mathematically
-  const provider = await Provider.findById(booking.provider._id).select('rating');
-  const oldAvg = provider.rating.average;
-  const oldCount = provider.rating.count;
-  
-  const newAvg = ((oldAvg * oldCount) + Number(rating)) / (oldCount + 1);
-  
-  provider.rating.average = Number(newAvg.toFixed(1));
-  provider.rating.count = oldCount + 1;
-  provider.rating.breakdown[rating] = (provider.rating.breakdown[rating] || 0) + 1;
-  await provider.save();
+  // Note: Provider rating and rank are updated automatically via Review model hooks
 
   // Recompute rank (import logic or call agenda to do it, but simple math here is fine too)
   const { agenda } = require('../jobs/providerRankJob');

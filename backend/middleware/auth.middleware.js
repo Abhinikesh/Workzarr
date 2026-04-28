@@ -25,21 +25,29 @@ const protect = asyncHandler(async (req, res, next) => {
     return next(ApiError.unauthorized('Session expired. Please log in again.'));
   }
 
-  const decoded = jwtUtils.verifyAccessToken(token);
+  try {
+    const decoded = jwtUtils.verifyAccessToken(token);
 
-  const user = await User.findById(decoded.userId).select('+status');
-  
-  if (!user) {
-    return next(ApiError.unauthorized('The user belonging to this token no longer exists.'));
+    const user = await User.findById(decoded.userId).select('+status');
+    
+    if (!user) {
+      return next(ApiError.unauthorized('The user belonging to this token no longer exists.'));
+    }
+
+    if (user.status === 'blocked') {
+      return next(ApiError.forbidden('Your account has been blocked. Contact support.'));
+    }
+
+    req.user = user;
+    req.token = token;
+    next();
+  } catch (error) {
+    if (error.statusCode === 401) {
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+    }
+    return next(error);
   }
-
-  if (user.status === 'blocked') {
-    return next(ApiError.forbidden('Your account has been blocked. Contact support.'));
-  }
-
-  req.user = user;
-  req.token = token;
-  next();
 });
 
 // 2. restrictTo
@@ -63,16 +71,16 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(); // Proceed without auth
+    return next();
   }
 
   try {
     const isBlacklisted = await redisClient.get(`blacklisted_token:${token}`);
-    if (isBlacklisted) {
-      return next();
-    }
+    if (isBlacklisted) return next();
 
-    const decoded = jwtUtils.verifyAccessToken(token);
+    const decoded = jwtUtils.verifyAccessToken(token, true);
+    if (!decoded) return next();
+
     const user = await User.findById(decoded.userId);
 
     if (user && user.status !== 'blocked') {
@@ -80,7 +88,7 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
       req.token = token;
     }
   } catch (error) {
-    // Ignore invalid tokens for optional auth
+    // Silent fail for optional auth
   }
   
   next();

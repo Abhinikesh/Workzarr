@@ -127,23 +127,29 @@ const DataTable = ({
       {pagination && (
         <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-            Showing <span className="text-slate-900 dark:text-white">{(pagination.currentPage - 1) * pagination.limit + 1}</span> to{' '}
-            <span className="text-slate-900 dark:text-white">
-              {Math.min(pagination.currentPage * pagination.limit, pagination.totalItems)}
-            </span>{' '}
-            of <span className="text-slate-900 dark:text-white">{pagination.totalItems}</span> entries
+            {pagination.totalItems > 0 ? (
+              <>
+                Showing <span className="text-slate-900 dark:text-white">{(pagination.currentPage - 1) * pagination.limit + 1}</span> to{' '}
+                <span className="text-slate-900 dark:text-white">
+                  {Math.min(pagination.currentPage * pagination.limit, pagination.totalItems)}
+                </span>{' '}
+                of <span className="text-slate-900 dark:text-white">{pagination.totalItems}</span> entries
+              </>
+            ) : (
+              'Showing 0 entries'
+            )}
           </div>
 
           <div className="flex items-center gap-1.5">
             <button 
-              disabled={pagination.currentPage === 1}
+              disabled={pagination.currentPage <= 1}
               onClick={() => onPageChange(1)}
               className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronsLeft size={16} />
             </button>
             <button 
-              disabled={pagination.currentPage === 1}
+              disabled={pagination.currentPage <= 1}
               onClick={() => onPageChange(pagination.currentPage - 1)}
               className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
@@ -151,19 +157,19 @@ const DataTable = ({
             </button>
             
             <div className="flex items-center px-4 h-9 bg-indigo-600 text-white font-extrabold rounded-xl shadow-lg shadow-indigo-600/20 text-xs">
-              {pagination.currentPage} / {pagination.totalPages}
+              {pagination.currentPage} / {Math.max(1, pagination.totalPages)}
             </div>
 
             <button 
-              disabled={pagination.currentPage === pagination.totalPages}
+              disabled={pagination.currentPage >= pagination.totalPages}
               onClick={() => onPageChange(pagination.currentPage + 1)}
               className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronRight size={16} />
             </button>
             <button 
-              disabled={pagination.currentPage === pagination.totalPages}
-              onClick={() => onPageChange(pagination.totalPages)}
+              disabled={pagination.currentPage >= pagination.totalPages}
+              onClick={() => onPageChange(pagination.totalPages || 1)}
               className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronsRight size={16} />

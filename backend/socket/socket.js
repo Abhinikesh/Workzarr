@@ -32,7 +32,14 @@ const initializeSocket = (httpServer) => {
       
       if (!token) return next(new Error('unauthorized'));
 
-      const decoded = verifyAccessToken(token);
+      let decoded;
+      try {
+        decoded = verifyAccessToken(token);
+      } catch (err) {
+        logger.warn('Socket token verification failed', { error: err.message });
+        return next(new Error('unauthorized'));
+      }
+
       const user = await User.findById(decoded.userId).select('_id role name lastLogin location');
       
       if (!user) return next(new Error('unauthorized'));
@@ -54,7 +61,7 @@ const initializeSocket = (httpServer) => {
 
       next();
     } catch (err) {
-      logger.warn('Socket authentication failed', { error: err.message });
+      logger.error('Socket authentication internal error', { error: err.message });
       next(new Error('unauthorized'));
     }
   });
@@ -65,11 +72,15 @@ const initializeSocket = (httpServer) => {
     
     logger.info('Socket connected', { userId, socketId: socket.id, role });
 
-    // Store in Redis (TTL: 24h = 86400s)
-    await redisClient.setEx(`socket:${userId}`, 86400, socket.id);
+    // Store in Redis (TTL: 24h = 86400s) - Non-blocking
+    redisClient.setEx(`socket:${userId}`, 86400, socket.id).catch(err => {
+      logger.error('Failed to store socketId in Redis', { userId, error: err.message });
+    });
     
-    // Update lastLogin
-    await User.findByIdAndUpdate(userId, { lastLogin: new Date() });
+    // Update lastLogin - Non-blocking
+    User.findByIdAndUpdate(userId, { lastLogin: new Date() }).catch(err => {
+      logger.error('Failed to update lastLogin on socket connect', { userId, error: err.message });
+    });
 
     // Join automatic rooms
     socket.join(`user:${userId}`);
@@ -197,10 +208,9 @@ const initializeSocket = (httpServer) => {
     // ─── DISCONNECT ───────────────────────────────────────────────────────────
     socket.on('disconnect', async () => {
       logger.info('Socket disconnected', { userId, socketId: socket.id });
-      await redisClient.del(`socket:${userId}`);
-
-      // If provider, optionally update availability (skip for now to avoid false offline drops,
-      // usually handled by a heartbeat or explicit toggle).
+      redisClient.del(`socket:${userId}`).catch(err => {
+        logger.error('Failed to delete socketId from Redis on disconnect', { userId, error: err.message });
+      });
     });
   });
 };

@@ -38,7 +38,7 @@ exports.getDashboardOverview = asyncHandler(async (req, res) => {
   const pendingVerification = await Provider.countDocuments({ isVerified: false });
   const activeProviderIds = await Booking.distinct('provider', { createdAt: { $gte: thirtyDaysAgo } });
   const activeProviders = activeProviderIds.length;
-  const premiumProviders = await Provider.countDocuments({ 'subscription.status': 'active' });
+  const premiumProviders = await Provider.countDocuments({ 'subscription.isActive': true });
   const newProvidersThisMonth = await Provider.countDocuments({ createdAt: { $gte: thisMonth } });
 
   const providers = { totalProviders, verifiedProviders, pendingVerification, activeProviders, premiumProviders, newProvidersThisMonth };
@@ -62,12 +62,12 @@ exports.getDashboardOverview = asyncHandler(async (req, res) => {
     {
       $group: {
         _id: null,
-        totalRevenue: { $sum: '$platformFee' },
-        revenueToday: { $sum: { $cond: [{ $gte: ['$createdAt', today] }, '$platformFee', 0] } },
-        revenueThisWeek: { $sum: { $cond: [{ $gte: ['$createdAt', thisWeek] }, '$platformFee', 0] } },
-        revenueThisMonth: { $sum: { $cond: [{ $gte: ['$createdAt', thisMonth] }, '$platformFee', 0] } },
+        totalRevenue: { $sum: '$commission' },
+        revenueToday: { $sum: { $cond: [{ $gte: ['$createdAt', today] }, '$commission', 0] } },
+        revenueThisWeek: { $sum: { $cond: [{ $gte: ['$createdAt', thisWeek] }, '$commission', 0] } },
+        revenueThisMonth: { $sum: { $cond: [{ $gte: ['$createdAt', thisMonth] }, '$commission', 0] } },
         totalRefunded: { $sum: { $cond: [{ $eq: ['$status', 'refunded'] }, '$amount', 0] } },
-        netRevenue: { $sum: { $subtract: ['$platformFee', { $cond: [{ $eq: ['$status', 'refunded'] }, '$platformFee', 0] }] } }
+        netRevenue: { $sum: { $subtract: ['$commission', { $cond: [{ $eq: ['$status', 'refunded'] }, '$commission', 0] }] } }
       }
     }
   ]);
@@ -78,7 +78,7 @@ exports.getDashboardOverview = asyncHandler(async (req, res) => {
   const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
   const lastMonthRevAggr = await Payment.aggregate([
     { $match: { status: 'captured', createdAt: { $gte: lastMonthStart, $lte: lastMonthEnd } } },
-    { $group: { _id: null, revenue: { $sum: '$platformFee' } } }
+    { $group: { _id: null, revenue: { $sum: '$commission' } } }
   ]);
   const lastMonthRev = lastMonthRevAggr[0]?.revenue || 0;
   const revenueGrowth = lastMonthRev === 0 ? 100 : (((revData.revenueThisMonth - lastMonthRev) / lastMonthRev) * 100).toFixed(2);
@@ -147,9 +147,9 @@ exports.getRevenueChart = asyncHandler(async (req, res) => {
     { $match: { createdAt: { $gte: start } } },
     {
       $group: {
-        _id: { $dateToString: { format: groupByFormat, date: '$createdAt' } },
+        _id: { $dateToString: { format: groupByFormat, date: '$createdAt', timezone: 'Asia/Kolkata' } },
         revenue: { $sum: { $cond: [{ $eq: ['$status', 'captured'] }, '$amount', 0] } },
-        commission: { $sum: { $cond: [{ $eq: ['$status', 'captured'] }, '$platformFee', 0] } },
+        commission: { $sum: { $cond: [{ $eq: ['$status', 'captured'] }, '$commission', 0] } },
         bookings: { $addToSet: '$booking' },
         refunds: { $sum: { $cond: [{ $eq: ['$status', 'refunded'] }, '$amount', 0] } }
       }
@@ -175,7 +175,7 @@ exports.getRevenueChart = asyncHandler(async (req, res) => {
   const prevStart = new Date(start.getTime() - diffTime);
   const prevData = await Payment.aggregate([
     { $match: { createdAt: { $gte: prevStart, $lt: start }, status: 'captured' } },
-    { $group: { _id: null, revenue: { $sum: '$platformFee' } } }
+    { $group: { _id: null, revenue: { $sum: '$commission' } } }
   ]);
   const prevRevenue = prevData[0]?.revenue || 0;
   const growthVsPrevPeriod = prevRevenue === 0 ? (totalRevenue > 0 ? 100 : 0) : (((totalRevenue - prevRevenue) / prevRevenue) * 100).toFixed(2);
@@ -202,7 +202,7 @@ exports.getBookingChart = asyncHandler(async (req, res) => {
     { $match: { createdAt: { $gte: start } } },
     {
       $group: {
-        _id: { $dateToString: { format: groupByFormat, date: '$createdAt' } },
+        _id: { $dateToString: { format: groupByFormat, date: '$createdAt', timezone: 'Asia/Kolkata' } },
         total: { $sum: 1 },
         completed: { $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] } },
         cancelled: { $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] } },

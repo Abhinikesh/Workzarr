@@ -53,8 +53,8 @@ const uploadToCloudinary = (fileBuffer, options = {}) => {
       folder,
       resource_type,
       overwrite: true,
-      invalidate:  true,
-      ...(public_id    && { public_id }),
+      invalidate: true,
+      ...(public_id && { public_id }),
       ...(transformation && { transformation })
     };
 
@@ -63,28 +63,31 @@ const uploadToCloudinary = (fileBuffer, options = {}) => {
       (error, result) => {
         if (error) {
           logger.error('Cloudinary upload error', { error: error.message, folder });
-          return reject(
-            ApiError.internal(`File upload failed: ${error.message}`)
-          );
+          return reject({
+            success: false,
+            error: error.message,
+            statusCode: 500
+          });
         }
 
-        logger.info('Cloudinary upload success', {
-          publicId: result.public_id,
-          bytes:    result.bytes
-        });
-
         resolve({
-          url:      result.secure_url,
+          success: true,
+          url: result.secure_url,
           publicId: result.public_id,
-          width:    result.width    || null,
-          height:   result.height   || null,
-          format:   result.format   || null,
-          size:     result.bytes    || null
+          width: result.width || null,
+          height: result.height || null,
+          format: result.format || null,
+          size: result.bytes || null
         });
       }
     );
 
-    streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+    const stream = streamifier.createReadStream(fileBuffer);
+    stream.on('error', (err) => {
+      logger.error('Streamifier read error', { error: err.message });
+      reject({ success: false, error: err.message, statusCode: 500 });
+    });
+    stream.pipe(uploadStream);
   });
 };
 

@@ -11,14 +11,19 @@ const standardHandler = (req, res, next, options) => {
 };
 
 const createRedisStore = (prefix) => {
-  return new RedisStore({
-    sendCommand: (...args) => redisClient.call(...args),
-    prefix: `rl_${prefix}:`
-  });
+  try {
+    return new RedisStore({
+      sendCommand: (...args) => redisClient.call(...args),
+      prefix: `rl_${prefix}:`
+    });
+  } catch (err) {
+    logger.error(`Redis rate limit store error (${prefix}), falling back to memory`, err);
+    return undefined; // Falls back to memory store
+  }
 };
 
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
@@ -38,7 +43,7 @@ const authLimiter = rateLimit({
 });
 
 const otpLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 3,
   standardHeaders: true,
   legacyHeaders: false,
@@ -48,14 +53,15 @@ const otpLimiter = rateLimit({
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   store: createRedisStore('api'),
   keyGenerator: (req) => {
-    // Limit by user ID if logged in, otherwise IP
-    return req.user ? req.user._id.toString() : (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const userId = req.user ? `_${req.user._id.toString()}` : '';
+    return ip + userId;
   },
   handler: standardHandler,
   message: 'API rate limit exceeded. Please try again later.'

@@ -57,14 +57,11 @@ const createBooking = asyncHandler(async (req, res) => {
   const providerEarning = price - commission;
 
   // 5. Generate OTP (4 digits)
-  const plainOtp = Math.floor(1000 + Math.random() * 9000).toString();
+  const plainOtp = crypto.randomInt(1000, 10000).toString();
   const hashedOtp = await bcrypt.hash(plainOtp, 10);
-
-  const customBookingId = await generateBookingId();
 
   // 6. Create booking
   const booking = await Booking.create({
-    bookingId: customBookingId,
     customer: customerId,
     provider: providerId,
     service: serviceId,
@@ -73,8 +70,6 @@ const createBooking = asyncHandler(async (req, res) => {
     address,
     paymentMethod,
     price,
-    commission,
-    providerEarning,
     notes,
     otp: hashedOtp
   });

@@ -23,10 +23,11 @@ const generateRefreshToken = (payload) => {
   );
 };
 
-const verifyAccessToken = (token) => {
+const verifyAccessToken = (token, ignoreError = false) => {
   try {
     return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
   } catch (error) {
+    if (ignoreError) return null;
     if (error.name === 'TokenExpiredError') {
       throw ApiError.unauthorized('Access token expired');
     }

@@ -40,7 +40,8 @@ otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 otpSchema.pre('save', async function(next) {
   if (this.isModified('otp')) {
-    const salt = await bcrypt.genSalt(10);
+    const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10;
+    const salt = await bcrypt.genSalt(saltRounds);
     this.otp = await bcrypt.hash(this.otp, salt);
   }
   next();

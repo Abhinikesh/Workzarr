@@ -1,16 +1,89 @@
+// Step 1: Load dotenv FIRST
 require('dotenv').config();
+
+// Step 2: Import logger
+const logger = require('./utils/logger');
+
+// Step 3: Import db connection
 const mongoose = require('mongoose');
+
+// Step 4: Import redis connection
+const redisClient = require('./config/redis');
+
+// Step 5: Import app
 const app = require('./app');
+
+// Step 6: Import socket
 const http = require('http');
 const { initializeSocket } = require('./socket/socket');
-const logger = require('./utils/logger');
-const redisClient = require('./config/redis');
+
+// Step 7: Import agenda jobs
 const { startAgenda, stopAgenda } = require('./jobs/providerRankJob');
 const { agenda: bookingAgenda } = require('./jobs/bookingJobs');
 const payoutQueue = require('./jobs/payoutQueue');
-const commissionEngine = require('./jobs/commissionEngine');
 
-// Handle uncaught exceptions gracefully
+// Global configuration
+const PORT = process.env.PORT || 5000;
+let server;
+
+/**
+ * Step 8: Connect DB
+ */
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    logger.error('Error connecting to MongoDB:', err);
+    process.exit(1);
+  }
+};
+
+/**
+ * Main Server Initialization Flow
+ */
+const startServer = async () => {
+  try {
+    // 8. Connect DB
+    await connectDB();
+    
+    // 9. Redis connects automatically on import in Step 4
+    logger.info('Redis connection initialized.');
+
+    // 10. Start HTTP server
+    server = http.createServer(app);
+    
+    // 11. Initialize socket on server
+    initializeSocket(server);
+
+    // 12. Start agenda jobs
+    await startAgenda();
+    await bookingAgenda.start();
+    
+    // Define background tasks
+    bookingAgenda.define('daily-payout-batch', async (job) => {
+      await payoutQueue.queueDailyBatch();
+    });
+    await bookingAgenda.every('0 10 * * *', 'daily-payout-batch');
+    
+    logger.info('Background workers & Job schedulers active.');
+
+    // Finalize server listening
+    server.listen(PORT, () => {
+      logger.info(`LocalServe API running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
+
+  } catch (error) {
+    logger.error('CRITICAL ERROR DURING INITIALIZATION:', error);
+    process.exit(1);
+  }
+};
+
+// Start the process
+startServer();
+
+// --- Error Handling & Graceful Shutdown ---
+
 process.on('uncaughtException', (err) => {
   logger.error('UNCAUGHT EXCEPTION! Shutting down...');
   logger.error(`${err.name}: ${err.message}`);
@@ -18,66 +91,17 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-const PORT = process.env.PORT || 5000;
-let server;
-
-// Connect to MongoDB
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (err) {
-    logger.error('Error connecting to MongoDB:', err);
-    console.error(err);
-    process.exit(1);
-  }
-};
-
-const startServer = async () => {
-  // 1. Connect MongoDB
-  await connectDB();
-  
-  // Redis is already connected automatically by ioredis upon instantiation.
-
-  // 3. Start Agenda Jobs
-  await startAgenda();
-  await bookingAgenda.start();
-  
-  // Schedule daily payout batch
-  bookingAgenda.define('daily-payout-batch', async (job) => {
-    await payoutQueue.queueDailyBatch();
-  });
-  await bookingAgenda.every('0 10 * * *', 'daily-payout-batch');
-  
-  logger.info('Booking Agenda & Payout Queue started.');
-
-  // 4. Create HTTP & Socket server
-  server = http.createServer(app);
-  initializeSocket(server);
-
-  // 5. Start Server
-  server.listen(PORT, () => {
-    logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  });
-};
-
-startServer();
-
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   logger.error('UNHANDLED REJECTION! Shutting down...');
   logger.error(`${err.name}: ${err.message}`);
   logger.error(err.stack);
   if (server) {
-    server.close(() => {
-      process.exit(1);
-    });
+    server.close(() => process.exit(1));
   } else {
     process.exit(1);
   }
 });
 
-// Graceful shutdown on SIGTERM / SIGINT
 const forceShutdown = async (signal) => {
   logger.info(`${signal} received. Shutting down gracefully...`);
   if (server) {
@@ -85,15 +109,12 @@ const forceShutdown = async (signal) => {
       logger.info('HTTP server closed.');
       await stopAgenda();
       await bookingAgenda.stop();
-      logger.info('Booking Agenda stopped.');
       await mongoose.connection.close(false);
-      logger.info('MongoDB connection closed.');
-      if (redisClient.isOpen) {
-        await redisClient.quit();
-        logger.info('Redis connection closed.');
-      }
+      logger.info('System resources released. Goodbye.');
       process.exit(0);
     });
+  } else {
+    process.exit(0);
   }
 };
 

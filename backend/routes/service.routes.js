@@ -12,8 +12,8 @@ router.get('/provider/:providerId', ctrl.getProviderServices);
 // Provider only
 router.post('/',           protect, providerOnly, ctrl.createService);
 router.get('/mine',        protect, providerOnly, ctrl.getMyServices);
-router.patch('/:id',       protect, providerOnly, ctrl.updateService);
-router.patch('/:id/toggle',protect, providerOnly, ctrl.toggleServiceStatus);
-router.delete('/:id',      protect, providerOnly, ctrl.deleteService);
+router.patch('/:serviceId',       protect, providerOnly, ctrl.updateService);
+router.patch('/:serviceId/toggle',protect, providerOnly, ctrl.toggleServiceStatus);
+router.delete('/:serviceId',      protect, providerOnly, ctrl.deleteService);
 
 module.exports = router;

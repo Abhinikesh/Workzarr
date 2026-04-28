@@ -6,19 +6,20 @@ const Provider = require('../models/Provider');
 
 // 1. generateBookingId()
 const generateBookingId = async () => {
-  const year = new Date().getFullYear();
-  let isUnique = false;
-  let bookingId = '';
+  const year = new Date().getUTCFullYear();
+  let attempts = 0;
+  const MAX_ATTEMPTS = 5;
 
-  while (!isUnique) {
+  while (attempts < MAX_ATTEMPTS) {
     const randomHex = crypto.randomBytes(3).toString('hex').toUpperCase(); // 6 chars
-    bookingId = `BK${year}${randomHex}`;
+    const bookingId = `BK${year}${randomHex}`;
     const exists = await Booking.exists({ bookingId });
     if (!exists) {
-      isUnique = true;
+      return bookingId;
     }
+    attempts++;
   }
-  return bookingId;
+  throw new Error('Failed to generate a unique booking ID after maximum attempts.');
 };
 
 // 2. checkProviderAvailability(providerId, scheduledAt)
@@ -29,17 +30,20 @@ const checkProviderAvailability = async (providerId, scheduledAt) => {
   }
 
   const date = new Date(scheduledAt);
-  const dayOfWeek = date.getDay(); // 0 (Sun) to 6 (Sat)
-  const scheduleDay = provider.availability.schedule[dayOfWeek];
+  const dayOfWeek = date.getUTCDay(); // Use UTC
+  const scheduleDay = provider.availability.schedule.find(s => s.day === dayOfWeek);
 
-  if (!scheduleDay || !scheduleDay.isAvailable) {
+  if (!scheduleDay || !scheduleDay.isAvailable || scheduleDay.isOff) {
     return { isAvailable: false, reason: 'Provider does not work on this day of the week.' };
   }
 
-  // Basic time bounds check
-  const timeString = date.toTimeString().slice(0, 5); // "HH:MM"
+  // Basic time bounds check (Assuming startTime/endTime are stored as UTC "HH:MM")
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
+
   if (timeString < scheduleDay.startTime || timeString > scheduleDay.endTime) {
-    return { isAvailable: false, reason: `Provider working hours are from ${scheduleDay.startTime} to ${scheduleDay.endTime}.` };
+    return { isAvailable: false, reason: `Provider working hours (UTC) are from ${scheduleDay.startTime} to ${scheduleDay.endTime}.` };
   }
 
   // Check overlapping accepted/arriving/in_progress bookings (2 hr window)
@@ -61,18 +65,25 @@ const checkProviderAvailability = async (providerId, scheduledAt) => {
 
 // 3. calculateRefundAmount(booking, cancelledBy)
 const calculateRefundAmount = (booking, cancelledBy) => {
-  if (booking.paymentMethod === 'cash' || booking.paymentStatus !== 'paid') {
-    return { refundAmount: 0, refundPercent: 0, reason: 'No payment was made.' };
+  if (booking.paymentMethod === 'cash' || booking.paymentStatus !== 'paid' || !booking.price || booking.price <= 0) {
+    return { refundAmount: 0, refundPercent: 0, reason: 'No refundable payment exists.' };
   }
 
-  const amountPaid = booking.price; // Simplified; ignoring tax/fees here for now
+  const amountPaid = booking.price;
 
   if (cancelledBy === 'provider' || cancelledBy === 'system' || cancelledBy === 'admin') {
     return { refundAmount: amountPaid, refundPercent: 100, reason: 'Cancelled by provider/system.' };
   }
 
   if (cancelledBy === 'customer') {
-    const minutesUntilScheduled = (new Date(booking.scheduledAt).getTime() - Date.now()) / (1000 * 60);
+    const scheduledTime = new Date(booking.scheduledAt).getTime();
+    const now = Date.now();
+    
+    if (scheduledTime < now) {
+      return { refundAmount: 0, refundPercent: 0, reason: 'Cannot refund for a booking scheduled in the past.' };
+    }
+
+    const minutesUntilScheduled = (scheduledTime - now) / (1000 * 60);
 
     if (minutesUntilScheduled > 60) {
       return { refundAmount: amountPaid, refundPercent: 100, reason: 'Cancelled > 60 min before.' };

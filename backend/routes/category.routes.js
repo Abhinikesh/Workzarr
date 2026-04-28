@@ -21,7 +21,7 @@ router.post(
 );
 
 router.patch(
-  '/:id',
+  '/:categoryId',
   protect,
   restrictTo('admin'),
   ...uploadAvatar,
@@ -29,7 +29,7 @@ router.patch(
 );
 
 router.patch(
-  '/:id/toggle',
+  '/:categoryId/toggle',
   protect,
   restrictTo('admin'),
   ctrl.toggleCategoryStatus

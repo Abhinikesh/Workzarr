@@ -55,7 +55,8 @@ const bookingSchema = new mongoose.Schema({
   },
   scheduledAt: {
     type: Date,
-    required: true
+    required: true,
+    default: Date.now
   },
   acceptedAt: { type: Date },
   arrivedAt: { type: Date },
@@ -124,18 +125,25 @@ bookingSchema.index({ customer: 1, status: 1 });
 bookingSchema.index({ provider: 1, status: 1 });
 bookingSchema.index({ 'address.coordinates': '2dsphere' });
 
-bookingSchema.pre('save', function(next) {
+bookingSchema.pre('save', async function(next) {
   if (this.isNew) {
-    const min = 10000;
-    const max = 99999;
-    const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    let isUnique = false;
     const year = new Date().getFullYear();
-    this.bookingId = `BK${year}${randomNum}`;
     
-    this.otp = Math.floor(1000 + Math.random() * 9000).toString();
-  }
-
-  if (this.isModified('price') || this.isNew) {
+    while (!isUnique) {
+      const min = 10000;
+      const max = 99999;
+      const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+      const generatedId = `BK${year}${randomNum}`;
+      
+      const existingBooking = await mongoose.model('Booking').findOne({ bookingId: generatedId });
+      if (!existingBooking) {
+        this.bookingId = generatedId;
+        isUnique = true;
+      }
+    }
+    
+    // Commission calculation only on new documents
     this.commission = parseFloat((this.price * 0.10).toFixed(2));
     this.providerEarning = parseFloat((this.price - this.commission).toFixed(2));
   }

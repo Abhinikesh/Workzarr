@@ -75,10 +75,10 @@ reviewSchema.post('save', async function() {
 
   if (stats.length > 0) {
     await mongoose.model('Provider').findByIdAndUpdate(providerId, {
-      rating: {
-        average: parseFloat(stats[0].averageRating.toFixed(1)),
-        count: stats[0].totalReviews,
-        breakdown: {
+      $set: {
+        'rating.average': parseFloat(stats[0].averageRating.toFixed(1)),
+        'rating.count': stats[0].totalReviews,
+        'rating.breakdown': {
           1: stats[0].rating1,
           2: stats[0].rating2,
           3: stats[0].rating3,

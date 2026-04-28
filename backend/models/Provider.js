@@ -138,14 +138,18 @@ providerSchema.index({ rank: -1 });
 
 providerSchema.pre('save', function(next) {
   let computedRank = 0;
-  computedRank += this.rating.average * 10;
-  computedRank += Math.min(this.stats.completedJobs, 100) * 0.5;
+  const avgRating = this.rating.average || 0;
+  const completedJobs = this.stats.completedJobs || 0;
+
+  computedRank += avgRating * 10;
+  computedRank += Math.min(completedJobs, 100) * 0.5;
   
   if (this.subscription.isActive && this.subscription.plan === 'premium') {
     computedRank += 50;
   }
   
-  this.rank = computedRank;
+  // Clamp rank between 0 and 100
+  this.rank = Math.min(Math.max(computedRank, 0), 100);
   next();
 });
 

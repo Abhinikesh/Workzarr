@@ -70,12 +70,12 @@ const getMyServices = asyncHandler(async (req, res) => {
 
 // ─── 3. updateService ─────────────────────────────────────────────────────────
 const updateService = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { serviceId } = req.params;
   const provider = req.provider;
 
-  if (!isValidObjectId(id)) throw ApiError.badRequest('Invalid service ID.');
+  if (!isValidObjectId(serviceId)) throw ApiError.badRequest('Invalid service ID.');
 
-  const service = await Service.findOne({ _id: id, provider: provider._id });
+  const service = await Service.findOne({ _id: serviceId, provider: provider._id });
   if (!service) throw ApiError.notFound('Service not found or you do not own it.');
 
   const { title, description, price, priceType, duration } = req.body;
@@ -95,12 +95,12 @@ const updateService = asyncHandler(async (req, res) => {
 
 // ─── 4. toggleServiceStatus ───────────────────────────────────────────────────
 const toggleServiceStatus = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { serviceId } = req.params;
   const provider = req.provider;
 
-  if (!isValidObjectId(id)) throw ApiError.badRequest('Invalid service ID.');
+  if (!isValidObjectId(serviceId)) throw ApiError.badRequest('Invalid service ID.');
 
-  const service = await Service.findOne({ _id: id, provider: provider._id });
+  const service = await Service.findOne({ _id: serviceId, provider: provider._id });
   if (!service) throw ApiError.notFound('Service not found or you do not own it.');
 
   service.isActive = !service.isActive;
@@ -116,12 +116,12 @@ const toggleServiceStatus = asyncHandler(async (req, res) => {
 
 // ─── 5. deleteService ─────────────────────────────────────────────────────────
 const deleteService = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { serviceId } = req.params;
   const provider = req.provider;
 
-  if (!isValidObjectId(id)) throw ApiError.badRequest('Invalid service ID.');
+  if (!isValidObjectId(serviceId)) throw ApiError.badRequest('Invalid service ID.');
 
-  const service = await Service.findOne({ _id: id, provider: provider._id });
+  const service = await Service.findOne({ _id: serviceId, provider: provider._id });
   if (!service) throw ApiError.notFound('Service not found or you do not own it.');
 
   const activeBookings = await Booking.countDocuments({

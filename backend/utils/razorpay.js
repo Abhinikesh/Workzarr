@@ -23,10 +23,12 @@ const createOrder = async ({ amount, currency = 'INR', receipt, notes }) => {
     const options = {
       amount: Math.round(amount), // amount in paise
       currency,
-      receipt: receipt.toString(),
+      receipt: receipt.toString().substring(0, 40), // Razorpay limit: 40 chars
       notes
     };
     
+    // Wrapping in promise to handle timeout if needed, but Razorpay SDK is standard
+    // Some versions support timeout in options, others don't. Standardizing.
     const order = await razorpay.orders.create(options);
     return order;
   } catch (error) {
@@ -45,7 +47,15 @@ const verifyPaymentSignature = ({ orderId, paymentId, signature }) => {
     .update(body.toString())
     .digest('hex');
 
-  return expectedSignature === signature;
+  // Use timingSafeEqual to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(expectedSignature),
+      Buffer.from(signature)
+    );
+  } catch (err) {
+    return false;
+  }
 };
 
 // ─── 3. capturePayment ────────────────────────────────────────────────────────
@@ -64,6 +74,12 @@ const initiateRefund = async ({ paymentId, amount, notes, speed = 'normal' }) =>
   try {
     if (!razorpay) throw ApiError.internal('Payment gateway not initialized.');
     
+    // 1. Validate refund amount <= original payment amount
+    const payment = await razorpay.payments.fetch(paymentId);
+    if (!payment || Math.round(amount) > (payment.amount - (payment.amount_refunded || 0))) {
+      throw ApiError.badRequest('Refund amount exceeds non-refunded original payment amount.');
+    }
+
     const options = {
       amount: Math.round(amount), // amount in paise
       speed,
@@ -73,6 +89,7 @@ const initiateRefund = async ({ paymentId, amount, notes, speed = 'normal' }) =>
     return await razorpay.payments.refund(paymentId, options);
   } catch (error) {
     logger.error('Razorpay initiateRefund error', { paymentId, error: error.message });
+    if (error instanceof ApiError) throw error;
     throw ApiError.internal('Failed to initiate refund.');
   }
 };
