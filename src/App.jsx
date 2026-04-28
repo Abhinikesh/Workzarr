@@ -1,121 +1,107 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useEffect, Suspense, lazy } from 'react';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { connectSocket, disconnectSocket } from './lib/socket';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Layouts
+import Sidebar from './components/layout/Sidebar';
+import TopBar from './components/layout/TopBar';
+
+// Pages (Lazy Loaded)
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
+const UserList = lazy(() => import('./pages/users/UserList'));
+const ProviderList = lazy(() => import('./pages/providers/ProviderList'));
+const BookingList = lazy(() => import('./pages/bookings/BookingList'));
+const PaymentList = lazy(() => import('./pages/payments/PaymentList'));
+const CategoryList = lazy(() => import('./pages/categories/CategoryList'));
+const NotificationManager = lazy(() => import('./pages/notifications/NotificationManager'));
+const AuditLogs = lazy(() => import('./pages/audit/AuditLogs'));
+const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'));
+
+// Placeholder components for routes not yet fully detailed in current part but required for structure
+const UserDetail = () => <div className="p-8">User Detail Coming Soon</div>;
+const ProviderDetail = () => <div className="p-8">Provider Detail Coming Soon</div>;
+const PendingVerifications = () => <div className="p-8">Pending Verifications Coming Soon</div>;
+const BookingDetail = () => <div className="p-8">Booking Detail Coming Soon</div>;
+const AnalyticsPage = () => <div className="p-8">Analytics Coming Soon</div>;
+const NotFound = () => <div className="p-8 text-center text-2xl font-bold">404 - Not Found</div>;
+
+const ProtectedLayout = () => {
+  const { isAuthenticated, admin, accessToken } = useSelector((state) => state.auth);
+  const { sidebarCollapsed } = useSelector((state) => state.ui);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (isAuthenticated && accessToken) {
+      connectSocket(accessToken);
+    }
+    return () => disconnectSocket();
+  }, [isAuthenticated, accessToken]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-50 transition-colors duration-300">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <TopBar />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          }>
+            <Outlet />
+          </Suspense>
+        </main>
+      </div>
+    </div>
+  );
+};
 
-      <div className="ticks"></div>
+function App() {
+  const { theme } = useSelector((state) => state.ui);
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+  return (
+    <Routes>
+      <Route path="/login" element={
+        <Suspense fallback={<div>Loading...</div>}>
+          <LoginPage />
+        </Suspense>
+      } />
+
+      <Route element={<ProtectedLayout />}>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/users/:userId" element={<UserDetail />} />
+        <Route path="/providers" element={<ProviderList />} />
+        <Route path="/providers/:providerId" element={<ProviderDetail />} />
+        <Route path="/providers/pending" element={<PendingVerifications />} />
+        <Route path="/bookings" element={<BookingList />} />
+        <Route path="/bookings/:bookingId" element={<BookingDetail />} />
+        <Route path="/payments" element={<PaymentList />} />
+        <Route path="/categories" element={<CategoryList />} />
+        <Route path="/notifications" element={<NotificationManager />} />
+        <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/audit" element={<AuditLogs />} />
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
