@@ -16,6 +16,8 @@ const serviceRoutes = require('./routes/service.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const reviewRoutes = require('./routes/review.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const adminRoutes = require('./routes/admin');
+const maintenanceMiddleware = require('./middleware/maintenance.middleware');
 
 const app = express();
 
@@ -38,6 +40,9 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
+
+// 2.5 Maintenance Middleware
+app.use(maintenanceMiddleware);
 
 // 3. Webhook (Must be before express.json)
 const rawBodyMiddleware = require('./middleware/rawBody.middleware');
@@ -72,6 +77,7 @@ app.use('/api/v1/services', serviceRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // 9. 404 handler
 app.use((req, res, next) => {
