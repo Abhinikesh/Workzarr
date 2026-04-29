@@ -123,7 +123,7 @@ const ProvidersPage = () => {
       render: (row) => (
         <div className="flex items-center gap-1">
           <button 
-            onClick={() => navigate(\`/providers/\${row._id}\`)}
+            onClick={() => navigate(`/providers/${row._id}`)}
             className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all"
             title="View Details"
           >
@@ -197,8 +197,8 @@ const ProvidersPage = () => {
       <ConfirmDialog
         isOpen={confirmModal.isOpen}
         variant={confirmModal.type === 'block' ? 'danger' : 'warning'}
-        title={\`\${confirmModal.type === 'block' ? 'Block' : 'Unblock'} \${confirmModal.data?.businessName}?\`}
-        description={\`Are you sure you want to \${confirmModal.type} this provider profile? They will \${confirmModal.type === 'block' ? 'be hidden from search' : 're-appear in search results'}.\`}
+        title={`${confirmModal.type === 'block' ? 'Block' : 'Unblock'} ${confirmModal.data?.businessName}?`}
+        description={`Are you sure you want to ${confirmModal.type} this provider profile? They will ${confirmModal.type === 'block' ? 'be hidden from search' : 're-appear in search results'}.`}
         onConfirm={async () => {
           await ProvidersService.toggleStatus(confirmModal.data._id, confirmModal.type === 'block' ? 'blocked' : 'active');
           fetchProviders();

@@ -121,13 +121,13 @@ const BookingDetailPage = () => {
                <div className="space-y-8 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:before:bg-slate-700/50">
                   {timeline.map((step, i) => (
                     <div key={i} className="flex gap-6 relative z-10">
-                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800 transition-all \${
+                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800 transition-all ${
                          step.isCompleted ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
-                       }\`}>
+                       }`}>
                           <CheckCircle2 size={16} />
                        </div>
                        <div>
-                          <p className={`text-sm font-extrabold \${step.isCompleted ? 'text-slate-900 dark:text-white' : 'text-slate-400'}\`}>
+                          <p className={`text-sm font-extrabold ${step.isCompleted ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                              {step.status.replace('_', ' ').toUpperCase()}
                           </p>
                           <p className="text-xs font-medium text-slate-500 mt-0.5">
@@ -150,7 +150,7 @@ const BookingDetailPage = () => {
                <div className="bg-white dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all">
                   <div className="flex items-center justify-between mb-6">
                      <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Customer Information</p>
-                     <Link to={\`/users/\${booking.user?._id}\`} className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all">
+                     <Link to={`/users/${booking.user?._id}`} className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all">
                         <ExternalLink size={16} />
                      </Link>
                   </div>
@@ -174,7 +174,7 @@ const BookingDetailPage = () => {
                <div className="bg-white dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all">
                   <div className="flex items-center justify-between mb-6">
                      <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Service Provider</p>
-                     <Link to={\`/providers/\${booking.provider?._id}\`} className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all">
+                     <Link to={`/providers/${booking.provider?._id}`} className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all">
                         <ExternalLink size={16} />
                      </Link>
                   </div>
@@ -258,7 +258,7 @@ const BookingDetailPage = () => {
       <Modal 
         isOpen={actionModal.isOpen} 
         onClose={() => setActionModal({ isOpen: false, type: '', reason: '' })}
-        title={\`Force Administrative \${actionModal.type}\`}
+        title={`Force Administrative ${actionModal.type}`}
         size="sm"
         footer={
           <button 

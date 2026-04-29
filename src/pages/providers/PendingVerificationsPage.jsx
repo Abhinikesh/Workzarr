@@ -97,9 +97,9 @@ const PendingVerificationsPage = () => {
                             </span>
                          </div>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest \${
+                      <div className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest ${
                         daysWaiting >= 3 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-slate-50 text-slate-500 border border-slate-100'
-                      }\`}>
+                      }`}>
                          {daysWaiting} Days Waiting
                       </div>
                    </div>
@@ -126,7 +126,7 @@ const PendingVerificationsPage = () => {
                          Requested on {formatDate(item.verificationRequestedAt)}
                       </div>
                       <button 
-                        onClick={() => navigate(\`/providers/\${item._id}\`)}
+                        onClick={() => navigate(`/providers/${item._id}`)}
                         className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-600/20 transition-all active:scale-95"
                       >
                          Review <ChevronRight size={16} />

@@ -223,11 +223,54 @@ const getMe = asyncHandler(async (req, res) => {
   });
 });
 
+// 7. adminLogin (Email + Password)
+const adminLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw ApiError.badRequest('Please provide email and password');
+  }
+
+  const user = await User.findOne({ email, role: 'admin' }).select('+password');
+
+  if (!user || !(await user.comparePassword(password))) {
+    throw ApiError.unauthorized('Invalid administrative credentials');
+  }
+
+  if (!user.isActive) {
+    throw ApiError.forbidden('Your account is inactive. Contact super admin.');
+  }
+
+  const { accessToken, refreshToken } = await jwtUtils.generateTokenPair(user);
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  user.lastLogin = new Date();
+  await user.save();
+
+  return ApiResponse.success(res, 200, 'Admin login successful', {
+    accessToken,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role
+    }
+  });
+});
+
 module.exports = {
   sendOTP,
   verifyOTP,
   completeProfile,
   refreshAccessToken,
   logout,
-  getMe
+  getMe,
+  adminLogin
 };

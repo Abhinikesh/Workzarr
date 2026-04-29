@@ -122,7 +122,7 @@ const BookingsPage = () => {
       label: 'Actions',
       render: (row) => (
         <button 
-          onClick={() => navigate(\`/bookings/\${row._id}\`)}
+          onClick={() => navigate(`/bookings/${row._id}`)}
           className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all"
         >
           <Eye size={18} />

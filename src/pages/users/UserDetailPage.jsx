@@ -178,7 +178,7 @@ const UserDetailPage = () => {
 
                 {user.role === 'PROVIDER' && (
                   <Link 
-                    to={\`/providers/\${user.providerId}\`}
+                    to={`/providers/${user.providerId}`}
                     className="block bg-white dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all group"
                   >
                      <div className="flex items-center justify-between">
@@ -219,8 +219,8 @@ const UserDetailPage = () => {
       <ConfirmDialog
         isOpen={confirmModal.isOpen}
         variant={confirmModal.type === 'block' ? 'danger' : 'warning'}
-        title={\`\${confirmModal.type === 'block' ? 'Block' : 'Unblock'} \${user.name}?\`}
-        description={\`Are you sure you want to \${confirmModal.type} this user? This will affect their ability to use the platform.\`}
+        title={`${confirmModal.type === 'block' ? 'Block' : 'Unblock'} ${user.name}?`}
+        description={`Are you sure you want to ${confirmModal.type} this user? This will affect their ability to use the platform.`}
         onConfirm={handleStatusToggle}
         onCancel={() => setConfirmModal({ isOpen: false, type: '' })}
       />

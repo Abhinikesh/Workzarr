@@ -44,7 +44,7 @@ const DateRangePicker = ({ value, onChange }) => {
       >
         <CalendarIcon size={18} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-          {value?.start ? \`\${formatDate(value.start)} - \${formatDate(value.end)}\` : 'Select Date Range'}
+          {value?.start ? `${formatDate(value.start)} - ${formatDate(value.end)}` : 'Select Date Range'}
         </span>
         <ChevronDown size={14} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>

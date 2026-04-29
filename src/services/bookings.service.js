@@ -23,7 +23,7 @@ const BookingsService = {
    */
   getBookingById: async (id) => {
     try {
-      const { data } = await axios.get(\`/admin/bookings/\${id}\`);
+      const { data } = await axios.get(`/admin/bookings/${id}`);
       return data;
     } catch (error) {
       toast.error('Failed to fetch booking details');
@@ -36,8 +36,8 @@ const BookingsService = {
    */
   updateStatus: async (id, status, reason = '') => {
     try {
-      const { data } = await axios.patch(\`/admin/bookings/\${id}/status\`, { status, reason });
-      toast.success(\`Booking status updated to \${status}\`);
+      const { data } = await axios.patch(`/admin/bookings/${id}/status`, { status, reason });
+      toast.success(`Booking status updated to ${status}`);
       return data;
     } catch (error) {
       toast.error('Failed to update booking status');
@@ -50,7 +50,7 @@ const BookingsService = {
    */
   processRefund: async (id, amount, reason) => {
     try {
-      const { data } = await axios.post(\`/admin/bookings/\${id}/refund\`, { amount, reason });
+      const { data } = await axios.post(`/admin/bookings/${id}/refund`, { amount, reason });
       toast.success('Refund processed successfully');
       return data;
     } catch (error) {
@@ -64,7 +64,7 @@ const BookingsService = {
    */
   getTimeline: async (id) => {
     try {
-      const { data } = await axios.get(\`/admin/bookings/\${id}/timeline\`);
+      const { data } = await axios.get(`/admin/bookings/${id}/timeline`);
       return data;
     } catch (error) {
       throw error;

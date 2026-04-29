@@ -84,9 +84,9 @@ const NotificationsPage = () => {
            <button
              key={tab.id}
              onClick={() => setActiveTab(tab.id)}
-             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all \${
+             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all ${
                activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-             }\`}
+             }`}
            >
              <tab.icon size={16} />
              {tab.label}
@@ -117,7 +117,7 @@ const NotificationsPage = () => {
                     <div>
                        <div className="flex justify-between items-center mb-2 ml-1">
                           <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Message Body</label>
-                          <span className={`text-[10px] font-extrabold \${messageBody.length > 450 ? 'text-red-500' : 'text-slate-400'}\`}>
+                          <span className={`text-[10px] font-extrabold ${messageBody.length > 450 ? 'text-red-500' : 'text-slate-400'}`}>
                              {messageBody.length} / 500
                           </span>
                        </div>
@@ -147,15 +147,15 @@ const NotificationsPage = () => {
                            key={opt.id}
                            type="button"
                            onClick={() => setValue('target', opt.id)}
-                           className={`p-4 rounded-2xl border text-left transition-all group \${
+                           className={`p-4 rounded-2xl border text-left transition-all group ${
                              selectedTarget === opt.id 
                               ? 'bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-600/20' 
                               : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-indigo-300'
-                           }\`}
+                           }`}
                          >
                             <opt.icon size={24} className={selectedTarget === opt.id ? 'text-white' : 'text-indigo-500'} />
-                            <p className={`text-xs font-extrabold mt-3 uppercase tracking-widest \${selectedTarget === opt.id ? 'text-white' : 'text-slate-900 dark:text-white'}\`}>{opt.label}</p>
-                            <p className={`text-[10px] font-bold mt-1 \${selectedTarget === opt.id ? 'text-white/60' : 'text-slate-400'}\`}>{opt.desc}</p>
+                            <p className={`text-xs font-extrabold mt-3 uppercase tracking-widest ${selectedTarget === opt.id ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{opt.label}</p>
+                            <p className={`text-[10px] font-bold mt-1 ${selectedTarget === opt.id ? 'text-white/60' : 'text-slate-400'}`}>{opt.desc}</p>
                          </button>
                        ))}
                     </div>
@@ -228,7 +228,7 @@ const NotificationsPage = () => {
             { key: 'success', label: 'Success', render: (row) => (
               <div className="w-full max-w-[100px] flex flex-col gap-1">
                  <div className="w-full h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500" style={{ width: \`\${(row.sentCount / (row.sentCount + row.failedCount)) * 100}%\` }} />
+                    <div className="h-full bg-emerald-500" style={{ width: `${(row.sentCount / (row.sentCount + row.failedCount)) * 100}%` }} />
                  </div>
                  <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">{Math.round((row.sentCount / (row.sentCount + row.failedCount)) * 100)}% Delivered</span>
               </div>

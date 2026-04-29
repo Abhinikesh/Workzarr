@@ -185,9 +185,9 @@ const PaymentsPage = () => {
            <button
              key={tab.id}
              onClick={() => setActiveTab(tab.id)}
-             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all \${
+             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all ${
                activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-             }\`}
+             }`}
            >
              <tab.icon size={16} />
              {tab.label}

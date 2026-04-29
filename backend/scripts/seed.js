@@ -13,6 +13,7 @@ const SEED_DATA = {
     name: "Super Admin",
     phone: "9999999999",
     email: "admin@localserve.com",
+    password: "admin123",
     role: "admin",
     isPhoneVerified: true,
     isActive: true
@@ -155,9 +156,10 @@ async function seed() {
     console.log("Sample booking seeded.");
 
     console.log("\n✅ Seeding complete!");
-    console.log("Admin login OTP phone: 9999999999");
-    console.log("Customer OTP phone: 8888888888");
-    console.log("Provider OTP phone: 7777777777");
+    console.log("Admin login: admin@localserve.com / admin123");
+    console.log("Admin phone: 9999999999");
+    console.log("Customer phone: 8888888888");
+    console.log("Provider phone: 7777777777");
     console.log("In dev mode, check logs for OTP");
 
     process.exit(0);

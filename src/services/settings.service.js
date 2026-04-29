@@ -23,8 +23,8 @@ const SettingsService = {
    */
   updateSettings: async (group, payload) => {
     try {
-      const { data } = await axios.patch(\`/admin/settings/\${group}\`, payload);
-      toast.success(\`\${group.charAt(0).toUpperCase() + group.slice(1)} settings updated\`);
+      const { data } = await axios.patch(`/admin/settings/${group}`, payload);
+      toast.success(`${group.charAt(0).toUpperCase() + group.slice(1)} settings updated`);
       return data;
     } catch (error) {
       toast.error('Failed to update settings');
@@ -38,7 +38,7 @@ const SettingsService = {
   toggleMaintenance: async (payload) => {
     try {
       const { data } = await axios.post('/admin/settings/maintenance', payload);
-      toast.warning(\`Maintenance mode \${payload.enabled ? 'Enabled' : 'Disabled'}\`);
+      toast.warning(`Maintenance mode ${payload.enabled ? 'Enabled' : 'Disabled'}`);
       return data;
     } catch (error) {
       toast.error('Failed to toggle maintenance mode');

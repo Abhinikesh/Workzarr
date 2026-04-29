@@ -25,7 +25,7 @@ export const STATUS_COLORS = {
  */
 export const customTooltipFormatter = (value, name) => {
   if (name.toLowerCase().includes('revenue') || name.toLowerCase().includes('amount')) {
-    return [\`₹\${value.toLocaleString()}\`, name];
+    return [`₹${value.toLocaleString()}`, name];
   }
   return [value.toLocaleString(), name];
 };

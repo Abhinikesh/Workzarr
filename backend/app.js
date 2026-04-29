@@ -71,7 +71,11 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // 9. mongoSanitize (Security against NoSQL injection)
-app.use(mongoSanitize());
+app.use((req, res, next) => {
+  if (req.body) mongoSanitize.sanitize(req.body);
+  if (req.params) mongoSanitize.sanitize(req.params);
+  next();
+});
 
 // 10. hpp (Security against HTTP Parameter Pollution)
 app.use(hpp());

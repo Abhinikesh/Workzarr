@@ -9,7 +9,7 @@ const AnalyticsService = {
    */
   getRevenueAnalytics: async (period) => {
     try {
-      const { data } = await axios.get(\`/admin/analytics/revenue?period=\${period}\`);
+      const { data } = await axios.get(`/admin/analytics/revenue?period=${period}`);
       return data;
     } catch (error) {
       throw error;
@@ -21,7 +21,7 @@ const AnalyticsService = {
    */
   getBookingAnalytics: async (period) => {
     try {
-      const { data } = await axios.get(\`/admin/analytics/bookings?period=\${period}\`);
+      const { data } = await axios.get(`/admin/analytics/bookings?period=${period}`);
       return data;
     } catch (error) {
       throw error;

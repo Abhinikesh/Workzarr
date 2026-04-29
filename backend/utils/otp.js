@@ -52,7 +52,7 @@ const sendOTPviaSMS = async (phone, otp) => {
 const storeOTPinRedis = async (phone, hashedOtp, purpose) => {
   const key = `otp:${purpose}:${phone}`;
   const value = JSON.stringify({ hashedOtp, attempts: 0 });
-  await redisClient.setEx(key, OTP_TTL, value);
+  await redisClient.setex(key, OTP_TTL, value);
 };
 
 const getOTPfromRedis = async (phone, purpose) => {
@@ -70,11 +70,11 @@ const incrementOTPAttempts = async (phone, purpose) => {
   const data = JSON.parse(dataStr);
   data.attempts += 1;
   
-  await redisClient.setEx(key, OTP_TTL, JSON.stringify(data));
+  await redisClient.setex(key, OTP_TTL, JSON.stringify(data));
   
   if (data.attempts >= MAX_ATTEMPTS) {
     const blockKey = `otp_blocked:${phone}`;
-    await redisClient.setEx(blockKey, BLOCK_TTL, 'blocked');
+    await redisClient.setex(blockKey, BLOCK_TTL, 'blocked');
     await redisClient.del(key);
   }
   

@@ -76,7 +76,7 @@ const ImagePreview = ({ src, alt = 'Preview', type = 'image' }) => {
               <div className="w-full h-full overflow-hidden flex items-center justify-center bg-transparent rounded-3xl">
                  {isPdf ? (
                     <iframe 
-                      src={\`\${src}#toolbar=0\`} 
+                      src={`${src}#toolbar=0`} 
                       className="w-full h-[80vh] rounded-2xl border-none bg-white"
                       title="PDF Preview"
                     />
@@ -85,7 +85,7 @@ const ImagePreview = ({ src, alt = 'Preview', type = 'image' }) => {
                       src={src} 
                       alt={alt} 
                       className="max-w-full max-h-[80vh] object-contain transition-transform duration-200 shadow-2xl rounded-lg"
-                      style={{ transform: \`scale(\${zoom})\` }}
+                      style={{ transform: `scale(${zoom})` }}
                     />
                  )}
               </div>

@@ -101,9 +101,9 @@ const ProviderDetailPage = () => {
            <button
              key={tab}
              onClick={() => setActiveTab(tab)}
-             className={`px-6 py-2 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all whitespace-nowrap \${
+             className={`px-6 py-2 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all whitespace-nowrap ${
                activeTab === tab ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-             }\`}
+             }`}
            >
              {tab}
            </button>
@@ -137,7 +137,7 @@ const ProviderDetailPage = () => {
                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6">Service Gallery</h3>
                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {provider.gallery?.map((img, i) => (
-                        <ImagePreview key={i} src={img} alt={\`Gallery \${i + 1}\`} />
+                        <ImagePreview key={i} src={img} alt={`Gallery ${i + 1}`} />
                       ))}
                       {(!provider.gallery || provider.gallery.length === 0) && (
                         <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-3xl text-slate-300">
@@ -183,7 +183,7 @@ const ProviderDetailPage = () => {
                    <div className="w-48 h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-emerald-500 transition-all duration-1000" 
-                        style={{ width: \`\${(provider.documents?.filter(d => d.status === 'verified').length / (provider.documents?.length || 1)) * 100}%\` }} 
+                        style={{ width: `${(provider.documents?.filter(d => d.status === 'verified').length / (provider.documents?.length || 1)) * 100}%` }} 
                       />
                    </div>
                 </div>

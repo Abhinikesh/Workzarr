@@ -22,6 +22,12 @@ router.post(
 );
 
 router.post(
+  '/admin/login',
+  authLimiter,
+  authController.adminLogin
+);
+
+router.post(
   '/refresh-token',
   validate(refreshTokenSchema),
   authController.refreshAccessToken

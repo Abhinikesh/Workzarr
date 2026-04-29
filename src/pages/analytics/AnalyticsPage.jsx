@@ -61,9 +61,9 @@ const AnalyticsPage = () => {
                   <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all \${
+                    className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       period === p ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                    }\`}
+                    }`}
                   >
                     {p.toUpperCase()}
                   </button>
@@ -118,7 +118,7 @@ const AnalyticsPage = () => {
                   />
                   <Bar dataKey="bookings" radius={[0, 10, 10, 0]} barSize={24}>
                      {categoryData.map((entry, index) => (
-                        <Cell key={\`cell-\${index}\`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                      ))}
                   </Bar>
                </BarChart>
@@ -132,7 +132,7 @@ const AnalyticsPage = () => {
                   <div key={i} className="relative">
                      <div 
                        className="h-12 bg-indigo-600 rounded-2xl flex items-center justify-between px-6 text-white font-extrabold shadow-xl shadow-indigo-600/20"
-                       style={{ width: \`\${100 - (i * 15)}%\`, margin: '0 auto' }}
+                       style={{ width: `${100 - (i * 15)}%`, margin: '0 auto' }}
                      >
                         <span className="text-xs uppercase tracking-widest">{step.label}</span>
                         <span>{formatNumber(step.value)}</span>
@@ -178,14 +178,14 @@ const AnalyticsPage = () => {
                        <span className="text-slate-900 dark:text-white">{town.bookings} Bookings</span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                       <div className="h-full bg-indigo-500" style={{ width: \`\${(town.bookings / 1000) * 100}%\` }} />
+                       <div className="h-full bg-indigo-500" style={{ width: `${(town.bookings / 1000) * 100}%` }} />
                     </div>
                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-slate-400 pt-2">
                        <span>Provider Supply</span>
                        <span className="text-slate-900 dark:text-white">{town.providers} Verified</span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                       <div className="h-full bg-amber-500" style={{ width: \`\${(town.providers / 100) * 100}%\` }} />
+                       <div className="h-full bg-amber-500" style={{ width: `${(town.providers / 100) * 100}%` }} />
                     </div>
                  </div>
               </div>

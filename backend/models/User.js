@@ -79,6 +79,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  password: {
+    type: String,
+    select: false
+  },
   lastLogin: {
     type: Date
   }
@@ -88,11 +92,15 @@ const userSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-userSchema.index({ phone: 1 });
-userSchema.index({ referralCode: 1 });
 userSchema.index({ 'location.coordinates': '2dsphere' });
 
-userSchema.pre('save', async function(next) {
+const bcrypt = require('bcryptjs');
+
+userSchema.pre('save', async function() {
+  if (this.isModified('password') && this.password) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
   if (!this.referralCode) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let isUnique = false;
@@ -110,8 +118,11 @@ userSchema.pre('save', async function(next) {
     }
     this.referralCode = code;
   }
-  next();
 });
+
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

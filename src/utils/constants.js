@@ -50,12 +50,12 @@ export const API_ENDPOINTS = {
   },
   USERS: {
     LIST: '/admin/users',
-    DETAIL: (id) => \`/admin/users/\${id}\`,
-    ACTION: (id) => \`/admin/users/\${id}/action\`,
+    DETAIL: (id) => `/admin/users/${id}`,
+    ACTION: (id) => `/admin/users/${id}/action`,
   },
   PROVIDERS: {
     LIST: '/admin/providers',
-    DETAIL: (id) => \`/admin/providers/\${id}\`,
-    VERIFY: (id) => \`/admin/providers/\${id}/verify\`,
+    DETAIL: (id) => `/admin/providers/${id}`,
+    VERIFY: (id) => `/admin/providers/${id}/verify`,
   },
 };

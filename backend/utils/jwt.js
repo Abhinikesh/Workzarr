@@ -59,9 +59,9 @@ const generateTokenPair = async (user) => {
   // Store refresh token in Redis (1 active token per user)
   const redisKey = `refresh_token:${payload.userId}`;
   try {
-    await redisClient.setEx(redisKey, REFRESH_TOKEN_EXPIRY_SECONDS, refreshToken);
+    await redisClient.setex(redisKey, REFRESH_TOKEN_EXPIRY_SECONDS, refreshToken);
   } catch (error) {
-    logger.error('Redis setsEx error while saving refresh token:', error);
+    logger.error('Redis setex error while saving refresh token:', error);
     throw ApiError.internal('Could not save refresh token');
   }
 

@@ -192,9 +192,9 @@ const UsersPage = () => {
       <ConfirmDialog
         isOpen={confirmModal.isOpen}
         variant={confirmModal.type === 'block' ? 'danger' : 'warning'}
-        title={\`\${confirmModal.type === 'block' ? 'Block' : 'Unblock'} User?\`}
-        description={\`Are you sure you want to \${confirmModal.type} \${confirmModal.data?.name}? They will \${confirmModal.type === 'block' ? 'lose access' : 'regain access'} to the platform.\`}
-        confirmLabel={\`Confirm \${confirmModal.type}\`}
+        title={`${confirmModal.type === 'block' ? 'Block' : 'Unblock'} User?`}
+        description={`Are you sure you want to ${confirmModal.type} ${confirmModal.data?.name}? They will ${confirmModal.type === 'block' ? 'lose access' : 'regain access'} to the platform.`}
+        confirmLabel={`Confirm ${confirmModal.type}`}
         onConfirm={() => handleStatusToggle(confirmModal.data?._id, confirmModal.type === 'block' ? 'blocked' : 'active')}
         onCancel={() => setConfirmModal({ isOpen: false, type: '', data: null })}
       />

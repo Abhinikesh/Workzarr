@@ -36,7 +36,7 @@ const PaymentsService = {
    */
   processPayout: async (payoutId, referenceId) => {
     try {
-      const { data } = await axios.post(\`/admin/payments/payouts/\${payoutId}/process\`, { referenceId });
+      const { data } = await axios.post(`/admin/payments/payouts/${payoutId}/process`, { referenceId });
       toast.success('Payout marked as processed');
       return data;
     } catch (error) {
@@ -50,7 +50,7 @@ const PaymentsService = {
    */
   getSummary: async (period = 'month') => {
     try {
-      const { data } = await axios.get(\`/admin/payments/summary?period=\${period}\`);
+      const { data } = await axios.get(`/admin/payments/summary?period=${period}`);
       return data;
     } catch (error) {
       throw error;

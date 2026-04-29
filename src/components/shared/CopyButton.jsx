@@ -30,7 +30,7 @@ const CopyButton = ({ text, label }) => {
         }`}
       >
         {copied ? <Check size={14} className="animate-in zoom-in duration-300" /> : <Copy size={14} className="group-hover:scale-110 transition-transform" />}
-        {copied ? 'Copied!' : text.length > 20 ? \`\${text.slice(0, 10)}...\${text.slice(-4)}\` : text}
+        {copied ? 'Copied!' : text.length > 20 ? `${text.slice(0, 10)}...${text.slice(-4)}` : text}
       </button>
     </div>
   );

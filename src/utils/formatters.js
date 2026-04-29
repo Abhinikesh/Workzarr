@@ -61,7 +61,7 @@ export const formatPhone = (phone) => {
   if (!phone) return '';
   const cleaned = ('' + phone).replace(/\D/g, '');
   if (cleaned.length === 10) {
-    return \`+91 \${cleaned.slice(0, 5)} \${cleaned.slice(5)}\`;
+    return `+91 ${cleaned.slice(0, 5)} ${cleaned.slice(5)}`;
   }
   return phone;
 };
@@ -73,5 +73,5 @@ export const formatDuration = (minutes) => {
   if (!minutes) return '0m';
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  return h > 0 ? \`\${h}h \${m}m\` : \`\${m}m\`;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
 };
