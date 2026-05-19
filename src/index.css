@@ -47,7 +47,6 @@
   animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Chart Styles */
 .recharts-default-tooltip {
   @apply !bg-white dark:!bg-slate-800 !border-slate-200 dark:!border-slate-700 !rounded-xl !shadow-xl !px-3 !py-2 !text-xs !font-medium !outline-none;
 }
