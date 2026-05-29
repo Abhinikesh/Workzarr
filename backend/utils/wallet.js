@@ -58,7 +58,7 @@ const getWalletBalance = async (providerId) => {
 
   // Cache in Redis TTL 5 min
   try {
-    await redisClient.setEx(cacheKey, 300, JSON.stringify(result));
+    await redisClient.set(cacheKey, JSON.stringify(result), 'EX', 300);
   } catch (err) {
     logger.warn('Redis wallet cache set failed', { error: err.message });
   }

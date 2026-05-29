@@ -50,7 +50,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
     })
   );
 
-  await redisClient.setEx(CATEGORIES_CACHE_KEY, CATEGORIES_CACHE_TTL, JSON.stringify({ categories: withCounts }));
+  await redisClient.set(CATEGORIES_CACHE_KEY, JSON.stringify({ categories: withCounts }), 'EX', CATEGORIES_CACHE_TTL);
 
   return ApiResponse.success(res, 200, 'Categories fetched.', { categories: withCounts });
 });

@@ -121,7 +121,7 @@ exports.getDashboardOverview = asyncHandler(async (req, res) => {
 
   const dashboardData = { users, providers, bookings, revenue, recentActivity, alerts };
 
-  await redisClient.setex(cacheKey, 300, JSON.stringify(dashboardData));
+  await redisClient.set(cacheKey, JSON.stringify(dashboardData), 'EX', 300);
 
   res.status(200).json(new ApiResponse(200, dashboardData, 'Dashboard overview fetched'));
 });

@@ -104,7 +104,7 @@ const userSchema = new mongoose.Schema({
 userSchema.index({ 'location.coordinates': '2dsphere' });
 
 // Hash password on save if modified
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
   if (this.isModified('password') && this.password) {
     this.password = await bcrypt.hash(this.password, 10);
   }
@@ -129,7 +129,7 @@ userSchema.pre('save', async function(next) {
     this.referralCode = code;
   }
 
-  next();
+
 });
 
 userSchema.methods.comparePassword = async function(candidatePassword) {

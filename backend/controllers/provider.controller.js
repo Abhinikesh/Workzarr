@@ -128,7 +128,7 @@ const getMyProviderProfile = asyncHandler(async (req, res) => {
     }));
   }
 
-  await redisClient.setEx(cacheKey, PROVIDER_CACHE_TTL, JSON.stringify(provider));
+  await redisClient.set(cacheKey, JSON.stringify(provider), 'EX', PROVIDER_CACHE_TTL);
   return ApiResponse.success(res, 200, 'Provider profile fetched.', { provider });
 });
 
@@ -386,7 +386,7 @@ const updateAvailability = asyncHandler(async (req, res) => {
   );
 
   await Promise.all([
-    redisClient.setEx(`provider_available:${provider._id}`, 86400, String(isAvailable)),
+    redisClient.set(`provider_available:${provider._id}`, String(isAvailable), 'EX', 86400),
     redisClient.del(`provider_profile:${provider._id}`),
     invalidateSearchCache()
   ]);

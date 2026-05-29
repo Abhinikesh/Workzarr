@@ -27,7 +27,7 @@ const verifyOTPSchema = Joi.object({
 });
 
 const refreshTokenSchema = Joi.object({
-  refreshToken: Joi.string().required()
+  refreshToken: Joi.string().optional()
 });
 
 const completeProfileSchema = Joi.object({

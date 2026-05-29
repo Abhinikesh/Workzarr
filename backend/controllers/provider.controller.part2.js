@@ -163,7 +163,7 @@ const searchProviders = asyncHandler(async (req, res) => {
 
   const pagination = { currentPage: pageNum, totalPages, totalItems: total, limit: limitNum };
 
-  await redisClient.setEx(cacheKey, SEARCH_CACHE_TTL, JSON.stringify({ data: providers, pagination }));
+  await redisClient.set(cacheKey, JSON.stringify({ data: providers, pagination }), 'EX', SEARCH_CACHE_TTL);
 
   return ApiResponse.paginated(res, 'Providers fetched.', providers, pagination);
 });
@@ -204,7 +204,7 @@ const getProviderById = asyncHandler(async (req, res) => {
 
   const payload = { provider, reviews, services };
 
-  await redisClient.setEx(cacheKey, PROVIDER_CACHE_TTL, JSON.stringify(payload));
+  await redisClient.set(cacheKey, JSON.stringify(payload), 'EX', PROVIDER_CACHE_TTL);
 
   return ApiResponse.success(res, 200, 'Provider fetched.', payload);
 });
@@ -418,7 +418,7 @@ const getTopProvidersByCategory = asyncHandler(async (req, res) => {
     }
   ]);
 
-  await redisClient.setEx(cacheKey, TOP_CACHE_TTL, JSON.stringify({ providers }));
+  await redisClient.set(cacheKey, JSON.stringify({ providers }), 'EX', TOP_CACHE_TTL);
 
   return ApiResponse.success(res, 200, 'Top providers fetched.', { providers });
 });

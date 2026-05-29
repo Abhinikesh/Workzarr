@@ -24,7 +24,7 @@ agenda.define('generate-daily-report', async (job) => {
     const report = await generateAdminReport(start, end);
     const dateStr = start.toISOString().split('T')[0];
     
-    await redisClient.setex(`admin:daily_report:${dateStr}`, 7 * 24 * 60 * 60, JSON.stringify(report)); // Cache for 7 days
+    await redisClient.set(`admin:daily_report:${dateStr}`, JSON.stringify(report), 'EX', 7 * 24 * 60 * 60); // Cache for 7 days
     
     // Find admins
     const admins = await User.find({ role: { $in: ['admin', 'superAdmin'] } }).select('email');

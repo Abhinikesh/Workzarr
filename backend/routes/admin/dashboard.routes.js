@@ -3,6 +3,7 @@ const dashboardController = require('../../controllers/admin/dashboard.controlle
 const router = express.Router();
 
 router.get('/overview', dashboardController.getDashboardOverview);
+router.get('/stats', dashboardController.getDashboardOverview);
 router.get('/revenue-chart', dashboardController.getRevenueChart);
 router.get('/booking-chart', dashboardController.getBookingChart);
 router.get('/geographic', dashboardController.getGeographicAnalytics);

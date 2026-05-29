@@ -73,7 +73,7 @@ const initializeSocket = (httpServer) => {
     logger.info('Socket connected', { userId, socketId: socket.id, role });
 
     // Store in Redis (TTL: 24h = 86400s) - Non-blocking
-    redisClient.setEx(`socket:${userId}`, 86400, socket.id).catch(err => {
+    redisClient.set(`socket:${userId}`, socket.id, 'EX', 86400).catch(err => {
       logger.error('Failed to store socketId in Redis', { userId, error: err.message });
     });
     
@@ -101,7 +101,7 @@ const initializeSocket = (httpServer) => {
 
         // Store current location in Redis (TTL 5 mins)
         const locationData = { lat, lng, updatedAt: Date.now() };
-        await redisClient.setEx(`provider_location:${providerId}`, 300, JSON.stringify(locationData));
+        await redisClient.set(`provider_location:${providerId}`, JSON.stringify(locationData), 'EX', 300);
 
         // Emit to the specific booking tracking room (which customer joins)
         io.to(`booking:${bookingId}`).emit('booking:provider_location', {
@@ -162,7 +162,7 @@ const initializeSocket = (httpServer) => {
 
         // Push to Redis list (TTL 7 days = 604800s)
         const redisKey = `chat:${bookingId}`;
-        await redisClient.rPush(redisKey, JSON.stringify(chatMessage));
+        await redisClient.rpush(redisKey, JSON.stringify(chatMessage));
         await redisClient.expire(redisKey, 604800);
 
         // Emit back to room
@@ -197,7 +197,7 @@ const initializeSocket = (httpServer) => {
         const { isAvailable } = data;
 
         await Provider.findByIdAndUpdate(providerId, { 'availability.isAvailable': Boolean(isAvailable) });
-        await redisClient.setEx(`provider_available:${providerId}`, 86400, String(isAvailable));
+        await redisClient.set(`provider_available:${providerId}`, String(isAvailable), 'EX', 86400);
 
         socket.emit('provider:toggle_availability_success', { isAvailable });
       } catch (err) {

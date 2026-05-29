@@ -12,7 +12,7 @@ exports.getPlatformSettings = asyncHandler(async (req, res) => {
   if (!settings) {
     const config = await Settings.getConfig();
     settings = config.value;
-    await redisClient.setex('platform:settings', 3600, JSON.stringify(settings));
+    await redisClient.set('platform:settings', JSON.stringify(settings), 'EX', 3600);
   } else {
     settings = JSON.parse(settings);
   }
@@ -40,7 +40,7 @@ exports.updatePlatformSettings = asyncHandler(async (req, res) => {
   const newConfig = await Settings.updateConfig(updates, req.user._id);
   const newMaintenance = newConfig.value.app?.maintenanceMode;
 
-  await redisClient.setex('platform:settings', 3600, JSON.stringify(newConfig.value));
+  await redisClient.set('platform:settings', JSON.stringify(newConfig.value), 'EX', 3600);
 
   if (oldMaintenance !== newMaintenance && newMaintenance === true) {
     await redisClient.set('app:maintenance', 'true');
@@ -90,7 +90,7 @@ exports.toggleMaintenanceMode = asyncHandler(async (req, res) => {
   };
 
   await Settings.updateConfig(updates, req.user._id);
-  await redisClient.setex('platform:settings', 3600, JSON.stringify((await Settings.getConfig()).value));
+  await redisClient.set('platform:settings', JSON.stringify((await Settings.getConfig()).value), 'EX', 3600);
 
   if (newMode) {
     await redisClient.set('app:maintenance', 'true');

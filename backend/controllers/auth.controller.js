@@ -141,10 +141,30 @@ const adminLogin = asyncHandler(async (req, res) => {
   user.lastLogin = new Date();
   await user.save({ validateBeforeSave: false });
 
-  const accessToken = await issueTokens(res, user);
+  const payload = {
+    id: user._id.toString(),
+    userId: user._id.toString(),
+    role: user.role
+  };
+
+  const accessToken = jwtUtils.generateAccessToken(payload, '15m');
+  const refreshToken = jwtUtils.generateRefreshToken(payload, '7d');
+
+  // Store refresh token in Redis (under key refresh:{userId} using client.set)
+  const redisClient = require('../config/redis');
+  await redisClient.set(`refresh:${payload.id}`, refreshToken, 'EX', 7 * 24 * 60 * 60);
+
+  // Set httpOnly cookie
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   return ApiResponse.success(res, 200, 'Admin login successful', {
     accessToken,
+    refreshToken,
     user: safeUser(user),
   });
 });
@@ -281,21 +301,68 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   try {
     const decoded = jwtUtils.verifyRefreshToken(incomingRefreshToken);
+    const userId = decoded.userId || decoded.id;
     const redisClient = require('../config/redis');
-    const storedToken = await redisClient.get(`refresh_token:${decoded.userId}`);
+    
+    // Check both potential Redis keys
+    let redisKey = `refresh:${userId}`;
+    let storedToken = await redisClient.get(redisKey);
+    
+    if (!storedToken) {
+      redisKey = `refresh_token:${userId}`;
+      storedToken = await redisClient.get(redisKey);
+    }
 
-    if (storedToken !== incomingRefreshToken) {
-      await jwtUtils.invalidateRefreshToken(decoded.userId);
+    if (!storedToken || storedToken !== incomingRefreshToken) {
+      // Invalidate if found on either key
+      await redisClient.del(`refresh:${userId}`);
+      await redisClient.del(`refresh_token:${userId}`);
       throw ApiError.unauthorized('Invalid refresh token or session expired');
     }
 
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(userId);
     if (!user) {
       throw ApiError.unauthorized('User not found');
     }
 
-    const accessToken = await issueTokens(res, user);
-    return ApiResponse.success(res, 200, 'Token refreshed successfully', { accessToken });
+    let accessToken, refreshToken;
+    if (user.role === 'admin' || user.role === 'superAdmin') {
+      const payload = {
+        id: user._id.toString(),
+        userId: user._id.toString(),
+        role: user.role
+      };
+      accessToken = jwtUtils.generateAccessToken(payload, '15m');
+      refreshToken = jwtUtils.generateRefreshToken(payload, '7d');
+
+      // Update Redis key refresh:{userId}
+      await redisClient.set(`refresh:${user._id.toString()}`, refreshToken, 'EX', 7 * 24 * 60 * 60);
+    } else {
+      const payload = {
+        userId: user._id.toString(),
+        id: user._id.toString(),
+        role: user.role,
+        phone: user.phone
+      };
+      accessToken = jwtUtils.generateAccessToken(payload);
+      refreshToken = jwtUtils.generateRefreshToken(payload);
+
+      // Update Redis key refresh_token:{userId}
+      await redisClient.set(`refresh_token:${user._id.toString()}`, refreshToken, 'EX', 7 * 24 * 60 * 60);
+    }
+
+    // Update the cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return ApiResponse.success(res, 200, 'Token refreshed successfully', { 
+      accessToken, 
+      refreshToken 
+    });
   } catch (error) {
     throw ApiError.unauthorized(error.message || 'Invalid refresh token');
   }
@@ -305,7 +372,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 // 8. logout  —  POST /api/v1/auth/logout
 // ─────────────────────────────────────────────────────────────────────────────
 const logout = asyncHandler(async (req, res) => {
-  await jwtUtils.invalidateRefreshToken(req.user._id.toString());
+  const userId = req.user._id.toString();
+  const redisClient = require('../config/redis');
+
+  // Invalidate both potential keys in Redis
+  await redisClient.del(`refresh:${userId}`);
+  await redisClient.del(`refresh_token:${userId}`);
 
   res.clearCookie('refreshToken', {
     httpOnly: true,
