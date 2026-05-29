@@ -16,7 +16,7 @@ import DataTable from '../../components/ui/DataTable';
 import ChartCard from '../../components/shared/ChartCard';
 import StatusBadge from '../../components/shared/StatusBadge';
 import Avatar from '../../components/shared/Avatar';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { CHART_COLORS, STATUS_COLORS, customTooltipFormatter } from '../../utils/chartHelpers';
 import { useSocket } from '../../hooks/useSocket';
@@ -37,7 +37,7 @@ const DashboardPage = () => {
     try {
       const [statsRes, revenueRes, bookingsRes, providersRes] = await Promise.all([
         axios.get('/admin/dashboard/stats'),
-        axios.get(\`/admin/dashboard/revenue-chart?period=\${period}\`),
+        axios.get(`/admin/dashboard/revenue-chart?period=\${period}`),
         axios.get('/admin/dashboard/recent-bookings'),
         axios.get('/admin/dashboard/top-providers')
       ]);
@@ -104,7 +104,7 @@ const DashboardPage = () => {
                  onClick={() => setPeriod(p)}
                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all \${
                    period === p ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                 }\`}
+                 }`}
                >
                  {p.toUpperCase()}
                </button>
@@ -113,7 +113,7 @@ const DashboardPage = () => {
           <button 
             onClick={fetchDashboardData}
             className="p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-indigo-600 hover:border-indigo-200 transition-all group"
-            title={\`Last updated at \${lastUpdated.toLocaleTimeString()}\`}
+            title={`Last updated at \${lastUpdated.toLocaleTimeString()}`}
           >
             <RefreshCw size={18} className={loading ? 'animate-spin' : 'group-active:rotate-180 transition-transform'} />
           </button>
@@ -156,7 +156,7 @@ const DashboardPage = () => {
         <StatsCard
           title="Active Providers"
           value={stats?.activeProviders || 0}
-          suffix={\` / \${stats?.totalProviders || 0}\`}
+          suffix={` / \${stats?.totalProviders || 0}`}
           icon={Briefcase}
           iconColor="text-amber-500"
           iconBg="bg-amber-50 dark:bg-amber-500/10"
@@ -207,13 +207,13 @@ const DashboardPage = () => {
                      axisLine={false} 
                      tickLine={false} 
                      tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}
-                     tickFormatter={(val) => \`₹\${val/1000}K\`}
+                     tickFormatter={(val) => `₹\${val/1000}K`}
                    />
                    <RechartsTooltip 
                      contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', padding: '12px' }}
                      itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
                      labelStyle={{ color: '#94a3b8', fontSize: '10px', marginBottom: '4px', fontWeight: 'bold' }}
-                     formatter={(value) => [\`₹\${value.toLocaleString()}\`, 'Revenue']}
+                     formatter={(value) => [`₹\${value.toLocaleString()}`, 'Revenue']}
                    />
                    <Area 
                      type="monotone" 
@@ -243,7 +243,7 @@ const DashboardPage = () => {
                      animationDuration={1500}
                    >
                      {bookingDistributionData.map((entry, index) => (
-                       <Cell key={\`cell-\${index}\`} fill={entry.color} />
+                       <Cell key={`cell-\${index}`} fill={entry.color} />
                      ))}
                    </Pie>
                    <RechartsTooltip 
@@ -332,7 +332,7 @@ const DashboardPage = () => {
                          <Avatar name={provider.businessName} size="md" />
                          <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-extrabold text-white shadow-lg \${
                            index === 0 ? 'bg-amber-400' : index === 1 ? 'bg-slate-300' : index === 2 ? 'bg-orange-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                         }\`}>
+                         }`}>
                             {index + 1}
                          </div>
                       </div>

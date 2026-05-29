@@ -3,7 +3,7 @@ import {
   Bell, Send, Trash2, CheckCircle, Clock, 
   Users, Briefcase, Globe, Info, AlertTriangle, RefreshCw
 } from 'lucide-react';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const NotificationManager = () => {
   const [notifications, setNotifications] = useState([]);

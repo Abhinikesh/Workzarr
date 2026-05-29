@@ -7,7 +7,7 @@ import {
 import StatsCard from '../../components/ui/StatsCard';
 import RevenueChart from './RevenueChart';
 import CategoryDistribution from './CategoryDistribution';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -158,7 +158,7 @@ const Dashboard = () => {
                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                    <div 
                      className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
-                     style={{ width: \`\${city.percentage}%\` }}
+                     style={{ width: `${city.percentage}%` }}
                    ></div>
                  </div>
                </div>

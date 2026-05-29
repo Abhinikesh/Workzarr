@@ -67,7 +67,7 @@ const SettingsPage = () => {
                     : item.danger 
                       ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20' 
                       : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }\`}
+                }`}
               >
                  <item.icon size={18} />
                  {item.label}

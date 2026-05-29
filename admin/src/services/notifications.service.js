@@ -1,4 +1,4 @@
-import axios from '../lib/axios';
+import { axiosInstance as axios } from '../lib/axios';
 import { toast } from 'sonner';
 
 /**

@@ -6,12 +6,11 @@ import { toast } from 'sonner';
 /**
  * Axios instance for the Admin portal.
  *
- * Because Vite proxies /api → http://localhost:5000, we use a
- * relative baseURL (/api/v1) so the proxy handles the actual routing.
- * This avoids CORS issues and means no hard-coded port in the code.
+ * Vite proxies /api → http://localhost:8000, so we use a relative
+ * baseURL (/api/v1). This avoids CORS issues and hardcoded ports.
  */
 export const axiosInstance = axios.create({
-  baseURL: '/api/v1',   // Proxied by Vite → http://localhost:5000/api/v1
+  baseURL: '/api/v1',   // Proxied by Vite → http://localhost:8000/api/v1
   withCredentials: true,
   timeout: 15000,
 });

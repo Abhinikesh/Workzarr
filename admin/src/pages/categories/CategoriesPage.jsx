@@ -10,7 +10,7 @@ import PageHeader from '../../components/shared/PageHeader';
 import DataTable from '../../components/ui/DataTable';
 import Badge from '../../components/shared/Badge';
 import Modal from '../../components/ui/Modal';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 import { toast } from 'sonner';
 
 const CategoriesPage = () => {
@@ -37,7 +37,7 @@ const CategoriesPage = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(\`/admin/categories/\${id}/status\`, { isActive: !currentStatus });
+      await axios.patch(`/admin/categories/\${id}/status`, { isActive: !currentStatus });
       toast.success('Category status updated');
       fetchCategories();
     } catch (error) {
@@ -93,16 +93,16 @@ const CategoriesPage = () => {
 
                  <div className="mt-8 pt-8 border-t border-slate-50 dark:border-slate-700/50 w-full flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                       <div className={\`w-2 h-2 rounded-full \${category.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}\`} />
+                       <div className={`w-2 h-2 rounded-full \${category.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">{category.isActive ? 'Active' : 'Inactive'}</span>
                     </div>
                     <button 
                       onClick={() => handleToggleStatus(category._id, category.isActive)}
-                      className={\`px-4 py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all \${
+                      className={`px-4 py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all \${
                         category.isActive 
                          ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white' 
                          : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white'
-                      }\`}
+                      }`}
                     >
                        {category.isActive ? 'Disable' : 'Enable'}
                     </button>
@@ -126,7 +126,7 @@ const CategoriesPage = () => {
                </div>
              )},
              { key: 'growth', label: 'Growth (MoM)', render: (row) => (
-               <Badge label={\`+\${row.stats?.growth || 0}%\`} variant="success" size="sm" />
+               <Badge label={`+\${row.stats?.growth || 0}%`} variant="success" size="sm" />
              )}
            ]}
            data={categories}

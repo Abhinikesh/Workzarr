@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -34,7 +34,7 @@ const CategoryList = () => {
     e.preventDefault();
     try {
       if (editingCategory) {
-        await axios.patch(\`/admin/categories/\${editingCategory._id}\`, formData);
+        await axios.patch(`/admin/categories/\${editingCategory._id}`, formData);
       } else {
         await axios.post('/admin/categories', formData);
       }
@@ -50,7 +50,7 @@ const CategoryList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure? This will hide the category from users.')) return;
     try {
-      await axios.delete(\`/admin/categories/\${id}\`);
+      await axios.delete(`/admin/categories/\${id}`);
       fetchCategories();
     } catch (error) {
        alert(error.response?.data?.message || 'Delete failed');
@@ -83,7 +83,7 @@ const CategoryList = () => {
       render: (row) => (
         <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider \${
           row.isActive ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10' : 'bg-red-100 text-red-600 dark:bg-red-500/10'
-        }\`}>
+        }`}>
           {row.isActive ? 'Active' : 'Inactive'}
         </span>
       )

@@ -1,4 +1,4 @@
-import axios from '../lib/axios';
+import { axiosInstance as axios } from '../lib/axios';
 import { toast } from 'sonner';
 
 /**
@@ -23,7 +23,7 @@ const UsersService = {
    */
   getUserById: async (id) => {
     try {
-      const { data } = await axios.get(\`/admin/users/\${id}\`);
+      const { data } = await axios.get(`/admin/users/\${id}`);
       return data;
     } catch (error) {
       toast.error('Failed to fetch user details');
@@ -36,8 +36,8 @@ const UsersService = {
    */
   toggleUserStatus: async (id, status) => {
     try {
-      const { data } = await axios.patch(\`/admin/users/\${id}/status\`, { status });
-      toast.success(\`User \${status === 'blocked' ? 'blocked' : 'unblocked'} successfully\`);
+      const { data } = await axios.patch(`/admin/users/\${id}/status`, { status });
+      toast.success(`User \${status === 'blocked' ? 'blocked' : 'unblocked'} successfully`);
       return data;
     } catch (error) {
       toast.error('Failed to update user status');
@@ -50,7 +50,7 @@ const UsersService = {
    */
   sendNotification: async (id, notification) => {
     try {
-      const { data } = await axios.post(\`/admin/users/\${id}/notify\`, notification);
+      const { data } = await axios.post(`/admin/users/\${id}/notify`, notification);
       toast.success('Notification sent successfully');
       return data;
     } catch (error) {
@@ -64,7 +64,7 @@ const UsersService = {
    */
   deleteUser: async (id) => {
     try {
-      await axios.delete(\`/admin/users/\${id}\`);
+      await axios.delete(`/admin/users/\${id}`);
       toast.success('User account deleted');
     } catch (error) {
       toast.error('Failed to delete user');

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import FilterBar from '../../components/ui/FilterBar';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const ProviderList = () => {
   const [providers, setProviders] = useState([]);

@@ -3,7 +3,7 @@ import { User, Shield, Ban, CheckCircle, Search, Mail, Phone, Calendar } from 'l
 import DataTable from '../../components/ui/DataTable';
 import FilterBar from '../../components/ui/FilterBar';
 import Modal from '../../components/ui/Modal';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
