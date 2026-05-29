@@ -4,13 +4,13 @@ const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Category name is required'],
-    unique: true,
+    unique: true,   // unique:true already creates an index — no need for schema.index({ slug: 1 })
     trim: true,
     maxlength: [100, 'Category name cannot exceed 100 characters']
   },
   slug: {
     type: String,
-    unique: true
+    unique: true    // unique:true already creates an index — duplicate removed below
   },
   icon: {
     type: String,
@@ -35,7 +35,8 @@ const categorySchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-categorySchema.index({ slug: 1 });
+// FIX: Removed duplicate slug index — unique:true in schema already creates one.
+// Keep only supporting indexes here:
 categorySchema.index({ displayOrder: 1 });
 categorySchema.index({ isActive: 1 });
 
