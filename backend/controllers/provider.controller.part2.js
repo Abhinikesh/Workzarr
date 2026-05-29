@@ -387,7 +387,7 @@ const getTopProvidersByCategory = asyncHandler(async (req, res) => {
         as:           'category'
       }
     },
-    { $unwind: { path: '$category', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
     {
       $lookup: {
         from:         'users',
@@ -396,7 +396,7 @@ const getTopProvidersByCategory = asyncHandler(async (req, res) => {
         as:           'user'
       }
     },
-    { $unwind: { path: '$user', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
     {
       $project: {
         businessName:               1,
