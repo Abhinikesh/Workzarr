@@ -8,7 +8,150 @@ const otpUtils = require('../utils/otp');
 const jwtUtils = require('../utils/jwt');
 const logger = require('../utils/logger');
 
-// 1. sendOTP
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper — build a safe user object (no password, no sensitive fields)
+// ─────────────────────────────────────────────────────────────────────────────
+const safeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  phone: user.phone,
+  role: user.role,
+  avatar: user.avatar,
+  isProfileComplete: user.isProfileComplete,
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper — issue tokens, set refresh cookie, return access token
+// ─────────────────────────────────────────────────────────────────────────────
+const issueTokens = async (res, user) => {
+  const { accessToken, refreshToken } = await jwtUtils.generateTokenPair(user);
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  return accessToken;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. register  —  POST /api/v1/auth/register
+//    Body: { name, email, password }
+// ─────────────────────────────────────────────────────────────────────────────
+const register = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    throw ApiError.badRequest('Please provide name, email and password');
+  }
+
+  if (password.length < 6) {
+    throw ApiError.badRequest('Password must be at least 6 characters');
+  }
+
+  const existing = await User.findOne({ email });
+  if (existing) {
+    throw ApiError.conflict('An account with this email already exists');
+  }
+
+  // Create user — pre-save hook will hash the password
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role: 'customer',
+    isEmailVerified: true,
+    isProfileComplete: true,
+  });
+
+  user.lastLogin = new Date();
+  await user.save();
+
+  const accessToken = await issueTokens(res, user);
+
+  return ApiResponse.success(res, 201, 'Account created successfully', {
+    accessToken,
+    user: safeUser(user),
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. login  —  POST /api/v1/auth/login
+//    Body: { email, password }
+//    Works for customers and providers
+// ─────────────────────────────────────────────────────────────────────────────
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw ApiError.badRequest('Please provide email and password');
+  }
+
+  // +password to override select: false on the schema
+  const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.comparePassword(password))) {
+    throw ApiError.unauthorized('Invalid email or password');
+  }
+
+  if (!user.isActive) {
+    throw ApiError.forbidden('Your account has been deactivated. Contact support.');
+  }
+
+  if (user.isBlocked) {
+    throw ApiError.forbidden('Your account has been blocked. Contact support.');
+  }
+
+  user.lastLogin = new Date();
+  await user.save({ validateBeforeSave: false });
+
+  const accessToken = await issueTokens(res, user);
+
+  return ApiResponse.success(res, 200, 'Login successful', {
+    accessToken,
+    user: safeUser(user),
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. adminLogin  —  POST /api/v1/auth/admin/login
+//    Body: { email, password }
+//    Requires role === 'admin'
+// ─────────────────────────────────────────────────────────────────────────────
+const adminLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw ApiError.badRequest('Please provide email and password');
+  }
+
+  const user = await User.findOne({ email, role: 'admin' }).select('+password');
+
+  if (!user || !(await user.comparePassword(password))) {
+    throw ApiError.unauthorized('Invalid email or password');
+  }
+
+  if (!user.isActive) {
+    throw ApiError.forbidden('Your admin account is inactive. Contact super admin.');
+  }
+
+  user.lastLogin = new Date();
+  await user.save({ validateBeforeSave: false });
+
+  const accessToken = await issueTokens(res, user);
+
+  return ApiResponse.success(res, 200, 'Admin login successful', {
+    accessToken,
+    user: safeUser(user),
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. sendOTP  —  POST /api/v1/auth/send-otp
+// ─────────────────────────────────────────────────────────────────────────────
 const sendOTP = asyncHandler(async (req, res) => {
   const { phone, purpose } = req.body;
 
@@ -20,14 +163,14 @@ const sendOTP = asyncHandler(async (req, res) => {
   const otp = otpUtils.generateOTP();
   const hashedOtp = await bcrypt.hash(otp, 10);
 
-  // Fallback to MongoDB
+  // Persist in MongoDB as fallback
   await OTP.findOneAndUpdate(
     { phone, purpose },
     { phone, purpose, otp: hashedOtp, attempts: 0, expiresAt: new Date(Date.now() + 10 * 60000) },
     { upsert: true, new: true }
   );
 
-  // Store in Redis too
+  // Also store in Redis (primary)
   await otpUtils.storeOTPinRedis(phone, hashedOtp, purpose);
 
   const smsResult = await otpUtils.sendOTPviaSMS(phone, otp);
@@ -36,15 +179,16 @@ const sendOTP = asyncHandler(async (req, res) => {
   }
 
   const responseData = { messageId: smsResult.messageId };
-
   if (process.env.NODE_ENV === 'development') {
-    responseData.otp = otp; // ONLY for dev
+    responseData.otp = otp; // expose OTP in dev console only
   }
 
   return ApiResponse.success(res, 200, 'OTP sent successfully', responseData);
 });
 
-// 2. verifyOTP
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. verifyOTP  —  POST /api/v1/auth/verify-otp
+// ─────────────────────────────────────────────────────────────────────────────
 const verifyOTP = asyncHandler(async (req, res) => {
   const { phone, otp, purpose } = req.body;
 
@@ -59,7 +203,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (otpData) {
     hashedOtp = otpData.hashedOtp;
   } else {
-    // Fallback to MongoDB
     const otpDoc = await OTP.findOne({ phone, purpose, expiresAt: { $gt: new Date() } });
     if (!otpDoc) {
       throw ApiError.badRequest('OTP expired or not found');
@@ -68,8 +211,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
   }
 
   const attempts = await otpUtils.incrementOTPAttempts(phone, purpose);
-  
   const isMatch = await bcrypt.compare(otp, hashedOtp);
+
   if (!isMatch) {
     const remaining = 5 - attempts;
     if (remaining <= 0) {
@@ -78,18 +221,14 @@ const verifyOTP = asyncHandler(async (req, res) => {
     throw ApiError.badRequest(`Invalid OTP. You have ${remaining} attempts left.`);
   }
 
-  // OTP verified successfully
   await otpUtils.deleteOTPfromRedis(phone, purpose);
-  await OTP.deleteOne({ phone, purpose }); // Delete from DB too
+  await OTP.deleteOne({ phone, purpose });
 
   let user = await User.findOne({ phone });
   let isNewUser = false;
 
   if (!user) {
-    user = await User.create({
-      phone,
-      isPhoneVerified: true
-    });
+    user = await User.create({ phone, isPhoneVerified: true });
     isNewUser = true;
   } else {
     if (!user.isPhoneVerified) {
@@ -98,29 +237,18 @@ const verifyOTP = asyncHandler(async (req, res) => {
     }
   }
 
-  const { accessToken, refreshToken } = await jwtUtils.generateTokenPair(user);
-
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-  });
+  const accessToken = await issueTokens(res, user);
 
   return ApiResponse.success(res, 200, 'OTP verified successfully', {
     accessToken,
-    user: {
-      _id: user._id,
-      phone: user.phone,
-      role: user.role,
-      name: user.name,
-      isProfileComplete: user.isProfileComplete
-    },
-    isNewUser
+    user: safeUser(user),
+    isNewUser,
   });
 });
 
-// 3. completeProfile
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. completeProfile  —  PATCH /api/v1/auth/complete-profile
+// ─────────────────────────────────────────────────────────────────────────────
 const completeProfile = asyncHandler(async (req, res) => {
   const { name, email, town, district, state, pincode } = req.body;
   const userId = req.user._id;
@@ -134,24 +262,16 @@ const completeProfile = asyncHandler(async (req, res) => {
 
   const user = await User.findByIdAndUpdate(
     userId,
-    {
-      name,
-      email,
-      location: {
-        town,
-        district,
-        state,
-        pincode
-      },
-      isProfileComplete: true
-    },
+    { name, email, location: { town, district, state, pincode }, isProfileComplete: true },
     { new: true, runValidators: true }
   ).select('-__v -createdAt -updatedAt');
 
   return ApiResponse.success(res, 200, 'Profile updated successfully', { user });
 });
 
-// 4. refreshAccessToken
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. refreshAccessToken  —  POST /api/v1/auth/refresh-token
+// ─────────────────────────────────────────────────────────────────────────────
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
@@ -161,13 +281,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   try {
     const decoded = jwtUtils.verifyRefreshToken(incomingRefreshToken);
-    
-    // Check Redis
     const redisClient = require('../config/redis');
     const storedToken = await redisClient.get(`refresh_token:${decoded.userId}`);
-    
+
     if (storedToken !== incomingRefreshToken) {
-      // Token reuse / potentially compromised
       await jwtUtils.invalidateRefreshToken(decoded.userId);
       throw ApiError.unauthorized('Invalid refresh token or session expired');
     }
@@ -177,100 +294,54 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       throw ApiError.unauthorized('User not found');
     }
 
-    const { accessToken, refreshToken } = await jwtUtils.generateTokenPair(user);
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    });
-
+    const accessToken = await issueTokens(res, user);
     return ApiResponse.success(res, 200, 'Token refreshed successfully', { accessToken });
   } catch (error) {
     throw ApiError.unauthorized(error.message || 'Invalid refresh token');
   }
 });
 
-// 5. logout
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. logout  —  POST /api/v1/auth/logout
+// ─────────────────────────────────────────────────────────────────────────────
 const logout = asyncHandler(async (req, res) => {
   await jwtUtils.invalidateRefreshToken(req.user._id.toString());
-  
+
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
   });
 
   return ApiResponse.success(res, 200, 'Logged out successfully');
 });
 
-// 6. getMe
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. getMe  —  GET /api/v1/auth/me
+// ─────────────────────────────────────────────────────────────────────────────
 const getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select('-__v -createdAt -updatedAt');
-  
+
   let providerProfile = null;
-  if (user.role === 'provider' || user.role === 'admin') {
-    // If provider model exists, populate it here.
-    // Assuming Provider model is used elsewhere, we simulate it or fetch it.
+  if (user.role === 'provider') {
     const Provider = require('../models/Provider');
     providerProfile = await Provider.findOne({ user: req.user._id }).select('-__v');
   }
 
-  return ApiResponse.success(res, 200, 'User profile fetched successfully', { 
-    user, 
-    providerProfile 
-  });
-});
-
-// 7. adminLogin (Email + Password)
-const adminLogin = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw ApiError.badRequest('Please provide email and password');
-  }
-
-  const user = await User.findOne({ email, role: 'admin' }).select('+password');
-
-  if (!user || !(await user.comparePassword(password))) {
-    throw ApiError.unauthorized('Invalid administrative credentials');
-  }
-
-  if (!user.isActive) {
-    throw ApiError.forbidden('Your account is inactive. Contact super admin.');
-  }
-
-  const { accessToken, refreshToken } = await jwtUtils.generateTokenPair(user);
-
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  });
-
-  user.lastLogin = new Date();
-  await user.save();
-
-  return ApiResponse.success(res, 200, 'Admin login successful', {
-    accessToken,
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role
-    }
+  return ApiResponse.success(res, 200, 'User profile fetched successfully', {
+    user,
+    providerProfile,
   });
 });
 
 module.exports = {
+  register,
+  login,
+  adminLogin,
   sendOTP,
   verifyOTP,
   completeProfile,
   refreshAccessToken,
   logout,
   getMe,
-  adminLogin
 };

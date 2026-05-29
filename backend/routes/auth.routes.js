@@ -6,6 +6,7 @@ const { authLimiter, otpLimiter } = require('../middleware/rateLimit.middleware'
 
 const router = express.Router();
 
+// ── OTP routes (phone login — existing) ──────────────────────────────────────
 router.post(
   '/send-otp',
   otpLimiter,
@@ -21,12 +22,31 @@ router.post(
   authController.verifyOTP
 );
 
+// ── Email + Password routes (NEW) ─────────────────────────────────────────────
+
+// POST /api/v1/auth/register  — create account with name, email, password
+router.post(
+  '/register',
+  authLimiter,
+  authController.register
+);
+
+// POST /api/v1/auth/login  — email + password login for customers/providers
+router.post(
+  '/login',
+  authLimiter,
+  authController.login
+);
+
+// ── Admin login ───────────────────────────────────────────────────────────────
+// POST /api/v1/auth/admin/login  — email + password, role must be 'admin'
 router.post(
   '/admin/login',
   authLimiter,
   authController.adminLogin
 );
 
+// ── Token management ──────────────────────────────────────────────────────────
 router.post(
   '/refresh-token',
   validate(refreshTokenSchema),
@@ -39,6 +59,7 @@ router.post(
   authController.logout
 );
 
+// ── Profile ───────────────────────────────────────────────────────────────────
 router.get(
   '/me',
   authMiddleware.protect,
