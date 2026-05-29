@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     services: {
       database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
-      redis: redisClient.isOpen ? "connected" : "disconnected",
+      redis: redisClient.status === 'ready' ? "connected" : "disconnected",
       agenda: "running"
     },
     uptime: process.uptime(),
