@@ -48,9 +48,9 @@ const SEED_DATA = {
 
 async function seed() {
   try {
-    const mongoUri = process.env.MONGODB_URI;
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
     if (!mongoUri) {
-      throw new Error("MONGODB_URI is not defined in .env file");
+      throw new Error("MONGO_URI or MONGODB_URI is not defined in .env file");
     }
 
     await mongoose.connect(mongoUri);

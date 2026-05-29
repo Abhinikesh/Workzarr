@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bookingSchema = new mongoose.Schema({
   bookingId: {
     type: String,
-    unique: true
+    unique: true   // keeps the unique constraint — removed duplicate schema.index({ bookingId: 1 }) below
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
@@ -120,7 +120,8 @@ const bookingSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-bookingSchema.index({ bookingId: 1 });
+// FIX: Removed duplicate bookingId index — unique:true in schema already creates one.
+// Keep only the compound/supporting indexes here:
 bookingSchema.index({ customer: 1, status: 1 });
 bookingSchema.index({ provider: 1, status: 1 });
 bookingSchema.index({ 'address.coordinates': '2dsphere' });
@@ -129,20 +130,20 @@ bookingSchema.pre('save', async function(next) {
   if (this.isNew) {
     let isUnique = false;
     const year = new Date().getFullYear();
-    
+
     while (!isUnique) {
       const min = 10000;
       const max = 99999;
       const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
       const generatedId = `BK${year}${randomNum}`;
-      
+
       const existingBooking = await mongoose.model('Booking').findOne({ bookingId: generatedId });
       if (!existingBooking) {
         this.bookingId = generatedId;
         isUnique = true;
       }
     }
-    
+
     // Commission calculation only on new documents
     this.commission = parseFloat((this.price * 0.10).toFixed(2));
     this.providerEarning = parseFloat((this.price - this.commission).toFixed(2));

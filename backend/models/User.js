@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -9,15 +10,21 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Phone number is required'],
     unique: true,
+    sparse: true,  // allows multiple null values (email-only users have no phone)
     match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number']
   },
   email: {
     type: String,
+    unique: true,
+    sparse: true,  // allows multiple null values (phone-only users have no email)
     trim: true,
     lowercase: true,
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address']
+  },
+  password: {
+    type: String,
+    select: false
   },
   avatar: {
     type: String,
@@ -32,9 +39,9 @@ const userSchema = new mongoose.Schema({
     town: { type: String, trim: true },
     district: { type: String, trim: true },
     state: { type: String, trim: true },
-    pincode: { 
-      type: String, 
-      match: [/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit PIN code'] 
+    pincode: {
+      type: String,
+      match: [/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit PIN code']
     },
     coordinates: {
       type: {
@@ -53,7 +60,8 @@ const userSchema = new mongoose.Schema({
   },
   referralCode: {
     type: String,
-    unique: true
+    unique: true,
+    sparse: true  // CRITICAL: allows multiple documents without a referralCode (null)
   },
   referredBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -75,13 +83,13 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  isProfileComplete: {
+  isEmailVerified: {
     type: Boolean,
     default: false
   },
-  password: {
-    type: String,
-    select: false
+  isProfileComplete: {
+    type: Boolean,
+    default: false
   },
   lastLogin: {
     type: Date
@@ -92,20 +100,22 @@ const userSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
+// Geospatial index (only one, for coordinates)
 userSchema.index({ 'location.coordinates': '2dsphere' });
 
-const bcrypt = require('bcryptjs');
-
-userSchema.pre('save', async function() {
+// Hash password on save if modified
+userSchema.pre('save', async function(next) {
   if (this.isModified('password') && this.password) {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  if (!this.referralCode) {
+  // Only auto-generate referralCode for phone-verified users (not seeded admin/email users)
+  // Skip if referralCode already set or if this is an email-only admin user
+  if (!this.referralCode && this.isPhoneVerified && this.phone) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let isUnique = false;
     let code = '';
-    
+
     while (!isUnique) {
       code = '';
       for (let i = 0; i < 8; i++) {
@@ -118,9 +128,12 @@ userSchema.pre('save', async function() {
     }
     this.referralCode = code;
   }
+
+  next();
 });
 
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
