@@ -31,9 +31,9 @@ const Tooltip = ({ content, children, position = 'top', disabled = false }) => {
     >
       {children}
       {isVisible && (
-        <div className={`absolute z-[100] whitespace-nowrap px-3 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-[11px] font-bold rounded-lg shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-200 \${positions[position]}\`}>
+        <div className={`absolute z-[100] whitespace-nowrap px-3 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-[11px] font-bold rounded-lg shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-200 ${positions[position]}`}>
           {content}
-          <div className={\`absolute border-[6px] border-transparent \${arrows[position]}\`} />
+            <div className={`absolute border-[6px] border-transparent ${arrows[position]}`} />
         </div>
       )}
     </div>

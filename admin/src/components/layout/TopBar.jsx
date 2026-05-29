@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { logoutAdmin } from '../../store/slices/authSlice';
 import useDebounce from '../../hooks/useDebounce';
-import axios from '../../lib/axios';
+import { axiosInstance as axios } from '../../lib/axios';
 
 const TopBar = () => {
   const location = useLocation();

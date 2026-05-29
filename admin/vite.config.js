@@ -15,12 +15,12 @@ export default defineConfig({
     strictPort: true,    // Fail instead of auto-picking another port
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
       },
       '/socket.io': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true,
       },

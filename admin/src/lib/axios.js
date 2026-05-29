@@ -96,7 +96,7 @@ axiosInstance.interceptors.response.use(
 
     // Network error (no response at all)
     if (!error.response) {
-      toast.error('Network error. Make sure the backend is running on port 5000.');
+      toast.error('Network error. Make sure the backend is running on port 8000.');
     }
 
     return Promise.reject(error);

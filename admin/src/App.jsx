@@ -1,17 +1,14 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { persistor } from './store';
+import { useSelector } from 'react-redux';
 import { connectSocket, disconnectSocket } from './lib/socket';
-import { logout } from './store/slices/authSlice';
 
-// Layouts
+// Layouts — eagerly imported (small, always needed)
 import Sidebar from './components/layout/Sidebar';
 import TopBar from './components/layout/TopBar';
 
-// Pages (Lazy Loaded)
-const LoginPage          = lazy(() => import('./pages/auth/LoginPage'));
+// Pages — lazy loaded (split bundles, faster initial load)
+const Login              = lazy(() => import('./pages/Login'));
 const Dashboard          = lazy(() => import('./pages/dashboard/Dashboard'));
 const UserList           = lazy(() => import('./pages/users/UserList'));
 const ProviderList       = lazy(() => import('./pages/providers/ProviderList'));
@@ -22,27 +19,23 @@ const NotificationManager= lazy(() => import('./pages/notifications/Notification
 const AuditLogs          = lazy(() => import('./pages/audit/AuditLogs'));
 const SettingsPage       = lazy(() => import('./pages/settings/SettingsPage'));
 
-// Stub pages for routes not yet built
-const UserDetail          = () => <div className="p-8">User Detail — Coming Soon</div>;
-const ProviderDetail      = () => <div className="p-8">Provider Detail — Coming Soon</div>;
-const PendingVerifications= () => <div className="p-8">Pending Verifications — Coming Soon</div>;
-const BookingDetail       = () => <div className="p-8">Booking Detail — Coming Soon</div>;
-const AnalyticsPage       = () => <div className="p-8">Analytics — Coming Soon</div>;
+// Placeholder pages for routes not yet fully built
+const UserDetail          = () => <div className="p-8 text-slate-600">User Detail — Coming Soon</div>;
+const ProviderDetail      = () => <div className="p-8 text-slate-600">Provider Detail — Coming Soon</div>;
+const PendingVerifications= () => <div className="p-8 text-slate-600">Pending Verifications — Coming Soon</div>;
+const BookingDetail       = () => <div className="p-8 text-slate-600">Booking Detail — Coming Soon</div>;
+const AnalyticsPage       = () => <div className="p-8 text-slate-600">Analytics — Coming Soon</div>;
 const NotFound            = () => (
-  <div className="p-8 text-center">
-    <h1 className="text-4xl font-bold text-slate-700 dark:text-slate-300">404</h1>
-    <p className="mt-2 text-slate-500">Page not found.</p>
+  <div className="p-12 text-center">
+    <h1 className="text-5xl font-bold text-slate-300">404</h1>
+    <p className="mt-3 text-slate-500 font-medium">Page not found.</p>
+    <a href="/dashboard" className="mt-4 inline-block text-indigo-600 font-semibold hover:underline">
+      Go to Dashboard
+    </a>
   </div>
 );
 
-// ── Full-screen loading spinner (used while redux-persist rehydrates) ─────────
-const FullScreenLoader = () => (
-  <div className="flex h-screen w-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-    <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-  </div>
-);
-
-// ── Page-level suspense fallback ──────────────────────────────────────────────
+// Spinners
 const PageLoader = () => (
   <div className="flex items-center justify-center h-full min-h-[300px]">
     <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
@@ -50,15 +43,12 @@ const PageLoader = () => (
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Protected Layout — guards all admin routes
+// ProtectedLayout — wraps all admin routes, redirects to /login if not authed
 // ─────────────────────────────────────────────────────────────────────────────
 const ProtectedLayout = () => {
   const { isAuthenticated, accessToken } = useSelector((state) => state.auth);
-  const { sidebarCollapsed } = useSelector((state) => state.ui);
-  const dispatch = useDispatch();
   const location = useLocation();
 
-  // Connect / disconnect socket based on auth state
   useEffect(() => {
     if (isAuthenticated && accessToken) {
       connectSocket(accessToken);
@@ -66,7 +56,6 @@ const ProtectedLayout = () => {
     return () => disconnectSocket();
   }, [isAuthenticated, accessToken]);
 
-  // Not authenticated → redirect to login, preserving attempted destination
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -88,45 +77,38 @@ const ProtectedLayout = () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Root App
+// NOTE: No PersistGate here — it lives in main.jsx to avoid double-wrapping
+// which causes the app to hang and render a blank white page.
 // ─────────────────────────────────────────────────────────────────────────────
 function App() {
   const { theme } = useSelector((state) => state.ui);
 
-  // Apply dark mode class to <html>
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
   return (
-    // PersistGate blocks rendering until redux-persist has fully rehydrated.
-    // This prevents the brief "not authenticated" flash on page refresh.
-    <PersistGate loading={<FullScreenLoader />} persistor={persistor}>
+    <Suspense fallback={
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-50">
+        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <Routes>
-        {/* Public */}
-        <Route
-          path="/login"
-          element={
-            <Suspense fallback={<FullScreenLoader />}>
-              <LoginPage />
-            </Suspense>
-          }
-        />
+        {/* ── Public ── */}
+        <Route path="/login" element={<Login />} />
 
-        {/* Protected */}
+        {/* ── Protected ── */}
         <Route element={<ProtectedLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/"              element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard"     element={<Dashboard />} />
           <Route path="/users"         element={<UserList />} />
-          <Route path="/users/:userId" element={<UserDetail />} />
-          <Route path="/providers"               element={<ProviderList />} />
-          <Route path="/providers/:providerId"   element={<ProviderDetail />} />
-          <Route path="/providers/pending"       element={<PendingVerifications />} />
-          <Route path="/bookings"                element={<BookingList />} />
-          <Route path="/bookings/:bookingId"     element={<BookingDetail />} />
+          <Route path="/users/:id"     element={<UserDetail />} />
+          <Route path="/providers"           element={<ProviderList />} />
+          <Route path="/providers/pending"   element={<PendingVerifications />} />
+          <Route path="/providers/:id"       element={<ProviderDetail />} />
+          <Route path="/bookings"            element={<BookingList />} />
+          <Route path="/bookings/:id"        element={<BookingDetail />} />
           <Route path="/payments"      element={<PaymentList />} />
           <Route path="/categories"    element={<CategoryList />} />
           <Route path="/notifications" element={<NotificationManager />} />
@@ -135,10 +117,10 @@ function App() {
           <Route path="/audit"         element={<AuditLogs />} />
         </Route>
 
-        {/* 404 */}
+        {/* ── 404 ── */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </PersistGate>
+    </Suspense>
   );
 }
 
