@@ -33,7 +33,8 @@ const UsersPage = () => {
         ...filters
       });
       setUsers(data.data.users);
-      setPagination(data.data.pagination);
+      const { total, page, pages } = data.data;
+      setPagination(prev => ({ ...prev, currentPage: page || 1, totalPages: pages || 1, totalItems: total || 0 }));
     } catch (error) {
       console.error('Failed to fetch users', error);
     } finally {

@@ -107,7 +107,7 @@ const Onboarding = () => {
         lng: 77.32,
         basePrice: Number(basePrice),
         priceUnit,
-        priceDescription: 'Base inspection and consulting charges.'
+        priceDescription: 'Base inspection and consulting charges.',
       };
 
       const providerRes = await axiosInstance.post('/providers/register', providerPayload);

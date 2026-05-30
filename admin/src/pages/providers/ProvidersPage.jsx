@@ -35,10 +35,11 @@ const ProvidersPage = () => {
         ...filters
       });
       setProviders(data.data.providers);
-      setPagination(data.data.pagination);
+      const { total, page, pages } = data.data;
+      setPagination(prev => ({ ...prev, currentPage: page || 1, totalPages: pages || 1, totalItems: total || 0 }));
       setStats({ 
-        total: data.data.total, 
-        pending: data.data.pendingVerification 
+        total: total || 0, 
+        pending: data.data.pendingVerification || 0
       });
     } catch (error) {
       console.error('Failed to fetch providers', error);

@@ -89,7 +89,9 @@ const registerProvider = asyncHandler(async (req, res) => {
       basePrice,
       priceUnit,
       description: priceDescription ? priceDescription.trim() : undefined
-    }
+    },
+    isVerified: true,
+    isActive: true
   });
 
   await User.findByIdAndUpdate(userId, { role: 'provider' });
