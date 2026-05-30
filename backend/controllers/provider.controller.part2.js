@@ -33,141 +33,206 @@ const searchProviders = asyncHandler(async (req, res) => {
     sortBy = 'relevance', page = 1, limit = 10
   } = req.query;
 
-  const latF   = parseFloat(lat);
-  const lngF   = parseFloat(lng);
-  const latKey = latF.toFixed(3);
-  const lngKey = lngF.toFixed(3);
+  const latF = parseFloat(lat);
+  const lngF = parseFloat(lng);
 
-  const cacheKey = `search:${latKey}:${lngKey}:${radius}:${categoryId || 'all'}:${sortBy}:${page}`;
-
-  const cached = await redisClient.get(cacheKey);
-  if (cached) {
-    logger.info('Search cache hit', { cacheKey });
-    const payload = JSON.parse(cached);
-    const dataToSend = (payload.data && payload.data.providers) ? payload.data : { providers: payload.data || [] };
-    return ApiResponse.paginated(res, 'Providers fetched.', dataToSend, payload.pagination);
+  if (isNaN(latF) || isNaN(lngF)) {
+    throw ApiError.badRequest('Valid lat and lng coordinates are required.');
   }
 
-  logger.info('Search cache miss', { cacheKey });
+  const latKey  = latF.toFixed(3);
+  const lngKey  = lngF.toFixed(3);
+  const pageNum  = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip     = (pageNum - 1) * limitNum;
 
-  const geoQuery = {
+  const cacheKey = `search:${latKey}:${lngKey}:${radius}:${categoryId || 'all'}:${sortBy}:${pageNum}`;
+
+  // ── 1. Try Redis cache (failure-safe) ──────────────────────────────────────
+  try {
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+      logger.info('Search cache hit', { cacheKey });
+      const payload = JSON.parse(cached);
+      return ApiResponse.paginated(
+        res, 'Providers fetched.',
+        { providers: payload.providers || [] },
+        payload.pagination
+      );
+    }
+  } catch (cacheReadErr) {
+    logger.warn('Redis cache read failed, proceeding without cache', { error: cacheReadErr.message });
+  }
+
+  // ── 2. Build base match query ──────────────────────────────────────────────
+  const baseQuery = {
     isActive:   true,
     isVerified: true,
     ...(categoryId && mongoose.Types.ObjectId.isValid(categoryId)
       ? { category: new mongoose.Types.ObjectId(categoryId) }
       : {}),
-    ...(isAvailable !== undefined ? { 'availability.isAvailable': isAvailable === true || isAvailable === 'true' } : {})
+    ...(isAvailable !== undefined
+      ? { 'availability.isAvailable': isAvailable === true || isAvailable === 'true' }
+      : {}),
+    ...(minRating ? { 'rating.average': { $gte: parseFloat(minRating) } } : {}),
+    ...(maxPrice  ? { 'pricing.basePrice': { $lte: parseFloat(maxPrice) } } : {})
   };
 
-  const sortStage = (() => {
+  let providers = [];
+  let total     = 0;
+
+  // ── 3. Geo aggregation (with fallback) ────────────────────────────────────
+  const geoSortStage = (() => {
     switch (sortBy) {
-      case 'rating':   return { 'rating.average': -1, relevanceScore: -1 };
+      case 'rating':   return { relevanceScore: -1, 'rating.average': -1 };
       case 'price':    return { 'pricing.basePrice': 1, relevanceScore: -1 };
-      case 'distance': return { distance: 1, relevanceScore: -1 };
+      case 'distance': return { distance: 1 };
       default:         return { relevanceScore: -1 };
     }
   })();
 
-  const pageNum  = parseInt(page, 10);
-  const limitNum = parseInt(limit, 10);
-  const skip     = (pageNum - 1) * limitNum;
-
-  const pipeline = [
-    {
-      $geoNear: {
-        near:          { type: 'Point', coordinates: [lngF, latF] },
-        distanceField: 'distance',
-        maxDistance:   parseFloat(radius) * 1000,
-        spherical:     true,
-        query:         geoQuery
-      }
-    },
-    {
-      $lookup: {
-        from:         'categories',
-        localField:   'category',
-        foreignField: '_id',
-        as:           'category'
-      }
-    },
-    { $unwind: '$category' },
-    {
-      $lookup: {
-        from:         'users',
-        localField:   'userId',
-        foreignField: '_id',
-        as:           'user'
-      }
-    },
-    { $unwind: '$user' },
-    {
-      $match: {
-        ...(minRating ? { 'rating.average': { $gte: parseFloat(minRating) } } : {}),
-        ...(maxPrice  ? { 'pricing.basePrice': { $lte: parseFloat(maxPrice) } } : {})
-      }
-    },
-    {
-      $addFields: {
-        distanceKm: { $divide: ['$distance', 1000] },
-        relevanceScore: {
-          $add: [
-            { $multiply: ['$rating.average', 20] },
-            { $multiply: ['$stats.completedJobs', 0.1] },
-            { $cond: [{ $and: [{ $eq: ['$subscription.plan', 'premium'] }, '$subscription.isActive'] }, 30, 0] },
-            { $cond: ['$isVerified', 20, 0] },
+  try {
+    const geoPipeline = [
+      {
+        $geoNear: {
+          near:          { type: 'Point', coordinates: [lngF, latF] },
+          distanceField: 'distance',
+          maxDistance:   parseFloat(radius) * 1000,
+          spherical:     true,
+          query:         baseQuery
+        }
+      },
+      // ── Lookup category ──
+      {
+        $lookup: {
+          from:         'categories',
+          localField:   'category',
+          foreignField: '_id',
+          as:           'category'
+        }
+      },
+      // preserveNullAndEmptyArrays keeps providers whose category doc was deleted
+      { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+      // ── Lookup user ──
+      {
+        $lookup: {
+          from:         'users',
+          localField:   'userId',
+          foreignField: '_id',
+          as:           'user'
+        }
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+      // ── Compute relevanceScore & distanceKm ──
+      {
+        $addFields: {
+          distanceKm: { $divide: ['$distance', 1000] },
+          relevanceScore: {
+            $add: [
+              { $multiply: [{ $ifNull: ['$rating.average',      0] }, 20]  },
+              { $multiply: [{ $ifNull: ['$stats.completedJobs', 0] }, 0.1] },
+              {
+                $cond: [
+                  {
+                    $and: [
+                      { $eq: ['$subscription.plan',     'premium'] },
+                      { $eq: ['$subscription.isActive', true]      }
+                    ]
+                  },
+                  30, 0
+                ]
+              },
+              { $cond: [{ $eq: ['$isVerified', true] }, 20, 0] },
+              {
+                $multiply: [
+                  { $max: [{ $subtract: [50, { $divide: ['$distance', 1000] }] }, 0] },
+                  0.5
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $sort: geoSortStage },
+      {
+        $facet: {
+          metadata:  [{ $count: 'total' }],
+          providers: [
+            { $skip: skip },
+            { $limit: limitNum },
             {
-              $multiply: [
-                { $subtract: [50, { $divide: ['$distance', 1000] }] },
-                0.5
-              ]
+              $project: {
+                businessName:               1,
+                profileImage:               1,
+                'category.name':            1,
+                'category.icon':            1,
+                'category.slug':            1,
+                'user.name':                1,
+                'user.avatar':              1,
+                'rating.average':           1,
+                'rating.count':             1,
+                pricing:                    1,
+                'availability.isAvailable': 1,
+                distanceKm:                 1,
+                isVerified:                 1,
+                subscriptionPlan:           '$subscription.plan',
+                relevanceScore:             1
+              }
             }
           ]
         }
       }
-    },
-    { $sort: sortStage },
-    {
-      $facet: {
-        metadata:  [{ $count: 'total' }],
-        providers: [
-          { $skip: skip },
-          { $limit: limitNum },
-          {
-            $project: {
-              businessName:               1,
-              profileImage:               1,
-              'category.name':            1,
-              'category.icon':            1,
-              'category.slug':            1,
-              'user.name':                1,
-              'user.avatar':              1,
-              'rating.average':           1,
-              'rating.count':             1,
-              pricing:                    1,
-              'availability.isAvailable': 1,
-              distanceKm:                 1,
-              isVerified:                 1,
-              subscriptionPlan:           '$subscription.plan',
-              relevanceScore:             1
-            }
-          }
-        ]
-      }
-    }
-  ];
+    ];
 
-  const [result] = await Provider.aggregate(pipeline);
+    const [result] = await Provider.aggregate(geoPipeline);
+    total     = result?.metadata?.[0]?.total ?? 0;
+    providers = result?.providers ?? [];
 
-  const total      = result.metadata[0] ? result.metadata[0].total : 0;
-  const providers  = result.providers || [];
-  const totalPages = Math.ceil(total / limitNum);
+  } catch (geoErr) {
+    // ── Fallback: plain .find() when $geoNear fails (e.g. index not ready) ──
+    logger.warn('Geo search failed — falling back to basic query', { error: geoErr.message });
 
-  const pagination = { currentPage: pageNum, totalPages, totalItems: total, limit: limitNum };
+    const fallbackSort = sortBy === 'price'  ? { 'pricing.basePrice': 1 }
+                       : sortBy === 'rating' ? { 'rating.average': -1 }
+                       : { rank: -1 };
 
-  await redisClient.set(cacheKey, JSON.stringify({ data: { providers }, pagination }), 'EX', SEARCH_CACHE_TTL);
+    [providers, total] = await Promise.all([
+      Provider.find(baseQuery)
+        .sort(fallbackSort)
+        .skip(skip)
+        .limit(limitNum)
+        .populate('category', 'name icon slug')
+        .populate('userId',   'name avatar')
+        .select('businessName profileImage category userId rating pricing availability isVerified subscription rank')
+        .lean(),
+      Provider.countDocuments(baseQuery)
+    ]);
+
+    // Normalise shape to match geo pipeline output
+    providers = providers.map(p => ({ ...p, user: p.userId, distanceKm: null }));
+  }
+
+  const pagination = {
+    currentPage: pageNum,
+    totalPages:  Math.ceil(total / limitNum) || 0,
+    totalItems:  total,
+    limit:       limitNum
+  };
+
+  // ── 4. Cache result (failure-safe) ────────────────────────────────────────
+  try {
+    await redisClient.set(
+      cacheKey,
+      JSON.stringify({ providers, pagination }),
+      'EX', SEARCH_CACHE_TTL
+    );
+  } catch (cacheWriteErr) {
+    logger.warn('Redis cache write failed', { error: cacheWriteErr.message });
+  }
 
   return ApiResponse.paginated(res, 'Providers fetched.', { providers }, pagination);
 });
+
 
 // ─── 10. getProviderById ──────────────────────────────────────────────────────
 const getProviderById = asyncHandler(async (req, res) => {

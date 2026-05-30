@@ -18,7 +18,12 @@ const validate = (schema, property = 'body') => {
       const messages = error.details.map((x) => x.message).join(', ');
       return next(ApiError.badRequest(`Validation error: ${messages}`));
     }
-    req[property] = value;
+    // req.query is a read-only getter on IncomingMessage — must use Object.assign
+    if (property === 'query') {
+      Object.assign(req.query, value);
+    } else {
+      req[property] = value;
+    }
     next();
   };
 };

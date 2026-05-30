@@ -18,9 +18,9 @@ exports.getSummary = asyncHandler(async (req, res) => {
 
   const raw = result[0] || {};
   const summary = {
-    captured:       raw.captured       || 0,
-    commission:     raw.commission     || 0,
-    netRevenue:     raw.commission     || 0,
+    captured:       raw.captured    || 0,
+    commission:     raw.commission  || 0,
+    netRevenue:     raw.commission  || 0,
     pendingPayouts: 0
   };
 
@@ -35,15 +35,15 @@ exports.getTransactions = asyncHandler(async (req, res) => {
   if (status) query.status = status;
   if (method) query.method = method;
   if (search) {
-    query.$or = [{ transactionId: new RegExp(search, 'i') }];
+    query.$or = [{ razorpayPaymentId: new RegExp(search, 'i') }];
   }
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   const [items, total] = await Promise.all([
     Payment.find(query)
-      .populate('customer', 'name phone avatar')
-      .populate('provider', 'businessName')
+      .populate('payer', 'name phone avatar')
+      .populate('payee', 'businessName')
       .populate('booking', 'bookingId')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -54,9 +54,9 @@ exports.getTransactions = asyncHandler(async (req, res) => {
 
   const pagination = {
     currentPage: parseInt(page),
-    totalPages: Math.ceil(total / parseInt(limit)) || 1,
-    totalItems: total,
-    limit: parseInt(limit)
+    totalPages:  Math.ceil(total / parseInt(limit)) || 1,
+    totalItems:  total,
+    limit:       parseInt(limit)
   };
 
   return res.status(200).json({
@@ -68,17 +68,17 @@ exports.getTransactions = asyncHandler(async (req, res) => {
 
 // GET /admin/payments/payouts
 exports.getPayouts = asyncHandler(async (req, res) => {
-  // Payouts are settlements to providers — derive from completed bookings' commissions
+  // Return captured payments (provider earnings) as payout records
   const { status, page = 1, limit = 25 } = req.query;
-
-  const query = { paymentType: 'payout' };
-  if (status) query.status = status;
+  const query = { status: status || 'captured' };
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   const [items, total] = await Promise.all([
     Payment.find(query)
-      .populate('provider', 'businessName phone')
+      .populate('payee', 'businessName phone')
+      .populate('payer', 'name')
+      .populate('booking', 'bookingId')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit))
@@ -88,9 +88,9 @@ exports.getPayouts = asyncHandler(async (req, res) => {
 
   const pagination = {
     currentPage: parseInt(page),
-    totalPages: Math.ceil(total / parseInt(limit)) || 1,
-    totalItems: total,
-    limit: parseInt(limit)
+    totalPages:  Math.ceil(total / parseInt(limit)) || 1,
+    totalItems:  total,
+    limit:       parseInt(limit)
   };
 
   return res.status(200).json({

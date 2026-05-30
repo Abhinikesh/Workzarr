@@ -63,6 +63,16 @@ router.patch(
   ctrl.rescheduleBooking
 );
 
+// Shortcut: PATCH /:bookingId/cancel — called by user app's Bookings.jsx
+router.patch(
+  '/:bookingId/cancel',
+  protect,
+  restrictTo('customer'),
+  (req, res, next) => { req.body.status = 'cancelled'; next(); },
+  validate(updateBookingStatusSchema),
+  ctrl.updateBookingStatus
+);
+
 router.patch(
   '/:bookingId/status',
   protect,

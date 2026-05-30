@@ -18,8 +18,8 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
   if (isActive) query.isActive = isActive === 'true';
   if (isBlocked) query.isBlocked = isBlocked === 'true';
   if (isPhoneVerified) query.isPhoneVerified = isPhoneVerified === 'true';
-  if (town) query['address.town'] = new RegExp(town, 'i');
-  if (district) query['address.district'] = new RegExp(district, 'i');
+  if (town) query['location.town'] = new RegExp(town, 'i');
+  if (district) query['location.district'] = new RegExp(district, 'i');
 
   if (search) {
     query.$or = [
@@ -78,11 +78,11 @@ exports.getUserById = asyncHandler(async (req, res) => {
 
   let providerProfile = null;
   if (user.role === 'provider') {
-    providerProfile = await Provider.findOne({ user: user._id });
+    providerProfile = await Provider.findOne({ userId: user._id });
   }
 
   const recentBookings = await Booking.find({ customer: user._id }).sort({ createdAt: -1 }).limit(10).populate('provider', 'businessName');
-  const recentPayments = await Payment.find({ customer: user._id }).sort({ createdAt: -1 }).limit(10);
+  const recentPayments = await Payment.find({ payer: user._id }).sort({ createdAt: -1 }).limit(10);
   const reviews = await Review.find({ customer: user._id }).sort({ createdAt: -1 }).limit(5).populate('provider', 'businessName');
 
   res.status(200).json(new ApiResponse(200, { user, providerProfile, recentBookings, recentPayments, reviews }, 'User details fetched'));
@@ -113,7 +113,7 @@ exports.blockUser = asyncHandler(async (req, res) => {
   await redisClient.set(`user_blocked:${userId}`, 'true');
 
   if (user.role === 'provider') {
-    const provider = await Provider.findOne({ user: userId });
+    const provider = await Provider.findOne({ userId });
     if (provider) {
       provider.isActive = false;
       await provider.save();
@@ -153,7 +153,7 @@ exports.unblockUser = asyncHandler(async (req, res) => {
   await redisClient.del(`user_blocked:${userId}`);
 
   if (user.role === 'provider') {
-    await Provider.findOneAndUpdate({ user: userId }, { isActive: true });
+    await Provider.findOneAndUpdate({ userId }, { isActive: true });
   }
 
   await logAdminAction({
@@ -197,7 +197,7 @@ exports.deleteUser = asyncHandler(async (req, res) => {
   );
 
   if (user.role === 'provider') {
-    const provider = await Provider.findOne({ user: userId });
+    const provider = await Provider.findOne({ userId });
     if (provider) {
       provider.isActive = false;
       provider.businessName = 'Deleted Business';

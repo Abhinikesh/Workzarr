@@ -100,7 +100,7 @@ const providerOnly = asyncHandler(async (req, res, next) => {
     return next(ApiError.forbidden('Only providers can access this route'));
   }
 
-  const provider = await Provider.findOne({ user: req.user._id });
+  const provider = await Provider.findOne({ userId: req.user._id });
   if (!provider) {
     return next(ApiError.forbidden('Complete provider setup first'));
   }

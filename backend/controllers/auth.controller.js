@@ -397,7 +397,7 @@ const getMe = asyncHandler(async (req, res) => {
   let providerProfile = null;
   if (user.role === 'provider') {
     const Provider = require('../models/Provider');
-    providerProfile = await Provider.findOne({ user: req.user._id }).select('-__v');
+    providerProfile = await Provider.findOne({ userId: req.user._id }).select('-__v');
   }
 
   return ApiResponse.success(res, 200, 'User profile fetched successfully', {

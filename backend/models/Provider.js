@@ -136,21 +136,20 @@ providerSchema.index({ category: 1 });
 providerSchema.index({ 'location.coordinates': '2dsphere' });
 providerSchema.index({ rank: -1 });
 
-providerSchema.pre('save', function(next) {
+providerSchema.pre('save', async function() {
   let computedRank = 0;
-  const avgRating = this.rating.average || 0;
-  const completedJobs = this.stats.completedJobs || 0;
+  const avgRating = this.rating?.average || 0;
+  const completedJobs = this.stats?.completedJobs || 0;
 
   computedRank += avgRating * 10;
   computedRank += Math.min(completedJobs, 100) * 0.5;
   
-  if (this.subscription.isActive && this.subscription.plan === 'premium') {
+  if (this.subscription?.isActive && this.subscription?.plan === 'premium') {
     computedRank += 50;
   }
   
   // Clamp rank between 0 and 100
   this.rank = Math.min(Math.max(computedRank, 0), 100);
-  next();
 });
 
 const Provider = mongoose.model('Provider', providerSchema);

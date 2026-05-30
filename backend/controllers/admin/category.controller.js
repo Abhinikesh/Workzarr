@@ -8,6 +8,53 @@ const Payment = require('../../models/Payment');
 const { logAdminAction } = require('../../utils/adminHelpers');
 const redisClient = require('../../config/redis');
 
+// GET /admin/categories — list all categories (active + inactive)
+exports.getAllCategories = asyncHandler(async (req, res) => {
+  const categories = await Category.find()
+    .sort({ displayOrder: 1, createdAt: 1 })
+    .lean();
+
+  const withCounts = await Promise.all(
+    categories.map(async (cat) => {
+      const [providerCount, bookingCount] = await Promise.all([
+        Provider.countDocuments({ category: cat._id }),
+        Booking.countDocuments({ category: cat._id })
+      ]);
+      return {
+        ...cat,
+        stats: { providerCount, bookingCount }
+      };
+    })
+  );
+
+  // data.data is the array directly so CategoriesPage.jsx can do setCategories(data.data)
+  return res.status(200).json({ success: true, message: 'Categories fetched', data: withCounts });
+});
+
+// PATCH /admin/categories/:id/status — toggle isActive
+exports.toggleCategoryStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const category = await Category.findById(id);
+  if (!category) throw new ApiError(404, 'Category not found');
+
+  category.isActive = !category.isActive;
+  await category.save();
+
+  // Invalidate public cache
+  await redisClient.del('all_categories').catch(() => {});
+
+  await logAdminAction({
+    adminId: req.user._id,
+    action: category.isActive ? 'ENABLE_CATEGORY' : 'DISABLE_CATEGORY',
+    targetModel: 'Category',
+    targetId: category._id,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent']
+  });
+
+  res.status(200).json(new ApiResponse(200, category, `Category ${category.isActive ? 'enabled' : 'disabled'}`));
+});
+
 exports.reorderCategories = asyncHandler(async (req, res) => {
   const { order } = req.body; // [{ id, displayOrder }]
   if (!Array.isArray(order)) throw new ApiError(400, 'Order must be an array');
@@ -57,13 +104,13 @@ exports.getCategoryAnalytics = asyncHandler(async (req, res) => {
     ]);
     
     const revenue = await Payment.aggregate([
-      { $match: { provider: { $in: providerIds }, status: 'captured' } },
-      { $group: { _id: null, total: { $sum: '$platformFee' } } }
+      { $match: { payee: { $in: providerIds }, status: 'captured' } },
+      { $group: { _id: null, total: { $sum: '$commission' } } }
     ]);
     
     const popularTownsAggr = await Provider.aggregate([
       { $match: { category: cat._id } },
-      { $group: { _id: '$address.town', count: { $sum: 1 } } },
+      { $group: { _id: '$location.town', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 3 }
     ]);
@@ -71,8 +118,8 @@ exports.getCategoryAnalytics = asyncHandler(async (req, res) => {
     let totalRating = 0;
     let ratingCount = 0;
     providers.forEach(p => {
-      if (p.stats && p.stats.rating > 0) {
-        totalRating += p.stats.rating;
+      if (p.rating && p.rating.average > 0) {
+        totalRating += p.rating.average;
         ratingCount++;
       }
     });

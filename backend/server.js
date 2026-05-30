@@ -23,6 +23,40 @@ const { agenda: bookingAgenda } = require('./jobs/bookingJobs');
 const payoutQueue = require('./jobs/payoutQueue');
 
 const PORT = process.env.PORT || 5000;
+
+// Category seeder — runs once on startup if collection is empty
+const seedCategories = async () => {
+  try {
+    const Category = require('./models/Category');
+    const count = await Category.countDocuments();
+    if (count > 0) return;
+
+    const defaults = [
+      { name: 'Electrician',     slug: 'electrician',     icon: '⚡', displayOrder: 1 },
+      { name: 'Plumber',         slug: 'plumber',         icon: '🔧', displayOrder: 2 },
+      { name: 'Carpenter',       slug: 'carpenter',       icon: '🪚', displayOrder: 3 },
+      { name: 'AC Repair',       slug: 'ac-repair',       icon: '❄️', displayOrder: 4 },
+      { name: 'Tutor',           slug: 'tutor',           icon: '📚', displayOrder: 5 },
+      { name: 'Computer Repair', slug: 'computer-repair', icon: '💻', displayOrder: 6 },
+      { name: 'Painter',         slug: 'painter',         icon: '🖌️', displayOrder: 7 },
+      { name: 'Mechanic',        slug: 'mechanic',        icon: '🔩', displayOrder: 8 },
+    ];
+
+    let seeded = 0;
+    for (const c of defaults) {
+      try {
+        await Category.create({ ...c, isActive: true });
+        seeded++;
+      } catch (e) {
+        if (e.code !== 11000) throw e; // rethrow non-duplicate errors
+      }
+    }
+    if (seeded > 0) logger.info(`✅ Seeded ${seeded} default categories.`);
+  } catch (err) {
+    logger.warn('Category seeding skipped:', err.message);
+  }
+};
+
 let server;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -109,6 +143,7 @@ const startServer = async () => {
     killPortProcess(PORT);
 
     await connectDB();
+    await seedCategories();
 
     logger.info('Redis connection initialized.');
 

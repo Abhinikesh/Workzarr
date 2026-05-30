@@ -93,9 +93,9 @@ exports.getDashboardOverview = asyncHandler(async (req, res) => {
     .select('bookingId customer provider service amount status createdAt');
     
   const recentPayments = await Payment.find().sort({ createdAt: -1 }).limit(10)
-    .populate('customer', 'name')
-    .populate('provider', 'businessName')
-    .select('amount method status customer provider createdAt');
+    .populate('payer', 'name')
+    .populate('payee', 'businessName')
+    .select('amount method status payer payee createdAt');
     
   const recentProviders = await Provider.find().sort({ createdAt: -1 }).limit(10)
     .populate('category', 'name')
@@ -250,9 +250,9 @@ exports.getGeographicAnalytics = asyncHandler(async (req, res) => {
   const towns = await Provider.aggregate([
     {
       $group: {
-        _id: '$address.town',
-        district: { $first: '$address.district' },
-        state: { $first: '$address.state' },
+        _id: '$location.town',
+        district: { $first: '$location.district' },
+        state: { $first: '$location.state' },
         totalProviders: { $sum: 1 },
         providers: { $push: '$_id' }
       }
@@ -261,7 +261,7 @@ exports.getGeographicAnalytics = asyncHandler(async (req, res) => {
 
   const usersByTown = await User.aggregate([
     { $match: { role: 'customer' } },
-    { $group: { _id: '$address.town', totalUsers: { $sum: 1 } } }
+    { $group: { _id: '$location.town', totalUsers: { $sum: 1 } } }
   ]);
 
   const userTownMap = {};
@@ -269,19 +269,19 @@ exports.getGeographicAnalytics = asyncHandler(async (req, res) => {
 
   const paymentsByProvider = await Payment.aggregate([
     { $match: { status: 'captured' } },
-    { $group: { _id: '$provider', totalRevenue: { $sum: '$platformFee' } } }
+    { $group: { _id: '$payee', totalRevenue: { $sum: '$commission' } } }
   ]);
   const paymentMap = {};
-  paymentsByProvider.forEach(p => paymentMap[p._id.toString()] = p.totalRevenue);
+  paymentsByProvider.forEach(p => { if (p._id) paymentMap[p._id.toString()] = p.totalRevenue; });
 
   const bookingsByProvider = await Booking.aggregate([
     { $group: { _id: '$provider', count: { $sum: 1 } } }
   ]);
   const bookingMap = {};
-  bookingsByProvider.forEach(b => bookingMap[b._id.toString()] = b.count);
+  bookingsByProvider.forEach(b => { if (b._id) bookingMap[b._id.toString()] = b.count; });
 
   const categoriesByTown = await Provider.aggregate([
-    { $group: { _id: { town: '$address.town', category: '$category' }, count: { $sum: 1 } } },
+    { $group: { _id: { town: '$location.town', category: '$category' }, count: { $sum: 1 } } },
     { $sort: { count: -1 } },
     { $group: { _id: '$_id.town', topCategory: { $first: '$_id.category' } } },
     { $lookup: { from: 'categories', localField: 'topCategory', foreignField: '_id', as: 'categoryInfo' } },

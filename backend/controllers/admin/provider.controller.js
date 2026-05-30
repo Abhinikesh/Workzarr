@@ -17,8 +17,8 @@ exports.getAllProviders = asyncHandler(async (req, res) => {
   if (isVerified) query.isVerified = isVerified === 'true';
   if (isActive) query.isActive = isActive === 'true';
   if (categoryId) query.category = categoryId;
-  if (town) query['address.town'] = new RegExp(town, 'i');
-  if (district) query['address.district'] = new RegExp(district, 'i');
+  if (town) query['location.town'] = new RegExp(town, 'i');
+  if (district) query['location.district'] = new RegExp(district, 'i');
 
   if (search) {
     query.$or = [
@@ -35,7 +35,7 @@ exports.getAllProviders = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const providers = await Provider.find(query)
-    .populate('user', 'name phone email isBlocked')
+    .populate('userId', 'name phone email isBlocked')
     .populate('category', 'name')
     .sort(sort)
     .skip(skip)
@@ -44,16 +44,26 @@ exports.getAllProviders = asyncHandler(async (req, res) => {
   const total = await Provider.countDocuments(query);
 
   const providersData = await Promise.all(providers.map(async (p) => {
-    const balance = await redisClient.hget(`wallet:${p.user._id}`, 'balance');
+    const uid = p.userId?._id || p.userId;
+    const balance = uid ? await redisClient.hget(`wallet:${uid}`, 'balance') : null;
     return {
       ...p.toObject(),
-      bookingCount: p.stats?.totalBookings || 0,
-      totalEarnings: p.stats?.totalEarnings || 0,
+      user: p.userId,       // alias so frontend can read row.user.phone
+      bookingCount:  p.stats?.totalBookings  || 0,
+      totalEarnings: p.stats?.totalEarnings  || 0,
       pendingPayout: parseFloat(balance || 0)
     };
   }));
 
-  res.status(200).json(new ApiResponse(200, { providers: providersData, total, page: parseInt(page), pages: Math.ceil(total / limit) }, 'Providers fetched'));
+  const pendingVerification = await Provider.countDocuments({ isVerified: false });
+
+  res.status(200).json(new ApiResponse(200, {
+    providers: providersData,
+    total,
+    page: parseInt(page),
+    pages: Math.ceil(total / limit),
+    pendingVerification
+  }, 'Providers fetched'));
 });
 
 exports.getProviderById = asyncHandler(async (req, res) => {

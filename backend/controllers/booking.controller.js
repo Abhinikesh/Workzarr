@@ -113,7 +113,7 @@ const createBooking = asyncHandler(async (req, res) => {
     paymentPayload = { orderId: `order_${crypto.randomBytes(6).toString('hex')}`, amount: price * 100 };
   }
 
-  logger.info('Booking created', { bookingId: booking._id, customBookingId });
+  logger.info('Booking created', { bookingId: booking._id, displayId: booking.bookingId });
 
   return ApiResponse.success(res, 201, 'Booking created successfully.', {
     booking: { ...booking.toObject(), otp: plainOtp }, // Return plain OTP to customer once so they have it

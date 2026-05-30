@@ -31,7 +31,7 @@ const validate = (schema, source = 'body') => (req, res, next) => {
 
   // Replace the source with the sanitised/coerced value
   if (source === 'query') {
-    req.query = value;
+    Object.assign(req.query, value);
   } else {
     req.body = value;
   }

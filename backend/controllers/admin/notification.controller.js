@@ -16,7 +16,7 @@ exports.sendBroadcastNotification = asyncHandler(async (req, res) => {
   let query = {};
   if (targetAudience === 'customers') query.role = 'customer';
   if (targetAudience === 'providers') query.role = 'provider';
-  if (targetAudience === 'specific_towns' && towns) query['address.town'] = { $in: towns };
+  if (targetAudience === 'specific_towns' && towns) query['location.town'] = { $in: towns };
   if (targetAudience === 'specific_users' && userIds) {
     if (userIds.length > 1000) throw new ApiError(400, 'Cannot broadcast to more than 1000 specific users at once.');
     query._id = { $in: userIds };
