@@ -33,8 +33,8 @@ const RevenueChart = ({ data, isLoading }) => {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
@@ -57,7 +57,7 @@ const RevenueChart = ({ data, isLoading }) => {
             <Area 
               type="monotone" 
               dataKey="totalRevenue" 
-              stroke="#6366f1" 
+              stroke="#f97316" 
               strokeWidth={3} 
               fillOpacity={1} 
               fill="url(#colorRevenue)" 

@@ -76,7 +76,7 @@ const TopBar = () => {
           <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
             {breadcrumbs.map((item, index) => (
               <React.Fragment key={index}>
-                <span className={index === breadcrumbs.length - 1 ? 'text-indigo-500' : ''}>{item}</span>
+                <span className={index === breadcrumbs.length - 1 ? 'text-orange-500' : ''}>{item}</span>
                 {index < breadcrumbs.length - 1 && <ChevronRight size={10} />}
               </React.Fragment>
             ))}
@@ -88,15 +88,15 @@ const TopBar = () => {
       {/* Center - Global Search */}
       <div className="flex-1 max-w-xl mx-8 relative group">
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-            {isSearching ? <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" /> : <Search size={18} />}
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-orange-500 transition-colors">
+            {isSearching ? <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" /> : <Search size={18} />}
           </div>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search users, providers, bookings..."
-            className="block w-full pl-11 pr-10 py-2.5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 dark:focus:border-indigo-500 transition-all text-sm font-medium"
+            className="block w-full pl-11 pr-10 py-2.5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-900/50 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-500 transition-all text-sm font-medium"
           />
           {searchQuery && (
             <button 
@@ -114,28 +114,28 @@ const TopBar = () => {
              {/* Simple Results List for demonstration - would be grouped in production */}
              <div className="max-h-[400px] overflow-y-auto p-2 space-y-1">
                 {Object.entries(searchResults).map(([type, items]) => items.length > 0 && (
-                  <div key={type}>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase px-3 py-2">{type}</p>
-                    {items.map((item, idx) => (
-                      <button 
-                        key={idx}
-                        className="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-all text-left"
-                        onClick={() => {
-                          setSearchQuery('');
-                          setSearchResults(null);
-                          navigate(`/${type}/${item._id}`);
-                        }}
-                      >
-                         <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-500">
-                            <User size={16} />
-                         </div>
-                         <div>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name || item.businessName || item.bookingId}</p>
-                            <p className="text-xs text-slate-500">{item.email || item.phone || item.status}</p>
-                         </div>
-                      </button>
-                    ))}
-                  </div>
+                   <div key={type}>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase px-3 py-2">{type}</p>
+                     {items.map((item, idx) => (
+                       <button 
+                         key={idx}
+                         className="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-all text-left"
+                         onClick={() => {
+                           setSearchQuery('');
+                           setSearchResults(null);
+                           navigate(`/${type}/${item._id}`);
+                         }}
+                       >
+                          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-500">
+                             <User size={16} />
+                          </div>
+                          <div>
+                             <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name || item.businessName || item.bookingId}</p>
+                             <p className="text-xs text-slate-500">{item.email || item.phone || item.status}</p>
+                          </div>
+                       </button>
+                     ))}
+                   </div>
                 ))}
              </div>
           </div>
@@ -169,7 +169,7 @@ const TopBar = () => {
             <div className="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
               <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">Recent Alerts</h3>
-                <span className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full">{unreadCount} New</span>
+                <span className="text-[10px] font-bold text-orange-500 bg-orange-50 dark:bg-orange-500/10 px-2 py-0.5 rounded-full">{unreadCount} New</span>
               </div>
               <div className="max-h-[350px] overflow-y-auto">
                 {alerts.length > 0 ? (
@@ -188,7 +188,7 @@ const TopBar = () => {
                   <div className="p-8 text-center text-slate-400 font-medium italic text-sm">No new notifications</div>
                 )}
               </div>
-              <Link to="/notifications" className="block w-full p-3 text-center text-xs font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
+              <Link to="/notifications" className="block w-full p-3 text-center text-xs font-bold text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
                 View All Notifications
               </Link>
             </div>
@@ -205,7 +205,7 @@ const TopBar = () => {
               <p className="text-[11px] font-bold text-slate-900 dark:text-white leading-none mb-0.5">{admin?.name || 'Super Admin'}</p>
               <p className="text-[9px] text-slate-500 font-extrabold uppercase tracking-widest">{admin?.role || 'Admin'}</p>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-600/20 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-orange-500/20 group-hover:scale-105 transition-transform">
                {admin?.name?.charAt(0) || 'A'}
             </div>
             <ChevronDown size={14} className={`text-slate-400 transition-transform ${showProfile ? 'rotate-180' : ''}`} />

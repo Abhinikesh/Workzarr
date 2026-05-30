@@ -13,6 +13,9 @@ export const loginAdmin = createAsyncThunk(
       const response = await axiosInstance.post('/auth/admin/login', credentials);
       // Persist token to localStorage for page-refresh survival
       localStorage.setItem('adminToken', response.data.data.accessToken);
+      if (response.data.data.refreshToken) {
+        localStorage.setItem('adminRefreshToken', response.data.data.refreshToken);
+      }
       return response.data;
     } catch (error) {
       // Show specific message from backend, or friendly fallback
@@ -37,6 +40,7 @@ export const logoutAdmin = createAsyncThunk(
       // Swallow errors — we always clear local state
     } finally {
       localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminRefreshToken');
     }
     return true;
   }
@@ -44,10 +48,12 @@ export const logoutAdmin = createAsyncThunk(
 
 // Rehydrate from localStorage on app load (survives page refresh)
 const persistedToken = localStorage.getItem('adminToken');
+const persistedRefreshToken = localStorage.getItem('adminRefreshToken');
 
 const initialState = {
   admin: null,
   accessToken: persistedToken || null,
+  refreshToken: persistedRefreshToken || null,
   isAuthenticated: !!persistedToken,
   isLoading: false,
   error: null,
@@ -59,18 +65,25 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       state.admin = action.payload.admin;
-      state.accessToken = action.payload.accessToken;
+      state.accessToken = action.payload.accessToken || action.payload.token;
+      state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
-      if (action.payload.accessToken) {
-        localStorage.setItem('adminToken', action.payload.accessToken);
+      const tokenToSave = action.payload.accessToken || action.payload.token;
+      if (tokenToSave) {
+        localStorage.setItem('adminToken', tokenToSave);
+      }
+      if (action.payload.refreshToken) {
+        localStorage.setItem('adminRefreshToken', action.payload.refreshToken);
       }
     },
     logout: (state) => {
       state.admin = null;
       state.accessToken = null;
+      state.refreshToken = null;
       state.isAuthenticated = false;
       state.error = null;
       localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminRefreshToken');
     },
     clearError: (state) => {
       state.error = null;
@@ -89,9 +102,10 @@ const authSlice = createSlice({
       .addCase(loginAdmin.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        // Backend returns: { data: { accessToken, user } }
+        // Backend returns: { data: { accessToken, refreshToken, user } }
         state.admin = action.payload.data.user;
         state.accessToken = action.payload.data.accessToken;
+        state.refreshToken = action.payload.data.refreshToken || null;
         state.error = null;
       })
       .addCase(loginAdmin.rejected, (state, action) => {

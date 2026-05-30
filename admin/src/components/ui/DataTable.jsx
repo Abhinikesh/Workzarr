@@ -45,7 +45,7 @@ const DataTable = ({
                 <th className="px-6 py-4 w-10">
                   <input 
                     type="checkbox" 
-                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                    className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
                     checked={data.length > 0 && selectedRows.length === data.length}
                     onChange={(e) => onSelectAll(e.target.checked)}
                   />
@@ -54,7 +54,7 @@ const DataTable = ({
               {columns.map((col) => (
                 <th 
                   key={col.key} 
-                  className={`px-6 py-4 text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest ${col.sortable ? 'cursor-pointer hover:text-indigo-500 transition-colors' : ''}`}
+                  className={`px-6 py-4 text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest ${col.sortable ? 'cursor-pointer hover:text-orange-500 transition-colors' : ''}`}
                   style={{ width: col.width }}
                   onClick={() => col.sortable && handleSort(col.key)}
                 >
@@ -62,7 +62,7 @@ const DataTable = ({
                     {col.label}
                     {col.sortable && (
                       sortConfig.key === col.key ? (
-                        sortConfig.direction === 'asc' ? <ArrowUp size={12} className="text-indigo-500" /> : <ArrowDown size={12} className="text-indigo-500" />
+                        sortConfig.direction === 'asc' ? <ArrowUp size={12} className="text-orange-500" /> : <ArrowDown size={12} className="text-orange-500" />
                       ) : <ArrowUpDown size={12} className="opacity-30" />
                     )}
                   </div>
@@ -103,7 +103,7 @@ const DataTable = ({
                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <input 
                         type="checkbox" 
-                        className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
                         checked={selectedRows.includes(row._id)}
                         onChange={(e) => onSelectRow(row._id, e.target.checked)}
                       />
@@ -156,7 +156,7 @@ const DataTable = ({
               <ChevronLeft size={16} />
             </button>
             
-            <div className="flex items-center px-4 h-9 bg-indigo-600 text-white font-extrabold rounded-xl shadow-lg shadow-indigo-600/20 text-xs">
+            <div className="flex items-center px-4 h-9 bg-orange-500 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/20 text-xs">
               {pagination.currentPage} / {Math.max(1, pagination.totalPages)}
             </div>
 

@@ -67,23 +67,31 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(
-          '/api/v1/auth/refresh-token',
-          {},
-          { withCredentials: true }
-        );
-        const newToken = data.data.accessToken;
+        const refreshToken = localStorage.getItem('adminRefreshToken');
+        const { data } = await axiosInstance.post('/auth/refresh-token', { refreshToken });
+        const newAccessToken = data.data.accessToken;
+        const newRefreshToken = data.data.refreshToken;
+
+        localStorage.setItem('adminToken', newAccessToken);
+        if (newRefreshToken) {
+          localStorage.setItem('adminRefreshToken', newRefreshToken);
+        }
+
         store.dispatch(
           setCredentials({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken || refreshToken,
             admin: store.getState().auth.admin,
-            accessToken: newToken,
           })
         );
-        processQueue(null, newToken);
-        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+
+        processQueue(null, newAccessToken);
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminRefreshToken');
         store.dispatch(logout());
         toast.error('Session expired. Please log in again.');
         window.location.href = '/login';

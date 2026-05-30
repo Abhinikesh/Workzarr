@@ -8,7 +8,7 @@ import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
  */
 const StatsCard = ({ 
   title, value, change, changeLabel, icon: Icon, 
-  iconColor = 'text-indigo-600', iconBg = 'bg-indigo-50 dark:bg-indigo-500/10',
+  iconColor = 'text-orange-500', iconBg = 'bg-orange-50 dark:bg-orange-500/10',
   isLoading = false, prefix = '', suffix = '', onClick
 }) => {
   if (isLoading) {
@@ -29,7 +29,7 @@ const StatsCard = ({
   return (
     <div 
       className={`bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm transition-all duration-300 ${
-        onClick ? 'hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 cursor-pointer active:scale-[0.98]' : ''
+        onClick ? 'hover:shadow-xl hover:shadow-orange-500/5 hover:-translate-y-1 cursor-pointer active:scale-[0.98]' : ''
       }`}
       onClick={onClick}
     >

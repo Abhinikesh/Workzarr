@@ -4,7 +4,7 @@ import {
   Legend, Tooltip 
 } from 'recharts';
 
-const COLORS = ['#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = ['#f97316', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const CategoryDistribution = ({ data, isLoading }) => {
   if (isLoading) {

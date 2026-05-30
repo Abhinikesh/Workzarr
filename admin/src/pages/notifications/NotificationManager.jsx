@@ -46,7 +46,7 @@ const NotificationManager = () => {
       <div className="lg:col-span-1">
         <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-6">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <Send className="text-indigo-500" size={20} />
+            <Send className="text-orange-500" size={20} />
             Broadcast Notification
           </h3>
           <form onSubmit={handleSend} className="space-y-5">
@@ -55,7 +55,7 @@ const NotificationManager = () => {
               <select 
                 value={formData.target}
                 onChange={(e) => setFormData({ ...formData, target: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-orange-500 transition-all"
               >
                 <option value="all">Everyone (All Users)</option>
                 <option value="user">Customers Only</option>
@@ -72,7 +72,7 @@ const NotificationManager = () => {
                     onClick={() => setFormData({ ...formData, type })}
                     className={`flex-1 py-2.5 rounded-xl border-2 text-xs font-extrabold uppercase transition-all ${
                       formData.type === type 
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10' 
+                        ? 'border-orange-500 bg-orange-50 text-orange-600 dark:bg-orange-500/10' 
                         : 'border-slate-100 dark:border-slate-700 text-slate-400'
                     }`}
                   >
@@ -88,7 +88,7 @@ const NotificationManager = () => {
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-medium outline-none focus:border-indigo-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-medium outline-none focus:border-orange-500 transition-all"
                 placeholder="Important Announcement"
               />
             </div>
@@ -98,14 +98,14 @@ const NotificationManager = () => {
                 required
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-medium outline-none focus:border-indigo-500 transition-all min-h-[120px]"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl font-medium outline-none focus:border-orange-500 transition-all min-h-[120px]"
                 placeholder="Enter notification content here..."
               />
             </div>
             <button 
               type="submit"
               disabled={sending}
-              className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl shadow-indigo-600/20 hover:bg-indigo-700 disabled:bg-indigo-400 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-orange-500 text-white rounded-2xl font-bold shadow-xl shadow-orange-500/20 hover:bg-orange-600 disabled:bg-orange-300 transition-all flex items-center justify-center gap-2"
             >
               {sending ? <RefreshCw className="animate-spin" size={20} /> : <Send size={20} />}
               Broadcast Now
@@ -118,7 +118,7 @@ const NotificationManager = () => {
       <div className="lg:col-span-2 space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold">Recent Notifications</h3>
-          <button onClick={fetchNotifications} className="p-2 text-slate-400 hover:text-indigo-500 transition-colors">
+          <button onClick={fetchNotifications} className="p-2 text-slate-400 hover:text-orange-500 transition-colors">
             <RefreshCw size={18} />
           </button>
         </div>
@@ -153,7 +153,7 @@ const NotificationManager = () => {
                            </div>
                            <p className="text-sm text-slate-500 dark:text-slate-400">{notif.message}</p>
                            <div className="flex items-center gap-3 mt-3">
-                              <span className="text-[10px] font-extrabold text-indigo-500 uppercase">Target: {notif.target}</span>
+                              <span className="text-[10px] font-extrabold text-orange-500 uppercase">Target: {notif.target}</span>
                               <span className="text-[10px] font-extrabold text-slate-400 uppercase">Status: Delivered</span>
                            </div>
                         </div>

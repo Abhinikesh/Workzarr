@@ -53,7 +53,7 @@ const UserList = () => {
       label: 'User',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center font-bold text-indigo-600 dark:text-indigo-400">
+          <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center font-bold text-orange-600 dark:text-orange-400">
             {row.name.charAt(0)}
           </div>
           <div>
@@ -68,7 +68,7 @@ const UserList = () => {
       label: 'Role',
       render: (row) => (
         <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-          row.role === 'admin' ? 'bg-purple-100 text-purple-600 dark:bg-purple-500/10' : 'bg-blue-100 text-blue-600 dark:bg-blue-500/10'
+          row.role === 'admin' ? 'bg-orange-100 text-orange-600 dark:bg-orange-500/10' : 'bg-slate-100 text-slate-600 dark:bg-slate-500/10'
         }`}>
           {row.role}
         </span>
@@ -108,7 +108,7 @@ const UserList = () => {
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setSelectedUser(row)}
-            className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all"
+            className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-lg transition-all"
           >
             <User size={18} />
           </button>
@@ -134,7 +134,7 @@ const UserList = () => {
           <h2 className="text-2xl font-bold">User Management</h2>
           <p className="text-slate-500">Monitor and manage all system users</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all">
+        <button className="flex items-center gap-2 px-4 py-2.5 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 shadow-lg shadow-orange-500/20 transition-all">
           Add New Admin
         </button>
       </div>
@@ -173,12 +173,12 @@ const UserList = () => {
         {selectedUser && (
           <div className="space-y-8">
             <div className="flex flex-col items-center">
-               <div className="w-24 h-24 rounded-3xl bg-indigo-600 flex items-center justify-center text-white text-4xl font-bold shadow-2xl shadow-indigo-500/30 mb-4">
+               <div className="w-24 h-24 rounded-3xl bg-orange-500 flex items-center justify-center text-white text-4xl font-bold shadow-2xl shadow-orange-500/30 mb-4">
                  {selectedUser.name.charAt(0)}
                </div>
                <h4 className="text-2xl font-bold">{selectedUser.name}</h4>
                <p className="text-slate-500 font-medium">{selectedUser.email}</p>
-               <span className="mt-3 px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 text-xs font-bold rounded-full uppercase tracking-widest">{selectedUser.role}</span>
+               <span className="mt-3 px-3 py-1 bg-orange-50 dark:bg-orange-500/10 text-orange-600 text-xs font-bold rounded-full uppercase tracking-widest">{selectedUser.role}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

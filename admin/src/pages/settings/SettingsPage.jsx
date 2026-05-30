@@ -61,9 +61,9 @@ const SettingsPage = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-extrabold uppercase tracking-widest transition-all \${
+                className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-xs font-extrabold uppercase tracking-widest transition-all ${
                   activeTab === item.id 
-                    ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' 
+                    ? 'bg-orange-500 text-white shadow-xl shadow-orange-500/20' 
                     : item.danger 
                       ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20' 
                       : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -87,7 +87,7 @@ const SettingsPage = () => {
                     <button 
                       type="submit" 
                       disabled={!isDirty || loading}
-                      className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all"
+                      className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-30 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 transition-all"
                     >
                        <Save size={18} /> {loading ? 'Saving...' : 'Save Changes'}
                     </button>
@@ -99,7 +99,7 @@ const SettingsPage = () => {
                        <div className="relative">
                           <input 
                             {...register('defaultCommission', { valueAsNumber: true })}
-                            className="w-full px-5 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none text-lg font-extrabold focus:border-indigo-500" 
+                            className="w-full px-5 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none text-lg font-extrabold focus:border-orange-500" 
                           />
                           <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 font-extrabold text-xl">%</div>
                        </div>
@@ -118,13 +118,13 @@ const SettingsPage = () => {
                        <p className="text-[10px] font-medium text-emerald-500 font-bold italic">Lower rate for premium platform subscribers</p>
                     </div>
 
-                    <div className="md:col-span-2 p-6 bg-indigo-50 dark:bg-indigo-500/5 rounded-3xl border border-indigo-100 dark:border-indigo-500/20 flex gap-6">
-                       <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0 shadow-sm">
+                    <div className="md:col-span-2 p-6 bg-orange-50 dark:bg-orange-500/5 rounded-3xl border border-orange-100 dark:border-orange-500/20 flex gap-6">
+                       <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-orange-500 flex-shrink-0 shadow-sm">
                           <Info size={24} />
                        </div>
                        <div>
-                          <h4 className="text-sm font-extrabold text-indigo-900 dark:text-indigo-400">Commission Policy Impact</h4>
-                          <p className="text-xs font-medium text-indigo-700/60 dark:text-indigo-400/60 mt-1 leading-relaxed">
+                          <h4 className="text-sm font-extrabold text-orange-950 dark:text-orange-400">Commission Policy Impact</h4>
+                          <p className="text-xs font-medium text-orange-700/60 dark:text-orange-400/60 mt-1 leading-relaxed">
                              Changes to commission rates will take effect immediately for all <span className="font-bold">new bookings</span>. Existing bookings will retain the commission rate at the time of creation.
                           </p>
                        </div>

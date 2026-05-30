@@ -21,7 +21,7 @@ const AuditLogs = () => {
         limit: pagination.limit,
         action: filters.action
       };
-      const { data } = await axios.get('/admin/audit/logs', { params });
+      const { data } = await axios.get('/admin/audit', { params });
       setLogs(data.data.logs);
       setPagination(data.data.pagination);
     } catch (error) {
@@ -51,7 +51,7 @@ const AuditLogs = () => {
       label: 'Administrator',
       render: (row) => (
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-[10px]">
+          <div className="w-7 h-7 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-[10px]">
             {row.admin?.name?.charAt(0) || 'S'}
           </div>
           <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{row.admin?.name || 'System'}</span>
@@ -99,7 +99,7 @@ const AuditLogs = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Shield className="text-indigo-500" size={24} />
+            <Shield className="text-orange-500" size={24} />
             Security & Audit Logs
           </h2>
           <p className="text-slate-500">Immutable record of all administrative actions and system modifications</p>
