@@ -30,10 +30,84 @@ body {
   padding: 0;
 }
 
-/* Custom dark mode helpers if html has .dark class */
+/* Custom dark mode selector configurations */
+@custom-variant dark (&:where(.dark, .dark *));
+
 .dark body {
-  background-color: var(--color-background-dark);
-  color: var(--color-text-primary-dark);
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* Base backgrounds & panels */
+.dark .bg-slate-50,
+.dark .bg-slate-100\/50,
+.dark .bg-gray-50 {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-white,
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-gray-50:hover {
+  background-color: #334155 !important;
+}
+
+/* Borders */
+.dark .border-slate-200,
+.dark .border-slate-100,
+.dark .border-slate-300,
+.dark .border-gray-200,
+.dark .border-gray-100 {
+  border-color: #334155 !important;
+}
+
+/* Typography override */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-slate-700,
+.dark .text-gray-700 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-400,
+.dark .text-slate-300,
+.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Inputs, textareas, selects */
+.dark input[type="text"],
+.dark input[type="tel"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark select,
+.dark textarea {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Custom list group or scrollbar dark override */
+.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(249, 115, 22, 0.2) !important;
 }
 
 /* Hide scrollbars for categories grid */
