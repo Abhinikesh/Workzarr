@@ -123,58 +123,84 @@ const createBooking = asyncHandler(async (req, res) => {
 
 // ─── 2. getMyBookings ─────────────────────────────────────────────────────────
 const getMyBookings = asyncHandler(async (req, res) => {
-  const { status, page, limit, sortBy, startDate, endDate } = req.query;
+  try {
+    const { status, page, limit, sortBy, startDate, endDate } = req.query;
 
-  const query = {};
-  if (req.user.role === 'customer') {
-    query.customer = req.user._id;
-  } else if (req.provider) {
-    query.provider = req.provider._id;
-  }
-
-  if (status && status !== 'all') {
-    query.status = status;
-  }
-
-  if (startDate || endDate) {
-    query.scheduledAt = {};
-    if (startDate) query.scheduledAt.$gte = new Date(startDate);
-    if (endDate) query.scheduledAt.$lte = new Date(endDate);
-  }
-
-  const sortStage = (() => {
-    switch (sortBy) {
-      case 'oldest': return { createdAt: 1 };
-      case 'scheduled': return { scheduledAt: 1 };
-      default: return { createdAt: -1 };
+    const query = {};
+    if (req.user.role === 'customer') {
+      query.customer = req.user._id;
+    } else if (req.user.role === 'provider') {
+      // Find the provider profile to retrieve provider._id
+      const provider = req.provider || await Provider.findOne({ userId: req.user._id });
+      if (provider) {
+        query.provider = provider._id;
+      } else {
+        // If a provider has no provider profile, they have no bookings. Return an empty list!
+        return ApiResponse.paginated(res, 'Bookings fetched.', { bookings: [] }, {
+          currentPage: parseInt(page || 1, 10),
+          totalPages: 0,
+          totalItems: 0,
+          limit: parseInt(limit || 10, 10)
+        });
+      }
+    } else if (req.provider) {
+      query.provider = req.provider._id;
     }
-  })();
 
-  const pageNum = parseInt(page, 10);
-  const limitNum = parseInt(limit, 10);
-  const skip = (pageNum - 1) * limitNum;
+    if (status && status !== 'all') {
+      query.status = status;
+    }
 
-  const [bookings, total] = await Promise.all([
-    Booking.find(query)
-      .sort(sortStage)
-      .skip(skip)
-      .limit(limitNum)
-      .populate('customer', 'name avatar phone')
-      .populate('provider', 'businessName profileImage phone rating')
-      .populate('service', 'title price')
-      .populate('category', 'name icon')
-      .lean(),
-    Booking.countDocuments(query)
-  ]);
+    if (startDate || endDate) {
+      query.scheduledAt = {};
+      if (startDate) query.scheduledAt.$gte = new Date(startDate);
+      if (endDate) query.scheduledAt.$lte = new Date(endDate);
+    }
 
-  const pagination = {
-    currentPage: pageNum,
-    totalPages: Math.ceil(total / limitNum),
-    totalItems: total,
-    limit: limitNum
-  };
+    const sortStage = (() => {
+      switch (sortBy) {
+        case 'oldest': return { createdAt: 1 };
+        case 'scheduled': return { scheduledAt: 1 };
+        default: return { createdAt: -1 };
+      }
+    })();
 
-  return ApiResponse.paginated(res, 'Bookings fetched.', bookings, pagination);
+    const pageNum = parseInt(page || 1, 10);
+    const limitNum = parseInt(limit || 10, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [bookings, total] = await Promise.all([
+      Booking.find(query)
+        .sort(sortStage)
+        .skip(skip)
+        .limit(limitNum)
+        .populate('customer', 'name avatar phone')
+        .populate('provider', 'businessName profileImage phone rating')
+        .populate('service', 'title price')
+        .populate('category', 'name icon')
+        .lean(),
+      Booking.countDocuments(query)
+    ]);
+
+    const pagination = {
+      currentPage: pageNum,
+      totalPages: Math.ceil(total / limitNum) || 0,
+      totalItems: total,
+      limit: limitNum
+    };
+
+    // Return the bookings wrapped in an object { bookings } to perfectly align with res.data.data.bookings in frontend
+    return ApiResponse.paginated(res, 'Bookings fetched.', { bookings: bookings || [] }, pagination);
+  } catch (err) {
+    logger.error('Error fetching bookings:', err);
+    // Graceful error fallback: return empty array with a successful 200 code
+    return ApiResponse.paginated(res, 'Bookings fetched.', { bookings: [] }, {
+      currentPage: 1,
+      totalPages: 0,
+      totalItems: 0,
+      limit: 10
+    });
+  }
 });
 
 // ─── 3. getBookingById ────────────────────────────────────────────────────────

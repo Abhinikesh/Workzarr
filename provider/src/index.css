@@ -4,116 +4,169 @@
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   
-  --color-primary-orange: #f97316;
-  --color-primary-dark: #ea580c;
-  --color-background-light: #ffffff;
-  --color-surface-light: #f8fafc;
-  --color-background-dark: #0f172a;
-  --color-surface-dark: #1e293b;
-  --color-text-primary-light: #0f172a;
-  --color-text-primary-dark: #f1f5f9;
-  --color-text-muted: #64748b;
-  --color-border-light: #e2e8f0;
-  --color-border-dark: #334155;
+  --color-primary-orange: #FF4500;
+  --color-primary-dark: #cc3700;
+  --color-background-light: #F8F8F8;
+  --color-surface-light: #FFFFFF;
+  --color-background-dark: #F8F8F8;
+  --color-surface-dark: #FFFFFF;
+  --color-text-primary-light: #1A1A1A;
+  --color-text-primary-dark: #1A1A1A;
+  --color-text-muted: #666666;
+  --color-border-light: #EEEEEE;
+  --color-border-dark: #EEEEEE;
   --color-success-green: #22c55e;
   --color-error-red: #ef4444;
   --color-warning-amber: #f59e0b;
+
+  /* Force standard orange colors to resolve to premium brand orange-red #FF4500 */
+  --color-orange-50: #FFF0EB;
+  --color-orange-100: #FFE0D6;
+  --color-orange-200: #FFC0AC;
+  --color-orange-500: #FF4500;
+  --color-orange-600: #FF4500;
+  --color-orange-700: #cc3700;
+}
+
+/* Force light theme globally */
+html, :root {
+  background-color: #F8F8F8 !important;
+  color: #1A1A1A !important;
+  color-scheme: light;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-background-light);
-  color: var(--color-text-primary-light);
+  background-color: #F8F8F8 !important;
+  color: #1A1A1A !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
 }
 
-/* Custom dark mode selector configurations */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Global color overrides to automatically restyle existing components to light theme */
 
-.dark body {
-  background-color: #0f172a;
-  color: #f1f5f9;
+/* 1. Page Backgrounds & Cards */
+.bg-slate-50,
+.bg-gray-50,
+.bg-slate-100\/50,
+.bg-slate-900,
+.bg-slate-950,
+.bg-slate-900\/50 {
+  background-color: #F8F8F8 !important;
 }
 
-/* Base backgrounds & panels */
-.dark .bg-slate-50,
-.dark .bg-slate-100\/50,
-.dark .bg-gray-50 {
-  background-color: #0f172a !important;
+.bg-white,
+.bg-slate-100,
+.bg-gray-100,
+.bg-slate-800 {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-.dark .bg-white,
-.dark .bg-slate-100 {
-  background-color: #1e293b !important;
+.hover\:bg-slate-50:hover,
+.hover\:bg-gray-50:hover,
+.hover\:bg-slate-100:hover,
+.hover\:bg-gray-100:hover {
+  background-color: #FFF0EB !important;
 }
 
-.dark .hover\:bg-slate-50:hover,
-.dark .hover\:bg-gray-50:hover {
-  background-color: #334155 !important;
+/* 2. Borders */
+.border-slate-200,
+.border-slate-100,
+.border-slate-300,
+.border-gray-200,
+.border-gray-100,
+.border-slate-700,
+.border-slate-800 {
+  border-color: #EEEEEE !important;
 }
 
-/* Borders */
-.dark .border-slate-200,
-.dark .border-slate-100,
-.dark .border-slate-300,
-.dark .border-gray-200,
-.dark .border-gray-100 {
-  border-color: #334155 !important;
+/* 3. Typography overrides */
+.text-slate-900,
+.text-slate-800,
+.text-gray-900,
+.text-gray-800,
+.text-slate-700,
+.text-gray-700,
+.text-black {
+  color: #1A1A1A !important;
 }
 
-/* Typography override */
-.dark .text-slate-900,
-.dark .text-slate-800,
-.dark .text-gray-900,
-.dark .text-gray-800,
-.dark .text-slate-700,
-.dark .text-gray-700 {
-  color: #f8fafc !important;
+.text-slate-600,
+.text-gray-600,
+.text-slate-500,
+.text-gray-500 {
+  color: #666666 !important;
 }
 
-.dark .text-slate-600,
-.dark .text-slate-500,
-.dark .text-gray-600,
-.dark .text-gray-500 {
-  color: #94a3b8 !important;
+.text-slate-400,
+.text-slate-300,
+.text-gray-400,
+.text-gray-300,
+.text-slate-200,
+.text-slate-100 {
+  color: #999999 !important;
 }
 
-.dark .text-slate-400,
-.dark .text-slate-300,
-.dark .text-gray-400 {
-  color: #64748b !important;
+/* 4. Form inputs, select, textareas */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  background-color: #FFFFFF !important;
+  color: #1A1A1A !important;
+  border: 1px solid #DDDDDD !important;
+  border-radius: 8px !important;
+  min-height: 44px !important;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Inputs, textareas, selects */
-.dark input[type="text"],
-.dark input[type="tel"],
-.dark input[type="email"],
-.dark input[type="password"],
-.dark select,
-.dark textarea {
-  background-color: #1e293b !important;
-  color: #f8fafc !important;
-  border-color: #334155 !important;
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #FF4500 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.2) !important;
 }
 
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: #64748b !important;
+input::placeholder,
+textarea::placeholder {
+  color: #999999 !important;
 }
 
-/* Custom list group or scrollbar dark override */
-.dark .bg-orange-50 {
-  background-color: rgba(249, 115, 22, 0.1) !important;
-  border-color: rgba(249, 115, 22, 0.2) !important;
-}
-
+/* Hide scrollbars for horizontal categories and scroll lists */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Custom premium scrollbar for main page */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8F8F8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E0E0E0;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D0D0D0;
 }

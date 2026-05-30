@@ -24,94 +24,94 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row" style={{ backgroundColor: '#F8F8F8' }}>
       {/* Left Column: Brand Story & Trust Points */}
-      <div className="w-full lg:w-1/2 bg-[#0f172a] text-white flex flex-col justify-between p-8 lg:p-16 relative overflow-hidden">
-        {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 lg:p-16 relative overflow-hidden" style={{ backgroundColor: '#FFF0EB' }}>
         {/* Top Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-600/30">
-            <span className="text-white font-bold text-lg">W</span>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md" style={{ backgroundColor: '#FF4500' }}>
+            <span className="text-white font-black text-lg">W</span>
           </div>
-          <span className="text-xl font-bold tracking-tight">Workzarr</span>
+          <span className="text-xl font-extrabold tracking-tight" style={{ color: '#1A1A1A' }}>Workzarr</span>
         </div>
 
         {/* Middle: Brand Tagline and Trust Points */}
         <div className="relative z-10 my-auto py-12 lg:py-0">
-          <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
-            Bharat ka apna <span className="text-orange-500">service hub</span>
+          <span className="font-extrabold uppercase tracking-wider text-[10px] mb-2 block" style={{ color: '#FF4500' }}>
+            Bharat Service Hub
+          </span>
+          <h2 className="text-4xl lg:text-5xl font-black tracking-tight mb-4" style={{ color: '#1A1A1A', lineHeight: '1.15' }}>
+            Manage India's trusted <span style={{ color: '#FF4500' }}>service marketplace</span>
           </h2>
-          <p className="text-slate-400 text-base lg:text-lg mb-12 max-w-md">
-            Connecting millions of families with trusted, local service professionals across India's small towns.
+          <p className="text-sm font-semibold mb-10 max-w-md leading-relaxed" style={{ color: '#666666' }}>
+            Connecting millions of families with background-verified service professionals across India's growing towns and cities.
           </p>
 
-          <div className="space-y-6 max-w-sm">
+          <div className="space-y-5 max-w-sm">
             <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6 text-orange-500" />
+              <div className="w-11 h-11 rounded-xl border flex items-center justify-center shrink-0" style={{ backgroundColor: '#FFFFFF', borderColor: '#FFE0D6' }}>
+                <ShieldCheck className="w-5.5 h-5.5" style={{ color: '#FF4500' }} />
               </div>
               <div>
-                <h4 className="font-semibold text-slate-200">Verified Providers</h4>
-                <p className="text-sm text-slate-400">100% background and skill-verified local partners.</p>
+                <h4 className="font-extrabold text-sm" style={{ color: '#1A1A1A' }}>Verified Providers</h4>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: '#666666' }}>100% background and credential checked local partners.</p>
               </div>
             </div>
 
             <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <CreditCard className="w-6 h-6 text-orange-500" />
+              <div className="w-11 h-11 rounded-xl border flex items-center justify-center shrink-0" style={{ backgroundColor: '#FFFFFF', borderColor: '#FFE0D6' }}>
+                <CreditCard className="w-5.5 h-5.5" style={{ color: '#FF4500' }} />
               </div>
               <div>
-                <h4 className="font-semibold text-slate-200">Secure Payments</h4>
-                <p className="text-sm text-slate-400">Milestone-based escrow and transparent pricing.</p>
+                <h4 className="font-extrabold text-sm" style={{ color: '#1A1A1A' }}>Escrow & Payments</h4>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: '#666666' }}>Milestone-based payouts and transparent marketplace commission.</p>
               </div>
             </div>
 
             <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <Clock className="w-6 h-6 text-orange-500" />
+              <div className="w-11 h-11 rounded-xl border flex items-center justify-center shrink-0" style={{ backgroundColor: '#FFFFFF', borderColor: '#FFE0D6' }}>
+                <Clock className="w-5.5 h-5.5" style={{ color: '#FF4500' }} />
               </div>
               <div>
-                <h4 className="font-semibold text-slate-200">30-Min Response</h4>
-                <p className="text-sm text-slate-400">Fast, reliable matching for emergency services.</p>
+                <h4 className="font-extrabold text-sm" style={{ color: '#1A1A1A' }}>Real-time Operations</h4>
+                <p className="text-xs font-semibold mt-0.5" style={{ color: '#666666' }}>Instant dispatch algorithms and 30-min matching service level agreements.</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom copyright */}
-        <div className="relative z-10 text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} Workzarr. All rights reserved. Made for Bharat.
+        <div className="relative z-10 text-xs font-bold" style={{ color: '#999999' }}>
+          &copy; {new Date().getFullYear()} Workzarr Admin. Bharat Service Hub Operations.
         </div>
       </div>
 
       {/* Right Column: Login Form */}
-      <div className="w-full lg:w-1/2 bg-slate-50 flex items-center justify-center p-8 lg:p-16">
-        <div className="w-full max-w-md bg-white rounded-2xl border border-slate-100 p-8 lg:p-10 shadow-sm">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16" style={{ backgroundColor: '#F8F8F8' }}>
+        <div className="w-full max-w-md rounded-2xl p-8 lg:p-10 shadow-sm border" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
           <div className="mb-8">
-            <span className="text-orange-500 font-bold uppercase tracking-wider text-xs mb-1 block">
-              Admin Portal
+            <span className="font-extrabold uppercase tracking-wider text-[10px] mb-1 block" style={{ color: '#FF4500' }}>
+              Workzarr Portal
             </span>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
-            <p className="text-slate-500 text-sm mt-1.5">Sign in with your administrative credentials</p>
+            <h1 className="text-3xl font-black tracking-tight" style={{ color: '#1A1A1A' }}>Welcome Back</h1>
+            <p className="text-xs font-semibold mt-1.5" style={{ color: '#666666' }}>Sign in to manage the Bharat Service Hub platform</p>
           </div>
 
           {/* Error message block */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-600 shrink-0" />
+            <div className="mb-6 p-4 border rounded-xl text-xs font-semibold flex items-center gap-2" style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA', color: '#DC2626' }}>
+              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: '#DC2626' }} />
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <label htmlFor="email" className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#999999' }}>
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                   <Mail className="w-5 h-5" />
                 </div>
                 <input
@@ -122,17 +122,18 @@ const Login = () => {
                   placeholder="admin@localserve.com"
                   required
                   autoComplete="email"
-                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <label htmlFor="password" className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#999999' }}>
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
@@ -143,7 +144,8 @@ const Login = () => {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                 />
               </div>
             </div>
@@ -151,7 +153,8 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-semibold rounded-xl shadow-sm hover:shadow-md active:transform active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2 mt-4 cursor-pointer"
+              className="w-full py-3.5 text-white font-extrabold rounded-xl shadow-sm hover:shadow-md transition-all text-xs flex items-center justify-center gap-2 mt-4 cursor-pointer"
+              style={{ backgroundColor: '#FF4500' }}
             >
               {isLoading ? (
                 <>
@@ -165,9 +168,9 @@ const Login = () => {
           </form>
 
           {/* Dev Hint box */}
-          <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
-            <p className="text-xs text-slate-500 font-medium">
-              <span className="font-bold text-slate-700">Seed credentials:</span><br />
+          <div className="mt-8 p-4 rounded-xl border text-center" style={{ backgroundColor: '#F8F8F8', borderColor: '#EEEEEE' }}>
+            <p className="text-[11px] font-semibold" style={{ color: '#666666' }}>
+              <span className="font-extrabold" style={{ color: '#1A1A1A' }}>Seed credentials:</span><br />
               admin@localserve.com / admin123
             </p>
           </div>

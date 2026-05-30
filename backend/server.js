@@ -26,12 +26,48 @@ const PORT = process.env.PORT || 5000;
 let server;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EADDRINUSE — Port already in use
-// Fix: run  lsof -ti:5000 | xargs kill -9  then restart
+// Port busy / EADDRINUSE automatic cleanup helper
 // ─────────────────────────────────────────────────────────────────────────────
+const killPortProcess = (port) => {
+  try {
+    const { execSync } = require('child_process');
+    logger.warn(`⚠️ Port ${port} is occupied. Scanning for active processes...`);
+    const pidsStr = execSync(`lsof -t -i:${port}`).toString().trim();
+    if (pidsStr) {
+      const pids = pidsStr.split('\n').map(p => p.trim()).filter(Boolean);
+      let killedAny = false;
+      pids.forEach((pid) => {
+        const pidNum = Number(pid);
+        if (pidNum && pidNum !== process.pid) {
+          logger.warn(`👉 Automatically killing conflicting process ${pidNum} listening on port ${port}...`);
+          try {
+            process.kill(pidNum, 'SIGKILL');
+            killedAny = true;
+          } catch (killErr) {
+            logger.error(`❌ Failed to kill process ${pidNum}:`, killErr.message);
+          }
+        }
+      });
+      return killedAny;
+    }
+  } catch (err) {
+    // execSync will throw if lsof finds no processes
+    logger.info(`Port ${port} scan completed. No foreign active process found.`);
+  }
+  return false;
+};
+
 process.on('uncaughtException', (err) => {
   if (err.code === 'EADDRINUSE') {
-    logger.error(`Port ${PORT} is already in use. Run: lsof -ti:${PORT} | xargs kill -9`);
+    logger.warn(`⚠️ Port ${PORT} is already in use. Attempting automatic process cleanup...`);
+    const cleared = killPortProcess(PORT);
+    if (cleared) {
+      logger.info(`🔄 Conflicting process cleared. Retrying server startup in 1.5 seconds...`);
+      setTimeout(() => {
+        startServer();
+      }, 1500);
+      return;
+    }
     process.exit(1);
   }
   logger.error('UNCAUGHT EXCEPTION! Shutting down...');
@@ -69,6 +105,9 @@ const connectDB = async () => {
 // ─────────────────────────────────────────────────────────────────────────────
 const startServer = async () => {
   try {
+    // Automatically attempt process cleanup before DB / initialization starts
+    killPortProcess(PORT);
+
     await connectDB();
 
     logger.info('Redis connection initialized.');
@@ -96,8 +135,15 @@ const startServer = async () => {
     // Handle listen errors (e.g., EADDRINUSE) before uncaughtException fires
     server.on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
-        logger.error(`❌ Port ${PORT} is already in use.`);
-        logger.error(`   Fix: run  lsof -ti:${PORT} | xargs kill -9  then restart.`);
+        logger.error(`❌ Port ${PORT} is still occupied. Attempting secondary process cleanup...`);
+        const cleared = killPortProcess(PORT);
+        if (cleared) {
+          logger.info(`🔄 Conflicting process cleared. Retrying server.listen on port ${PORT} in 1.5 seconds...`);
+          setTimeout(() => {
+            server.listen(PORT);
+          }, 1500);
+          return;
+        }
         process.exit(1);
       }
       throw err;

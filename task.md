@@ -1,0 +1,34 @@
+# Redesign Tasks Checklist (Light Theme)
+
+- [x] Core Style Foundations (index.css)
+  - [x] Redesign `user/src/index.css` for pure white/off-white light theme and `#FF4500` brand orange
+  - [x] Redesign `provider/src/index.css` for pure white/off-white light theme and `#FF4500` brand orange
+  - [x] Redesign `admin/src/index.css` for pure white/off-white light theme and `#FF4500` brand orange
+- [x] User App Customizations (localhost:3000)
+  - [x] Redesign `user/src/components/Header.jsx` (sticky white background, `#EEEEEE` border, no theme toggles)
+  - [x] Style bottom navigation `user/src/components/BottomNav.jsx` (white background, `#EEEEEE` border)
+  - [x] Overhaul Home page `user/src/pages/Home.jsx` (clean white hero, bold headings, outlines category cards, hover lifts)
+  - [x] Overhaul Search page `user/src/pages/Search.jsx` (outlined pills with hover/active highlights, clean white provider lists)
+  - [x] Overhaul Login & Signup page `user/src/pages/Login.jsx` (white card panel, gray texts, orange buttons, split screen, Google login option)
+  - [x] Overhaul Booking & Tracking pages `user/src/pages/Booking.jsx`, `user/src/pages/BookingTracking.jsx` (clean steps, code sharing, status tracking)
+  - [x] Overhaul Complete Profile page `user/src/pages/CompleteProfile.jsx` (clean white panel, location setup)
+  - [x] Add Splash Screen component `user/src/components/SplashScreen.jsx` and integrate in `user/src/main.jsx`
+- [x] Provider App Customizations (localhost:3002)
+  - [x] Redesign `provider/src/components/Header.jsx` (clean white styling, no theme toggles)
+  - [x] Style bottom navigation `provider/src/components/BottomNav.jsx` (white background, `#EEEEEE` border)
+  - [x] Overhaul Dashboard page `provider/src/pages/Dashboard.jsx` (white metric cards, custom orange toggle switch, invitation cards)
+  - [x] Overhaul Earnings page `provider/src/pages/Earnings.jsx` (weekly SVG bars in `#FF4500` on white bg)
+  - [x] Overhaul Login & Signup page `provider/src/pages/Login.jsx` (white card layout, brand accent color buttons, split screen)
+  - [x] Overhaul Onboarding page `provider/src/pages/Onboarding.jsx` (clean white panels and inputs)
+  - [x] Overhaul My Jobs & Job Requests pages `provider/src/pages/MyJobs.jsx`, `provider/src/pages/JobRequests.jsx` (verification flows, accept/decline buttons)
+  - [x] Overhaul Profile page `provider/src/pages/Profile.jsx` (custom service packages management)
+  - [x] Add Splash Screen component `provider/src/components/SplashScreen.jsx` and integrate in `provider/src/main.jsx`
+- [x] Admin Panel Customizations (localhost:3001)
+  - [x] Adjust `admin/src/App.jsx` to force light theme (`classList.remove('dark')`) on load
+  - [x] Redesign Sidebar `admin/src/components/layout/Sidebar.jsx` as clean white/light gray with no theme toggles
+  - [x] Overhaul Login page `admin/src/pages/Login.jsx` (clean split layout panel, change LocalServe references to Workzarr and Bharat Service Hub, remove purple gradients)
+  - [x] Audit layouts and metric grids to render in light mode
+- [x] Compile and Verify
+  - [x] Run build test on `user` app
+  - [x] Run build test on `provider` app
+  - [x] Run build test on `admin` app

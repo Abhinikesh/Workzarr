@@ -44,7 +44,8 @@ const searchProviders = asyncHandler(async (req, res) => {
   if (cached) {
     logger.info('Search cache hit', { cacheKey });
     const payload = JSON.parse(cached);
-    return ApiResponse.paginated(res, 'Providers fetched.', payload.data, payload.pagination);
+    const dataToSend = (payload.data && payload.data.providers) ? payload.data : { providers: payload.data || [] };
+    return ApiResponse.paginated(res, 'Providers fetched.', dataToSend, payload.pagination);
   }
 
   logger.info('Search cache miss', { cacheKey });
@@ -163,9 +164,9 @@ const searchProviders = asyncHandler(async (req, res) => {
 
   const pagination = { currentPage: pageNum, totalPages, totalItems: total, limit: limitNum };
 
-  await redisClient.set(cacheKey, JSON.stringify({ data: providers, pagination }), 'EX', SEARCH_CACHE_TTL);
+  await redisClient.set(cacheKey, JSON.stringify({ data: { providers }, pagination }), 'EX', SEARCH_CACHE_TTL);
 
-  return ApiResponse.paginated(res, 'Providers fetched.', providers, pagination);
+  return ApiResponse.paginated(res, 'Providers fetched.', { providers }, pagination);
 });
 
 // ─── 10. getProviderById ──────────────────────────────────────────────────────

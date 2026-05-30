@@ -81,11 +81,9 @@ const ProtectedLayout = () => {
 // which causes the app to hang and render a blank white page.
 // ─────────────────────────────────────────────────────────────────────────────
 function App() {
-  const { theme } = useSelector((state) => state.ui);
-
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   return (
     <Suspense fallback={

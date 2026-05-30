@@ -5,7 +5,7 @@ import { setCredentials, logout } from '../store/slices/authSlice';
 import { axiosInstance } from '../lib/axios';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import { User, Phone, Briefcase, Star, CreditCard, CheckCircle2, AlertCircle, Trash2, Plus, Edit2, LogOut, Loader2, Check } from 'lucide-react';
+import { User, Phone, Briefcase, Star, CheckCircle2, AlertCircle, Trash2, Plus, Edit2, LogOut, Loader2, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ProfilePage = () => {
@@ -138,33 +138,35 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 lg:pb-8">
+    <div className="min-h-screen pb-20 lg:pb-8" style={{ backgroundColor: '#F8F8F8' }}>
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         
         {/* Profile Card Header */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex justify-between items-start gap-4">
+        <div className="rounded-2xl p-6 shadow-sm flex justify-between items-start gap-4 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700 font-extrabold text-xl shrink-0">
+            <div className="w-16 h-16 rounded-full border flex items-center justify-center font-extrabold text-xl shrink-0"
+              style={{ backgroundColor: '#FFF0EB', borderColor: '#FFC0AC', color: '#FF4500' }}>
               {getInitials(provider?.businessName || user?.name)}
             </div>
             
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">{provider?.businessName || user?.name}</h2>
-                <span className="bg-orange-50 text-orange-700 border border-orange-200 text-[9px] font-bold px-2 py-0.5 rounded-full capitalize">
+                <h2 className="text-xl font-extrabold tracking-tight" style={{ color: '#1A1A1A' }}>{provider?.businessName || user?.name}</h2>
+                <span className="border text-[9px] font-bold px-2 py-0.5 rounded-full capitalize"
+                  style={{ backgroundColor: '#FFF0EB', borderColor: '#FFC0AC', color: '#FF4500' }}>
                   {provider?.subscription?.plan || 'Free'} Plan
                 </span>
               </div>
               
-              <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-                <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs font-semibold flex items-center gap-1.5" style={{ color: '#666666' }}>
+                <Briefcase className="w-3.5 h-3.5" style={{ color: '#999999' }} />
                 <span>{provider?.category?.name || 'Local Service Expert'}</span>
               </p>
               
-              <p className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs font-semibold flex items-center gap-1.5" style={{ color: '#666666' }}>
+                <Phone className="w-3.5 h-3.5" style={{ color: '#999999' }} />
                 <span>+91 {provider?.phone || user?.phone}</span>
               </p>
             </div>
@@ -172,99 +174,110 @@ const ProfilePage = () => {
 
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="p-2 border border-slate-200 hover:border-orange-500 hover:bg-orange-50 rounded-lg text-slate-500 hover:text-orange-600 transition-colors cursor-pointer"
+            className="p-2 border rounded-lg transition-colors cursor-pointer"
+            style={{
+              backgroundColor: isEditing ? '#FFF0EB' : '#FFFFFF',
+              borderColor: isEditing ? '#FFC0AC' : '#EEEEEE',
+              color: isEditing ? '#FF4500' : '#666666'
+            }}
           >
             {isEditing ? <Check className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Verification Status Banner */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3.5">
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Verification Status</h3>
+        <div className="rounded-2xl p-5 shadow-sm space-y-3 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#999999' }}>Verification Status</h3>
           <div className="flex items-center justify-between text-xs font-bold">
             <div className="flex items-center gap-2">
               {provider?.isVerified ? (
                 <>
-                  <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                  <span className="text-green-700">Aadhaar & Background Verified</span>
+                  <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: '#16A34A' }} />
+                  <span style={{ color: '#16A34A' }}>Aadhaar & Background Verified</span>
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                  <span className="text-amber-700">Verification Pending</span>
+                  <AlertCircle className="w-5 h-5 shrink-0" style={{ color: '#F59E0B' }} />
+                  <span style={{ color: '#D97706' }}>Verification Pending</span>
                 </>
               )}
             </div>
-            <span className="text-[10px] text-slate-400 font-semibold">Rohtak Region</span>
+            <span className="text-[10px] font-semibold" style={{ color: '#999999' }}>Rohtak Region</span>
           </div>
         </div>
 
         {/* Inline Profile Editing Form */}
         {isEditing ? (
-          <form onSubmit={handleUpdateProfile} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 animate-scaleUp">
-            <h3 className="text-sm font-bold text-slate-800">Edit Business Info</h3>
+          <form onSubmit={handleUpdateProfile} className="rounded-2xl p-6 shadow-sm space-y-4 border animate-scaleUp" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
+            <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>Edit Business Info</h3>
             
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Business Name</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>Business Name</label>
                 <input
                   type="text"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                  className="w-full border rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Bio</label>
+                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>Bio</label>
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   maxLength="200"
                   rows="2"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                  className="w-full border rounded-lg p-3 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Town</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>Town</label>
                   <input
                     type="text"
                     value={town}
                     onChange={(e) => setTown(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">District</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>District</label>
                   <input
                     type="text"
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">State</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>State</label>
                   <input
                     type="text"
                     value={stateName}
                     onChange={(e) => setStateName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Pincode</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>Pincode</label>
                   <input
                     type="text"
                     maxLength="6"
                     value={pincode}
                     onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
@@ -273,28 +286,30 @@ const ProfilePage = () => {
             <button
               type="submit"
               disabled={submittingSvc}
-              className="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full py-3 text-white font-extrabold rounded-xl text-xs shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              style={{ backgroundColor: '#FF4500' }}
             >
               {submittingSvc ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Profile'}
             </button>
           </form>
         ) : (
           /* Address details static */
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Business Description</h3>
-            <p className="text-xs text-slate-600 leading-relaxed italic">
+          <div className="rounded-2xl p-6 shadow-sm space-y-3 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
+            <h3 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#999999' }}>Business Description</h3>
+            <p className="text-xs leading-relaxed italic font-semibold" style={{ color: '#666666' }}>
               "{provider?.bio || 'No business description provided yet.'}"
             </p>
           </div>
         )}
 
         {/* Custom Services Management List */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="rounded-2xl p-6 shadow-sm space-y-4 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#EEEEEE' }}>
           <div className="flex justify-between items-center">
-            <h3 className="text-sm font-bold text-slate-800">My Custom Services</h3>
+            <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>My Custom Services</h3>
             <button
               onClick={() => setShowAddSvc(!showAddSvc)}
-              className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-[10px] flex items-center gap-1 transition-colors cursor-pointer"
+              className="px-3.5 py-2 text-white font-extrabold rounded-lg text-[10px] flex items-center gap-1 transition-colors cursor-pointer"
+              style={{ backgroundColor: '#FF4500' }}
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Package</span>
@@ -303,40 +318,43 @@ const ProfilePage = () => {
 
           {/* Add Service mini modal inline */}
           {showAddSvc && (
-            <form onSubmit={handleAddService} className="p-4 bg-orange-50/20 border border-orange-100 rounded-xl space-y-3 animate-scaleUp">
-              <h4 className="text-xs font-bold text-orange-700 uppercase tracking-wider">Create New Service</h4>
+            <form onSubmit={handleAddService} className="p-4 rounded-xl space-y-3 border animate-scaleUp" style={{ backgroundColor: '#FFF0EB', borderColor: '#FFC0AC' }}>
+              <h4 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#FF4500' }}>Create New Service</h4>
               
               <div>
-                <label className="block text-[10px] font-semibold text-slate-500 mb-1">Service Title *</label>
+                <label className="block text-[10px] font-semibold mb-1" style={{ color: '#666666' }}>Service Title *</label>
                 <input
                   type="text"
                   value={newSvcTitle}
                   onChange={(e) => setNewSvcTitle(e.target.value)}
                   placeholder="e.g. Copper wiring repair"
                   required
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                  className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-semibold text-slate-500 mb-1">Price (₹) *</label>
+                  <label className="block text-[10px] font-semibold mb-1" style={{ color: '#666666' }}>Price (₹) *</label>
                   <input
                     type="number"
                     value={newSvcPrice}
                     onChange={(e) => setNewSvcPrice(e.target.value)}
                     required
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-semibold text-slate-500 mb-1">Duration (Mins)</label>
+                  <label className="block text-[10px] font-semibold mb-1" style={{ color: '#666666' }}>Duration (Mins)</label>
                   <input
                     type="number"
                     value={newSvcDuration}
                     onChange={(e) => setNewSvcDuration(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                    className="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
@@ -345,14 +363,16 @@ const ProfilePage = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddSvc(false)}
-                  className="px-3.5 py-1.5 bg-slate-200 text-slate-600 font-bold rounded-lg text-[10px]"
+                  className="px-3.5 py-1.5 text-slate-600 font-bold rounded-lg text-[10px]"
+                  style={{ backgroundColor: '#EBEBEB' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingSvc}
-                  className="px-3.5 py-1.5 bg-orange-600 text-white font-bold rounded-lg text-[10px]"
+                  className="px-3.5 py-1.5 text-white font-bold rounded-lg text-[10px]"
+                  style={{ backgroundColor: '#FF4500' }}
                 >
                   {submittingSvc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Service'}
                 </button>
@@ -362,18 +382,26 @@ const ProfilePage = () => {
 
           {/* List of custom services */}
           {loadingSvcs ? (
-            <div className="py-6 text-center text-xs text-slate-400">Loading custom services...</div>
+            <div className="py-6 text-center text-xs" style={{ color: '#999999' }}>Loading custom services...</div>
           ) : services.length > 0 ? (
-            <div className="divide-y divide-slate-100 text-xs">
+            <div className="divide-y text-xs" style={{ borderColor: '#F5F5F5' }}>
               {services.map((svc) => (
-                <div key={svc._id} className="py-3 flex justify-between items-center gap-4">
+                <div key={svc._id} className="py-3.5 flex justify-between items-center gap-4">
                   <div>
-                    <h4 className="font-bold text-slate-800">{svc.title}</h4>
-                    <p className="text-[10px] text-slate-400 mt-0.5">₹{svc.price} • {svc.duration} Mins</p>
+                    <h4 className="font-extrabold" style={{ color: '#1A1A1A' }}>{svc.title}</h4>
+                    <p className="text-[10px] font-semibold mt-0.5" style={{ color: '#666666' }}>₹{svc.price} • {svc.duration} Mins</p>
                   </div>
                   <button
                     onClick={() => handleDeleteService(svc._id)}
-                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer flex items-center justify-center border border-transparent"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#FCA5A5';
+                      e.currentTarget.style.backgroundColor = '#FEF2F2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'transparent';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -381,7 +409,7 @@ const ProfilePage = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-6 text-xs text-slate-400 font-semibold">
+            <div className="text-center py-6 text-xs font-semibold" style={{ color: '#999999' }}>
               No custom services added. Use the general pricing package.
             </div>
           )}
@@ -390,7 +418,14 @@ const ProfilePage = () => {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full py-3.5 bg-white hover:bg-red-50 text-red-600 font-bold border border-red-100 rounded-xl shadow-sm text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+          className="w-full py-4 bg-white font-extrabold rounded-xl border shadow-sm text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          style={{ borderColor: '#FECACA', color: '#DC2626' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#FEF2F2';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#FFFFFF';
+          }}
         >
           <LogOut className="w-4 h-4" />
           <span>Log Out</span>

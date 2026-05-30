@@ -46,8 +46,6 @@ const CompleteProfile = () => {
       };
 
       const response = await axiosInstance.patch('/auth/complete-profile', payload);
-      
-      // The endpoint returns success: true, user payload inside data
       const updatedUser = response.data.data.user;
 
       // Update Redux state
@@ -63,24 +61,24 @@ const CompleteProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#F8F8F8' }}>
+      <div className="w-full max-w-lg rounded-2xl p-8 shadow-sm" style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}>
         <div className="mb-8">
-          <span className="text-orange-500 font-bold uppercase tracking-wider text-xs mb-1 block">
+          <span className="font-extrabold uppercase tracking-wider text-[10px] mb-1 block" style={{ color: '#FF4500' }}>
             Step 2: Setup Profile
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Complete your profile</h1>
-          <p className="text-slate-500 text-sm mt-1">Provide your details to find local service partners near you.</p>
+          <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: '#1A1A1A' }}>Complete your profile</h1>
+          <p className="text-xs mt-1.5 font-semibold" style={{ color: '#666666' }}>Provide your details to find local service partners near you.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <label htmlFor="name" className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#999999' }}>
               Full Name *
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                 <User className="w-5 h-5" />
               </div>
               <input
@@ -90,18 +88,19 @@ const CompleteProfile = () => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Abhinav Sharma"
                 required
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
               />
             </div>
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <label htmlFor="email" className="block text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#999999' }}>
               Email Address (Optional)
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                 <Mail className="w-5 h-5" />
               </div>
               <input
@@ -110,25 +109,26 @@ const CompleteProfile = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. abhinav@email.com"
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
               />
             </div>
           </div>
 
-          <div className="border-t border-slate-100 my-6 pt-4">
-            <h3 className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-orange-600" />
+          <div className="border-t my-6 pt-5" style={{ borderColor: '#F0F0F0' }}>
+            <h3 className="text-xs font-extrabold mb-4 flex items-center gap-1.5" style={{ color: '#1A1A1A' }}>
+              <MapPin className="w-4 h-4" style={{ color: '#FF4500' }} />
               Location Details
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Town */}
               <div>
-                <label htmlFor="town" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label htmlFor="town" className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>
                   Town / City *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                     <Building className="w-4 h-4" />
                   </div>
                   <input
@@ -138,18 +138,19 @@ const CompleteProfile = () => {
                     onChange={(e) => setTown(e.target.value)}
                     placeholder="e.g. Rohtak"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
 
               {/* District */}
               <div>
-                <label htmlFor="district" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label htmlFor="district" className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>
                   District *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                     <Landmark className="w-4 h-4" />
                   </div>
                   <input
@@ -159,18 +160,19 @@ const CompleteProfile = () => {
                     onChange={(e) => setDistrict(e.target.value)}
                     placeholder="e.g. Rohtak"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
 
               {/* State */}
               <div>
-                <label htmlFor="state" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label htmlFor="state" className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>
                   State *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                     <Globe className="w-4 h-4" />
                   </div>
                   <input
@@ -180,18 +182,19 @@ const CompleteProfile = () => {
                     onChange={(e) => setStateName(e.target.value)}
                     placeholder="e.g. Haryana"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
 
               {/* Pincode */}
               <div>
-                <label htmlFor="pincode" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label htmlFor="pincode" className="block text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#999999' }}>
                   Pincode (6 digits) *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: '#999999' }}>
                     <MapPin className="w-4 h-4" />
                   </div>
                   <input
@@ -203,7 +206,8 @@ const CompleteProfile = () => {
                     onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
                     placeholder="e.g. 124001"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-semibold"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#DDDDDD', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
@@ -213,7 +217,8 @@ const CompleteProfile = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-semibold rounded-lg shadow-sm transition-all text-sm flex items-center justify-center gap-2 cursor-pointer mt-4"
+            className="w-full py-3.5 font-bold rounded-xl shadow-sm transition-all text-xs flex items-center justify-center gap-2 cursor-pointer mt-4"
+            style={{ backgroundColor: '#FF4500', color: '#FFFFFF' }}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

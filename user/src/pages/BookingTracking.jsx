@@ -4,7 +4,7 @@ import { axiosInstance } from '../lib/axios';
 import { socket, connectSocket } from '../lib/socket';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import { Calendar, Clock, MapPin, CreditCard, ShieldAlert, CheckCircle, ArrowLeft, Phone, User, MessageSquare, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, ArrowLeft, ShieldAlert, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BookingTrackingPage = () => {
@@ -125,20 +125,21 @@ const BookingTrackingPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-orange-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#F8F8F8' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#FF4500' }} />
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <ShieldAlert className="w-12 h-12 text-slate-400 mb-3" />
-        <h3 className="text-base font-bold text-slate-800">Booking not found</h3>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ backgroundColor: '#F8F8F8' }}>
+        <ShieldAlert className="w-12 h-12 mb-3" style={{ color: '#CCCCCC' }} />
+        <h3 className="text-base font-extrabold" style={{ color: '#1A1A1A' }}>Booking not found</h3>
         <button
           onClick={() => navigate('/bookings')}
-          className="mt-4 px-4 py-2 bg-orange-600 text-white font-bold rounded-lg text-xs"
+          className="mt-4 px-6 py-3 font-bold rounded-xl text-xs cursor-pointer"
+          style={{ backgroundColor: '#FF4500', color: '#FFFFFF' }}
         >
           Go to My Bookings
         </button>
@@ -156,7 +157,7 @@ const BookingTrackingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen pb-20" style={{ backgroundColor: '#F8F8F8' }}>
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -164,26 +165,29 @@ const BookingTrackingPage = () => {
         {/* Back navigation */}
         <button
           onClick={() => navigate('/bookings')}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-bold transition-colors cursor-pointer"
+          style={{ color: '#666666' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#1A1A1A'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#666666'}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Bookings</span>
         </button>
 
         {/* Timeline Tracking Block */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
-          <h3 className="text-sm font-bold text-slate-800">Service Status Timeline</h3>
+        <div className="rounded-2xl p-6 shadow-sm space-y-6" style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}>
+          <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>Service Status Timeline</h3>
           
           {booking.status === 'cancelled' || booking.status === 'no_show' ? (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5" />
+            <div className="p-4 border rounded-xl text-xs font-semibold flex items-center gap-3" style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA', color: '#991B1B' }}>
+              <ShieldAlert className="w-5 h-5 shrink-0" style={{ color: '#EF4444' }} />
               <div>
-                <p className="font-bold">Booking Cancelled</p>
-                <p className="text-[10px] text-red-500 mt-0.5">Reason: {booking.cancellationReason || 'Provider marked as no-show'}</p>
+                <p className="font-extrabold">Booking Cancelled</p>
+                <p className="text-[10px] mt-0.5" style={{ color: '#B91C1C' }}>Reason: {booking.cancellationReason || 'Provider marked as no-show'}</p>
               </div>
             </div>
           ) : (
-            <div className="relative pl-6 border-l border-slate-200 ml-3 space-y-6">
+            <div className="relative pl-6 ml-3 space-y-6" style={{ borderLeft: '2px solid #EEEEEE' }}>
               {timelineSteps.map((step, index) => {
                 const isCompleted = index <= currentStep;
                 const isActive = index === currentStep;
@@ -191,20 +195,19 @@ const BookingTrackingPage = () => {
                 return (
                   <div key={index} className="relative">
                     {/* Circle marker */}
-                    <div className={`absolute -left-[31px] top-0 w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center transition-all ${
-                      isActive 
-                        ? 'border-orange-500 bg-orange-600' 
-                        : isCompleted
-                        ? 'border-orange-500 bg-orange-100'
-                        : 'border-slate-200 bg-white'
-                    }`} />
+                    <div className="absolute -left-[32px] top-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+                      style={{
+                        borderColor: isCompleted ? '#FF4500' : '#CCCCCC',
+                        backgroundColor: isActive ? '#FF4500' : isCompleted ? '#FFF0EB' : '#FFFFFF'
+                      }}
+                    />
                     
                     {/* Step details */}
                     <div className="space-y-0.5">
-                      <h4 className={`text-xs font-bold ${isActive ? 'text-orange-600' : isCompleted ? 'text-slate-800' : 'text-slate-400'}`}>
+                      <h4 className="text-xs font-extrabold" style={{ color: isActive ? '#FF4500' : isCompleted ? '#1A1A1A' : '#999999' }}>
                         {step.label}
                       </h4>
-                      <p className="text-[10px] text-slate-400 font-medium">{step.desc}</p>
+                      <p className="text-[10px] font-semibold" style={{ color: isCompleted ? '#666666' : '#BBBBBB' }}>{step.desc}</p>
                     </div>
                   </div>
                 );
@@ -215,27 +218,28 @@ const BookingTrackingPage = () => {
 
         {/* OTP Verification Box */}
         {['accepted', 'arriving'].includes(booking.status) && otp && (
-          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 shadow-sm text-center space-y-2">
-            <p className="text-[10px] font-bold text-orange-700 uppercase tracking-widest">Share this start code with the provider</p>
-            <div className="text-2xl font-extrabold tracking-widest text-orange-600 font-mono">
+          <div className="border rounded-2xl p-6 shadow-sm text-center space-y-3" style={{ backgroundColor: '#FFF0EB', borderColor: '#FFD9CC' }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#FF4500' }}>Share this start code with the provider</p>
+            <div className="text-3xl font-extrabold tracking-widest font-mono" style={{ color: '#FF4500' }}>
               {otp}
             </div>
-            <p className="text-[10px] text-slate-400 font-semibold">Do not share this OTP until the provider arrives at your location.</p>
+            <p className="text-[10px] font-semibold" style={{ color: '#666666' }}>Do not share this OTP until the provider arrives at your location.</p>
           </div>
         )}
 
         {/* Provider Details Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-800">Provider Information</h3>
+        <div className="rounded-2xl p-6 shadow-sm space-y-4" style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}>
+          <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>Provider Information</h3>
           
           <div className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700 font-extrabold text-sm shrink-0">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-full border flex items-center justify-center font-extrabold text-base shrink-0"
+                style={{ backgroundColor: '#FFF0EB', borderColor: '#FFC0AC', color: '#FF4500' }}>
                 {booking.provider?.businessName?.[0] || 'P'}
               </div>
               <div>
-                <h4 className="font-extrabold text-slate-800 text-sm">{booking.provider?.businessName || 'Local Service Expert'}</h4>
-                <p className="text-xs text-slate-400 font-semibold">{booking.provider?.category?.name || 'Local Partner'}</p>
+                <h4 className="font-extrabold text-sm" style={{ color: '#1A1A1A' }}>{booking.provider?.businessName || 'Local Service Expert'}</h4>
+                <p className="text-xs font-semibold" style={{ color: '#666666' }}>{booking.provider?.category?.name || 'Local Partner'}</p>
               </div>
             </div>
 
@@ -243,7 +247,16 @@ const BookingTrackingPage = () => {
             {['accepted', 'arriving', 'in_progress'].includes(booking.status) && booking.provider?.phone && (
               <a
                 href={`tel:${booking.provider.phone}`}
-                className="p-2.5 bg-orange-50 border border-orange-100 rounded-full text-orange-700 hover:bg-orange-100 transition-colors"
+                className="p-3 border rounded-full transition-colors flex items-center justify-center"
+                style={{ backgroundColor: '#FFF0EB', borderColor: '#FFC0AC', color: '#FF4500' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FF4500';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FFF0EB';
+                  e.currentTarget.style.color = '#FF4500';
+                }}
               >
                 <Phone className="w-4 h-4" />
               </a>
@@ -252,15 +265,15 @@ const BookingTrackingPage = () => {
         </div>
 
         {/* Service Details Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3.5">
-          <h3 className="text-sm font-bold text-slate-800">Job Details</h3>
+        <div className="rounded-2xl p-6 shadow-sm space-y-4" style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}>
+          <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>Job Details</h3>
           
-          <div className="space-y-3 text-xs text-slate-600 font-medium">
-            <div className="flex gap-2">
-              <Calendar className="w-4.5 h-4.5 text-slate-400 shrink-0" />
+          <div className="space-y-4 text-xs font-medium">
+            <div className="flex gap-3">
+              <Calendar className="w-5 h-5 shrink-0" style={{ color: '#999999' }} />
               <div>
-                <p className="font-bold text-slate-800">Scheduled Date</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">
+                <p className="font-bold" style={{ color: '#1A1A1A' }}>Scheduled Date</p>
+                <p className="text-[11px] mt-0.5" style={{ color: '#666666' }}>
                   {new Date(booking.scheduledDate || booking.scheduledAt).toLocaleDateString('en-IN', {
                     day: 'numeric',
                     month: 'short',
@@ -270,41 +283,41 @@ const BookingTrackingPage = () => {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Clock className="w-4.5 h-4.5 text-slate-400 shrink-0" />
+            <div className="flex gap-3">
+              <Clock className="w-5 h-5 shrink-0" style={{ color: '#999999' }} />
               <div>
-                <p className="font-bold text-slate-800">Scheduled Slot</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{booking.scheduledSlot || 'Slot'}</p>
+                <p className="font-bold" style={{ color: '#1A1A1A' }}>Scheduled Slot</p>
+                <p className="text-[11px] mt-0.5" style={{ color: '#666666' }}>{booking.scheduledSlot || 'Slot'}</p>
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <MapPin className="w-4.5 h-4.5 text-slate-400 shrink-0" />
+            <div className="flex gap-3">
+              <MapPin className="w-5 h-5 shrink-0" style={{ color: '#999999' }} />
               <div>
-                <p className="font-bold text-slate-800">Delivery Address</p>
-                <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">{booking.address?.fullAddress}</p>
+                <p className="font-bold" style={{ color: '#1A1A1A' }}>Delivery Address</p>
+                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#666666' }}>{booking.address?.fullAddress}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Pricing Summary */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3.5">
-          <h3 className="text-sm font-bold text-slate-800">Payment Breakdown</h3>
+        <div className="rounded-2xl p-6 shadow-sm space-y-4" style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}>
+          <h3 className="text-sm font-extrabold" style={{ color: '#1A1A1A' }}>Payment Breakdown</h3>
           
-          <div className="space-y-2 text-xs text-slate-600 font-medium">
+          <div className="space-y-2.5 text-xs font-semibold" style={{ color: '#666666' }}>
             <div className="flex justify-between">
               <span>Service Charge</span>
-              <span className="text-slate-800 font-semibold">₹{booking.serviceInfo?.price || booking.totalAmount - 20}</span>
+              <span style={{ color: '#1A1A1A' }}>₹{booking.serviceInfo?.price || booking.totalAmount - 20}</span>
             </div>
             <div className="flex justify-between">
               <span>Platform Fee</span>
-              <span className="text-slate-800 font-semibold">₹20</span>
+              <span style={{ color: '#1A1A1A' }}>₹20</span>
             </div>
             
-            <div className="border-t border-slate-100 pt-2.5 flex justify-between text-sm font-extrabold text-slate-900">
+            <div className="border-t pt-3 flex justify-between text-sm font-extrabold" style={{ borderColor: '#F5F5F5', color: '#1A1A1A' }}>
               <span>Total Payable</span>
-              <span className="text-orange-600">₹{booking.totalAmount}</span>
+              <span style={{ color: '#FF4500' }}>₹{booking.totalAmount}</span>
             </div>
           </div>
         </div>
@@ -314,7 +327,14 @@ const BookingTrackingPage = () => {
           <button
             onClick={handleCancelBooking}
             disabled={cancelling}
-            className="w-full py-3 border border-red-200 hover:bg-red-50 text-red-600 font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full py-3.5 border font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA', color: '#DC2626' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#FEE2E2';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FEF2F2';
+            }}
           >
             {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Cancel Booking Request'}
           </button>

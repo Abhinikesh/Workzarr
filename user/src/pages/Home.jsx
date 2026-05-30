@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux';
 import { axiosInstance } from '../lib/axios';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import { Search, Star, MapPin, Calendar, Clock, ArrowRight, User } from 'lucide-react';
-import { toast } from 'sonner';
+import { Search, Star, MapPin, Calendar, ArrowRight } from 'lucide-react';
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,56 +77,59 @@ const HomePage = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-amber-50 text-amber-700 border border-amber-100 uppercase tracking-wider">Pending</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wider">Pending</span>;
       case 'accepted':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-blue-50 text-blue-700 border border-blue-100 uppercase tracking-wider">Accepted</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-blue-50 text-blue-600 border border-blue-200 uppercase tracking-wider">Accepted</span>;
       case 'arriving':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-indigo-50 text-indigo-700 border border-indigo-100 uppercase tracking-wider">Arriving</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200 uppercase tracking-wider">Arriving</span>;
       case 'in_progress':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-purple-50 text-purple-700 border border-purple-100 uppercase tracking-wider">In Progress</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-purple-50 text-purple-600 border border-purple-200 uppercase tracking-wider">In Progress</span>;
       case 'completed':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-green-50 text-green-700 border border-green-100 uppercase tracking-wider">Completed</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-green-50 text-green-600 border border-green-200 uppercase tracking-wider">Completed</span>;
       case 'cancelled':
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-red-50 text-red-700 border border-red-100 uppercase tracking-wider">Cancelled</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-red-50 text-red-600 border border-red-200 uppercase tracking-wider">Cancelled</span>;
       default:
-        return <span className="px-2 py-0.5 text-xs font-semibold rounded bg-slate-50 text-slate-700 border border-slate-100 uppercase tracking-wider">{status}</span>;
+        return <span className="px-3 py-1 text-[10px] font-bold rounded-full bg-slate-50 text-slate-600 border border-slate-200 uppercase tracking-wider">{status}</span>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 lg:pb-8">
+    <div className="min-h-screen bg-[#F8F8F8] pb-24 lg:pb-12 text-[#1A1A1A]">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-12">
         
         {/* Banner with Title and Search */}
-        <section className="bg-[#0f172a] text-white rounded-2xl p-6 lg:p-12 relative overflow-hidden shadow-sm">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-25" />
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <span className="text-orange-500 font-bold uppercase tracking-wider text-xs">
+        <section className="bg-white border border-[#EEEEEE] rounded-2xl p-8 lg:p-14 relative overflow-hidden shadow-sm">
+          {/* Subtle decoration lines */}
+          <div className="absolute right-0 top-0 w-[300px] h-[300px] bg-[#FFF0EB] rounded-full blur-[100px] pointer-events-none" />
+          
+          <div className="relative z-10 max-w-2xl space-y-6">
+            <span className="text-[#FF4500] font-extrabold uppercase tracking-widest text-[10px] bg-[#FFF0EB] px-3.5 py-1.5 rounded-full border border-[#FFC0AC]">
               Bharat ka trusted service marketplace
             </span>
-            <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight">
+            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] leading-tight">
               Get professional home services on demand
             </h2>
-            <p className="text-slate-400 text-sm lg:text-base">
+            <p className="text-[#666666] text-sm lg:text-base leading-relaxed">
               Verified local experts for every need. Book Electricians, Plumbers, Carpenters, AC Repair and more instantly.
             </p>
 
-            <form onSubmit={handleSearchSubmit} className="pt-4 flex gap-2 max-w-lg">
+            <form onSubmit={handleSearchSubmit} className="pt-4 flex gap-3 max-w-lg">
               <div className="relative flex-1">
-                <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for electrician, plumber, AC repair..."
-                  className="w-full bg-white text-slate-900 pl-11 pr-4 py-3.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                  className="w-full bg-[#FFFFFF] text-[#1A1A1A] pl-12 pr-4 py-4 rounded-xl text-sm border border-[#DDDDDD] focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium transition-all"
+                  style={{ minHeight: '44px' }}
                 />
               </div>
               <button
                 type="submit"
-                className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 rounded-lg text-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold px-7 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-md hover:shadow-lg"
               >
                 <span>Search</span>
               </button>
@@ -136,9 +138,9 @@ const HomePage = () => {
         </section>
 
         {/* Category Grid Section */}
-        <section className="space-y-4">
+        <section className="space-y-6">
           <div className="flex justify-between items-baseline">
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Browse Categories</h3>
+            <h3 className="text-xl lg:text-2xl font-black tracking-tight text-[#1A1A1A]">Browse Categories</h3>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -147,10 +149,10 @@ const HomePage = () => {
                 <Link
                   key={cat._id}
                   to={`/search?categoryId=${cat._id}`}
-                  className="flex flex-col items-center justify-center p-5 bg-white border border-slate-200 rounded-xl hover:border-orange-500 hover:shadow-sm transition-all text-center group cursor-pointer"
+                  className="flex flex-col items-center justify-center p-6 bg-white border border-[#EEEEEE] rounded-2xl hover:border-[#FF4500] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center group cursor-pointer"
                 >
-                  <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">{cat.icon || '🛠️'}</span>
-                  <span className="text-sm font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+                  <span className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{cat.icon || '🛠️'}</span>
+                  <span className="text-sm font-extrabold text-[#666666] group-hover:text-[#FF4500] transition-colors">
                     {cat.name}
                   </span>
                 </Link>
@@ -170,10 +172,10 @@ const HomePage = () => {
                 <div
                   key={c.name}
                   onClick={() => navigate(`/search?q=${c.name}`)}
-                  className="flex flex-col items-center justify-center p-5 bg-white border border-slate-200 rounded-xl hover:border-orange-500 hover:shadow-sm transition-all text-center group cursor-pointer"
+                  className="flex flex-col items-center justify-center p-6 bg-white border border-[#EEEEEE] rounded-2xl hover:border-[#FF4500] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center group cursor-pointer"
                 >
-                  <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">{c.icon}</span>
-                  <span className="text-sm font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+                  <span className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{c.icon}</span>
+                  <span className="text-sm font-extrabold text-[#666666] group-hover:text-[#FF4500] transition-colors">
                     {c.name}
                   </span>
                 </div>
@@ -183,55 +185,55 @@ const HomePage = () => {
         </section>
 
         {/* Horizontal scroll of Top-Rated Providers */}
-        <section className="space-y-4">
+        <section className="space-y-6">
           <div className="flex justify-between items-baseline">
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Top Rated Providers Near You</h3>
-            <Link to="/search" className="text-sm font-bold text-orange-600 hover:underline flex items-center gap-1">
+            <h3 className="text-xl lg:text-2xl font-black tracking-tight text-[#1A1A1A]">Top Rated Providers Near You</h3>
+            <Link to="/search" className="text-xs lg:text-sm font-extrabold text-[#FF4500] hover:underline flex items-center gap-1.5">
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {loadingProviders ? (
-            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+            <div className="flex gap-5 overflow-x-auto pb-4 no-scrollbar">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="min-w-[260px] max-w-[260px] bg-white border border-slate-200 rounded-xl p-4 space-y-4 animate-pulse">
-                  <div className="flex gap-3">
-                    <div className="w-12 h-12 rounded-full bg-slate-200 shrink-0" />
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-slate-200 rounded w-3/4" />
-                      <div className="h-3.5 bg-slate-200 rounded w-1/2" />
+                <div key={i} className="min-w-[280px] max-w-[280px] bg-white border border-[#EEEEEE] rounded-2xl p-5 space-y-4 animate-pulse shadow-sm">
+                  <div className="flex gap-3.5">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 shrink-0" />
+                    <div className="space-y-2.5 flex-1">
+                      <div className="h-4 bg-slate-100 rounded w-3/4" />
+                      <div className="h-3.5 bg-slate-100 rounded w-1/2" />
                     </div>
                   </div>
-                  <div className="h-9 bg-slate-200 rounded" />
+                  <div className="h-10 bg-slate-100 rounded-xl" />
                 </div>
               ))}
             </div>
           ) : topProviders.length > 0 ? (
-            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+            <div className="flex gap-5 overflow-x-auto pb-4 no-scrollbar">
               {topProviders.map((p) => (
                 <div
                   key={p._id}
-                  className="min-w-[260px] max-w-[260px] bg-white border border-slate-200 rounded-xl p-4 flex flex-col justify-between hover:border-orange-500 hover:shadow-sm transition-all"
+                  className="min-w-[280px] max-w-[280px] bg-white border border-[#EEEEEE] rounded-2xl p-5 flex flex-col justify-between hover:border-[#FF4500] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 shadow-sm"
                 >
-                  <div className="space-y-3.5">
+                  <div className="space-y-4">
                     {/* Provider Meta */}
-                    <div className="flex gap-3">
+                    <div className="flex gap-3.5">
                       {p.profileImage ? (
                         <img
                           src={p.profileImage}
                           alt={p.businessName}
-                          className="w-12 h-12 rounded-full object-cover border border-slate-100 shrink-0"
+                          className="w-12 h-12 rounded-full object-cover border border-[#EEEEEE] shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700 font-bold shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-[#FFF0EB] border border-[#FFC0AC] flex items-center justify-center text-[#FF4500] font-black shrink-0">
                           {getProviderInitials(p.businessName || p.user?.name)}
                         </div>
                       )}
-                      <div>
-                        <h4 className="font-bold text-slate-800 line-clamp-1">{p.businessName || p.user?.name}</h4>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
+                      <div className="min-w-0">
+                        <h4 className="font-extrabold text-[#1A1A1A] truncate">{p.businessName || p.user?.name}</h4>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="text-[10px] font-bold px-2 py-0.5 bg-[#FFF0EB] text-[#FF4500] rounded-full border border-[#FFC0AC]">
                             {p.category?.name || 'Local Partner'}
                           </span>
                         </div>
@@ -239,22 +241,22 @@ const HomePage = () => {
                     </div>
 
                     {/* Pricing & Rating */}
-                    <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-3">
-                      <div className="flex items-center gap-1 font-bold text-slate-700">
-                        <Star className="w-4 h-4 text-orange-500 fill-orange-500" />
+                    <div className="flex justify-between items-center text-sm border-t border-[#EEEEEE] pt-4">
+                      <div className="flex items-center gap-1 font-bold text-[#666666]">
+                        <Star className="w-4 h-4 text-[#FF4500] fill-[#FF4500]" />
                         <span>{p.rating?.average ? p.rating.average.toFixed(1) : '5.0'}</span>
-                        <span className="text-slate-400 font-medium text-xs">({p.rating?.count || 1})</span>
+                        <span className="text-slate-400 font-bold text-xs">({p.rating?.count || 1})</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-slate-400 font-medium">Starts from</p>
-                        <p className="font-bold text-orange-600">₹{p.pricing?.basePrice || 250}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Starts from</p>
+                        <p className="font-black text-[#FF4500] text-base">₹{p.pricing?.basePrice || 250}</p>
                       </div>
                     </div>
                   </div>
 
                   <Link
                     to={`/provider/${p._id}`}
-                    className="w-full mt-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full mt-5 py-3 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:shadow-md"
                   >
                     <span>Book Now</span>
                   </Link>
@@ -262,8 +264,8 @@ const HomePage = () => {
               ))}
             </div>
           ) : (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center">
-              <p className="text-sm font-semibold text-slate-500">
+            <div className="p-10 bg-white border border-[#EEEEEE] rounded-2xl text-center shadow-sm">
+              <p className="text-sm font-extrabold text-[#666666]">
                 No top rated providers found nearby. Try updating your location.
               </p>
             </div>
@@ -271,49 +273,49 @@ const HomePage = () => {
         </section>
 
         {/* Recent Bookings Section */}
-        <section className="space-y-4">
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight">Recent Bookings</h3>
+        <section className="space-y-6">
+          <h3 className="text-xl lg:text-2xl font-black tracking-tight text-[#1A1A1A]">Recent Bookings</h3>
           
           {loadingBookings ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[1, 2].map((i) => (
-                <div key={i} className="h-20 bg-white border border-slate-200 rounded-xl animate-pulse" />
+                <div key={i} className="h-24 bg-white border border-[#EEEEEE] rounded-2xl animate-pulse shadow-sm" />
               ))}
             </div>
           ) : recentBookings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {recentBookings.slice(0, 3).map((b) => (
                 <div
                   key={b._id}
                   onClick={() => navigate(`/bookings/${b._id}`)}
-                  className="bg-white border border-slate-200 rounded-xl p-4 flex justify-between items-center hover:border-orange-500 transition-all cursor-pointer shadow-sm hover:shadow-md"
+                  className="bg-white border border-[#EEEEEE] rounded-2xl p-5 flex justify-between items-center hover:border-[#FF4500] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-sm"
                 >
-                  <div className="space-y-1.5">
-                    <h4 className="font-bold text-slate-800">{b.serviceInfo?.title || 'Home Service'}</h4>
-                    <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">
-                      <span>{b.provider?.businessName || 'Local Expert'}</span>
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-[#1A1A1A] text-base">{b.serviceInfo?.title || 'Home Service'}</h4>
+                    <p className="text-xs font-bold text-[#FF4500]">
+                      {b.provider?.businessName || 'Local Expert'}
                     </p>
-                    <p className="text-xs text-slate-400 font-medium">
+                    <p className="text-xs text-[#666666] font-semibold">
                       {new Date(b.scheduledDate).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
                       })} • {b.scheduledSlot}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="font-bold text-slate-800">₹{b.totalAmount}</span>
+                  <div className="flex flex-col items-end gap-3 shrink-0">
+                    <span className="font-black text-[#1A1A1A] text-base">₹{b.totalAmount}</span>
                     {getStatusBadge(b.status)}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center flex flex-col items-center justify-center">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+            <div className="p-10 bg-white border border-[#EEEEEE] rounded-2xl text-center flex flex-col items-center justify-center shadow-sm">
+              <div className="w-14 h-14 rounded-full bg-[#FFF0EB] flex items-center justify-center text-[#FF4500] mb-4 border border-[#FFC0AC]">
                 <Calendar className="w-6 h-6" />
               </div>
-              <p className="text-sm font-semibold text-slate-500">No bookings yet</p>
-              <p className="text-xs text-slate-400 mt-1">Find a service near you to start booking!</p>
+              <p className="text-sm font-extrabold text-[#666666]">No bookings yet</p>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">Find a service near you to start booking!</p>
             </div>
           )}
         </section>

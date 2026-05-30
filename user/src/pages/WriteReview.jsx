@@ -3,8 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../lib/axios';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import { Star, MessageSquare, Loader2, ArrowLeft } from 'lucide-react';
+import { Star, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+const LABELS = ['', 'Poor!', 'Fair!', 'Good!', 'Very Good!', 'Excellent!'];
+const EMOJIS = ['', '😞', '😕', '🙂', '👍', '🌟'];
 
 const WriteReviewPage = () => {
   const { bookingId } = useParams();
@@ -23,7 +26,7 @@ const WriteReviewPage = () => {
       try {
         const res = await axiosInstance.get(`/bookings/${bookingId}`);
         setBooking(res.data.data.booking);
-      } catch (err) {
+      } catch {
         toast.error('Failed to load booking details');
       } finally {
         setLoading(false);
@@ -32,12 +35,9 @@ const WriteReviewPage = () => {
     fetchBooking();
   }, [bookingId]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (rating < 1 || rating > 5) {
-      toast.error('Please select a rating between 1 and 5 stars');
-      return;
-    }
+    if (rating < 1 || rating > 5) { toast.error('Please select a rating'); return; }
 
     setSubmitting(true);
     try {
@@ -47,7 +47,6 @@ const WriteReviewPage = () => {
         title: title.trim() || undefined,
         comment: comment.trim() || undefined,
       });
-
       toast.success('Thank you! Review submitted successfully.');
       navigate('/bookings', { replace: true });
     } catch (err) {
@@ -59,19 +58,20 @@ const WriteReviewPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-orange-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F8F8' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#FF4500' }} />
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <h3 className="text-base font-bold text-slate-800">Booking not found</h3>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: '#F8F8F8' }}>
+        <h3 className="text-base font-extrabold" style={{ color: '#1A1A1A' }}>Booking not found</h3>
         <button
           onClick={() => navigate('/bookings')}
-          className="mt-4 px-4 py-2 bg-orange-600 text-white font-bold rounded-lg text-xs"
+          className="px-6 py-3 text-xs font-extrabold rounded-xl cursor-pointer"
+          style={{ backgroundColor: '#FF4500', color: '#FFFFFF' }}
         >
           Go back to Bookings
         </button>
@@ -79,42 +79,55 @@ const WriteReviewPage = () => {
     );
   }
 
+  const activeRating = hoverRating || rating;
+
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen pb-24 lg:pb-12" style={{ backgroundColor: '#F8F8F8' }}>
       <Header />
 
-      <main className="max-w-xl mx-auto px-4 py-6 space-y-6">
-        
-        {/* Back button */}
+      <main className="max-w-xl mx-auto px-4 py-8 space-y-6">
+
+        {/* Back */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+          style={{ color: '#666666' }}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
 
-        {/* Info card */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <span className="text-[10px] font-bold text-orange-500 uppercase tracking-wider block mb-1">
-            Rate Service Experience
+        {/* Service Info Card */}
+        <div
+          className="rounded-2xl p-5 shadow-sm"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}
+        >
+          <span className="text-[10px] font-extrabold uppercase tracking-widest block mb-1" style={{ color: '#FF4500' }}>
+            Rate Your Experience
           </span>
-          <h2 className="text-lg font-extrabold text-slate-800">{booking.serviceInfo?.title || 'Home Service'}</h2>
-          <p className="text-xs text-slate-400 font-semibold mt-0.5">
-            Partner: <span className="text-slate-700 font-bold">{booking.provider?.businessName || 'Local Expert'}</span>
+          <h2 className="text-lg font-extrabold" style={{ color: '#1A1A1A' }}>
+            {booking.serviceInfo?.title || 'Home Service'}
+          </h2>
+          <p className="text-xs font-semibold mt-0.5" style={{ color: '#666666' }}>
+            Partner: <span style={{ color: '#1A1A1A' }}>{booking.provider?.businessName || 'Local Expert'}</span>
           </p>
         </div>
 
         {/* Review Form */}
-        <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
-          {/* Stars Selection */}
-          <div className="flex flex-col items-center justify-center space-y-2 py-4">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl p-6 shadow-sm space-y-6"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #EEEEEE' }}
+        >
+
+          {/* Star Rating */}
+          <div className="flex flex-col items-center justify-center space-y-3 py-4">
+            <label className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#999999' }}>
               Tap to Rate
             </label>
-            
-            <div className="flex items-center gap-1.5">
-              {[1, 2, 3, 4, 5].map((star) => (
+
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map(star => (
                 <button
                   key={star}
                   type="button"
@@ -124,65 +137,80 @@ const WriteReviewPage = () => {
                   className="p-1 transition-transform active:scale-90 cursor-pointer"
                 >
                   <Star
-                    className={`w-10 h-10 ${
-                      star <= (hoverRating || rating)
-                        ? 'text-orange-500 fill-orange-500'
-                        : 'text-slate-200'
-                    }`}
+                    className="w-10 h-10 transition-colors"
+                    style={{
+                      color: star <= activeRating ? '#FF4500' : '#EEEEEE',
+                      fill: star <= activeRating ? '#FF4500' : '#EEEEEE',
+                    }}
                   />
                 </button>
               ))}
             </div>
-            
-            <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
-              {rating === 5 && 'Excellent! 🌟'}
-              {rating === 4 && 'Very Good! 👍'}
-              {rating === 3 && 'Good! 🙂'}
-              {rating === 2 && 'Fair! 😕'}
-              {rating === 1 && 'Poor! 😞'}
-            </span>
+
+            <div className="text-center">
+              <span className="text-xl">{EMOJIS[activeRating]}</span>
+              <p className="text-sm font-extrabold mt-1" style={{ color: '#1A1A1A' }}>
+                {LABELS[activeRating]}
+              </p>
+            </div>
           </div>
 
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <label htmlFor="rev-title" className="block text-xs font-extrabold uppercase tracking-widest mb-2" style={{ color: '#666666' }}>
               Review Title
             </label>
             <input
-              id="title"
+              id="rev-title"
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Excellent work, very professional"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+              className="w-full px-4 py-3 rounded-xl text-sm font-medium focus:outline-none transition-all"
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #DDDDDD',
+                color: '#1A1A1A',
+                minHeight: '44px',
+              }}
+              onFocus={e => e.target.style.borderColor = '#FF4500'}
+              onBlur={e => e.target.style.borderColor = '#DDDDDD'}
             />
           </div>
 
           {/* Comment */}
           <div>
-            <label htmlFor="comment" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              Tell us more about your experience
+            <label htmlFor="rev-comment" className="block text-xs font-extrabold uppercase tracking-widest mb-2" style={{ color: '#666666' }}>
+              Tell us more
             </label>
             <textarea
-              id="comment"
-              rows="4"
+              id="rev-comment"
+              rows={4}
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={e => setComment(e.target.value)}
               placeholder="How was the behavior of the provider? Was the issue fully resolved?"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+              className="w-full p-4 rounded-xl text-xs font-medium focus:outline-none transition-all resize-none"
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #DDDDDD',
+                color: '#1A1A1A',
+              }}
+              onFocus={e => e.target.style.borderColor = '#FF4500'}
+              onBlur={e => e.target.style.borderColor = '#DDDDDD'}
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3.5 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-extrabold rounded-lg text-sm shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-4 font-extrabold rounded-xl text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+            style={{
+              backgroundColor: '#FF4500',
+              color: '#FFFFFF',
+              opacity: submitting ? 0.6 : 1,
+            }}
           >
-            {submitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              'Submit Review'
-            )}
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Review'}
           </button>
         </form>
 

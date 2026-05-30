@@ -4,13 +4,13 @@ import { LayoutDashboard, Inbox, Calendar, User } from 'lucide-react';
 
 const BottomNav = () => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#EEEEEE] z-50 lg:hidden shadow-sm">
       <div className="flex justify-around items-center h-16">
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 text-xs font-medium transition-colors ${
-              isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-800'
+            `flex flex-col items-center gap-1 text-xs font-medium transition-all duration-200 ${
+              isActive ? 'text-[#FF4500]' : 'text-[#666666] hover:text-[#1A1A1A]'
             }`
           }
         >
@@ -21,8 +21,8 @@ const BottomNav = () => {
         <NavLink
           to="/requests"
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 text-xs font-medium transition-colors ${
-              isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-800'
+            `flex flex-col items-center gap-1 text-xs font-medium transition-all duration-200 ${
+              isActive ? 'text-[#FF4500]' : 'text-[#666666] hover:text-[#1A1A1A]'
             }`
           }
         >
@@ -33,8 +33,8 @@ const BottomNav = () => {
         <NavLink
           to="/jobs"
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 text-xs font-medium transition-colors ${
-              isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-800'
+            `flex flex-col items-center gap-1 text-xs font-medium transition-all duration-200 ${
+              isActive ? 'text-[#FF4500]' : 'text-[#666666] hover:text-[#1A1A1A]'
             }`
           }
         >
@@ -45,8 +45,8 @@ const BottomNav = () => {
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 text-xs font-medium transition-colors ${
-              isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-800'
+            `flex flex-col items-center gap-1 text-xs font-medium transition-all duration-200 ${
+              isActive ? 'text-[#FF4500]' : 'text-[#666666] hover:text-[#1A1A1A]'
             }`
           }
         >

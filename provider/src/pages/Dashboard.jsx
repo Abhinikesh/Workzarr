@@ -6,7 +6,7 @@ import { axiosInstance } from '../lib/axios';
 import { socket, connectSocket } from '../lib/socket';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
-import { CheckCircle2, AlertCircle, Sparkles, MapPin, Phone, Star, TrendingUp, Calendar, Loader2 } from 'lucide-react';
+import { MapPin, Star, Sparkles, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
@@ -165,8 +165,8 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-orange-600 animate-spin" />
+      <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center p-4">
+        <Loader2 className="w-8 h-8 text-[#FF4500] animate-spin" />
       </div>
     );
   }
@@ -177,76 +177,76 @@ const Dashboard = () => {
   const earningsToday = provider?.stats?.totalEarnings ?? 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 lg:pb-8">
+    <div className="min-h-screen bg-[#F8F8F8] pb-24 lg:pb-12 text-[#1A1A1A]">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
         
         {/* Availability Switch Header Panel */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
+        <div className="bg-white border border-[#EEEEEE] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-sm">
+          <div className="text-left">
+            <h2 className="text-xl lg:text-2xl font-black text-[#1A1A1A] tracking-tight">
               {getGreeting()}, {provider?.businessName || user?.name}
             </h2>
-            <p className="text-xs text-slate-400 font-semibold mt-0.5">Manage your daily gig workspace.</p>
+            <p className="text-xs text-[#666666] font-bold mt-1.5 uppercase tracking-widest">Manage your daily gig workspace.</p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5">
+          <div className="flex items-center gap-3.5 bg-[#F8F8F8] border border-[#EEEEEE] rounded-2xl px-5 py-3 shrink-0">
             <span className={`w-2.5 h-2.5 rounded-full ${isAvailable ? 'bg-green-600 animate-pulse' : 'bg-slate-300'}`}></span>
-            <span className="text-xs font-bold text-slate-700">
+            <span className="text-xs font-extrabold text-[#666666]">
               {isAvailable ? 'Online for Jobs' : 'Offline'}
             </span>
             <button
               onClick={handleAvailabilityToggle}
-              className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                isAvailable ? 'bg-orange-600' : 'bg-slate-300'
+              className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-200 ${
+                isAvailable ? 'bg-green-600' : 'bg-slate-300'
               }`}
             >
-              <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                isAvailable ? 'translate-x-5' : 'translate-x-0'
+              <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ${
+                isAvailable ? 'translate-x-6' : 'translate-x-0'
               }`} />
             </button>
           </div>
         </div>
 
         {/* Professional Metrics */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
-            <p className="text-lg font-extrabold text-orange-600">₹{earningsToday}</p>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Earnings Today</p>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white border border-[#EEEEEE] rounded-2xl p-5 text-center shadow-sm hover:border-[#FF4500]/30 transition-all duration-300">
+            <p className="text-xl lg:text-2xl font-black text-[#FF4500]">₹{earningsToday}</p>
+            <p className="text-[10px] text-[#666666] font-black uppercase tracking-widest mt-2">Earnings Today</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
-            <p className="text-lg font-extrabold text-slate-800">{totalCompleted}</p>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Jobs Done</p>
+          <div className="bg-white border border-[#EEEEEE] rounded-2xl p-5 text-center shadow-sm hover:border-[#FF4500]/30 transition-all duration-300">
+            <p className="text-xl lg:text-2xl font-black text-[#1A1A1A]">{totalCompleted}</p>
+            <p className="text-[10px] text-[#666666] font-black uppercase tracking-widest mt-2">Jobs Done</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm flex flex-col items-center justify-center">
-            <p className="text-lg font-extrabold text-slate-800 flex items-center gap-0.5">
-              <Star className="w-4.5 h-4.5 text-orange-500 fill-orange-500 shrink-0" />
+          <div className="bg-white border border-[#EEEEEE] rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm hover:border-[#FF4500]/30 transition-all duration-300">
+            <p className="text-xl lg:text-2xl font-black text-[#1A1A1A] flex items-center gap-1 justify-center">
+              <Star className="w-5 h-5 text-[#FF4500] fill-[#FF4500] shrink-0" />
               <span>{ratingAverage.toFixed(1)}</span>
             </p>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Rating</p>
+            <p className="text-[10px] text-[#666666] font-black uppercase tracking-widest mt-2">Rating</p>
           </div>
         </div>
 
         {/* Active Job Card */}
         {activeJob && (
-          <div className="bg-white border-2 border-orange-500 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex justify-between items-baseline">
-              <span className="text-[10px] font-bold text-orange-600 uppercase tracking-wider">Active Gig Job</span>
-              <span className="px-2.5 py-0.5 bg-orange-50 text-orange-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-orange-200">
+          <div className="bg-white border-2 border-[#FF4500] rounded-2xl p-6 space-y-5 shadow-md">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black text-[#FF4500] uppercase tracking-widest">Active Gig Job</span>
+              <span className="px-3 py-1 bg-[#FFF0EB] text-[#FF4500] text-[10px] font-black rounded-full uppercase tracking-wider border border-[#FFC0AC]">
                 {activeJob.status.replace('_', ' ')}
               </span>
             </div>
 
             <div className="flex gap-4">
-              <div className="w-11 h-11 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-extrabold text-sm shrink-0">
+              <div className="w-12 h-12 rounded-full bg-[#FFF0EB] border border-[#FFC0AC] flex items-center justify-center text-[#FF4500] font-black text-sm shrink-0">
                 {activeJob.customer?.name?.[0] || 'C'}
               </div>
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-slate-800 text-sm">{activeJob.customer?.name || 'Local Customer'}</h4>
-                <p className="text-xs font-bold text-orange-600">{activeJob.serviceInfo?.title || 'Home Service'}</p>
-                <p className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-slate-400" />
+              <div className="space-y-1.5 min-w-0">
+                <h4 className="font-extrabold text-[#1A1A1A] text-base leading-tight">{activeJob.customer?.name || 'Local Customer'}</h4>
+                <p className="text-xs font-bold text-[#FF4500]">{activeJob.serviceInfo?.title || 'Home Service'}</p>
+                <p className="text-xs text-[#666666] font-semibold flex items-center gap-1.5 leading-relaxed">
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>{activeJob.address?.fullAddress}</span>
                 </p>
               </div>
@@ -254,11 +254,11 @@ const Dashboard = () => {
 
             {/* Render OTP Box if provider wants to mark in_progress */}
             {showOtpField && activeJob.status === 'arriving' && (
-              <div className="p-3.5 bg-orange-50 border border-orange-100 rounded-xl space-y-2">
-                <label htmlFor="otp" className="block text-[10px] font-bold text-orange-700 uppercase tracking-wider">
+              <div className="p-4 bg-[#F8F8F8] border border-[#EEEEEE] rounded-xl space-y-3">
+                <label htmlFor="otp" className="block text-[10px] font-black text-[#FF4500] uppercase tracking-widest">
                   Enter 4-Digit Customer OTP
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <input
                     id="otp"
                     type="text"
@@ -267,11 +267,12 @@ const Dashboard = () => {
                     value={otpVal}
                     onChange={(e) => setOtpVal(e.target.value.replace(/\D/g, ''))}
                     placeholder="••••"
-                    className="w-24 bg-white border border-slate-200 rounded-lg text-center text-sm font-bold tracking-widest py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-28 bg-white border border-[#DDDDDD] rounded-xl text-center text-sm font-black tracking-widest py-2.5 focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none text-[#1A1A1A]"
+                    style={{ minHeight: '44px' }}
                   />
                   <button
                     onClick={() => handleUpdateStatus('in_progress')}
-                    className="px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-lg cursor-pointer"
+                    className="px-5 py-2.5 bg-[#FF4500] hover:bg-[#cc3700] text-white text-xs font-extrabold rounded-xl cursor-pointer transition-colors shadow-sm"
                   >
                     Verify & Start Job
                   </button>
@@ -280,12 +281,12 @@ const Dashboard = () => {
             )}
 
             {/* Gig status control action triggers */}
-            <div className="border-t border-slate-100 pt-4 flex gap-3">
+            <div className="border-t border-[#EEEEEE] pt-5 flex gap-3">
               {activeJob.status === 'accepted' && (
                 <button
                   onClick={() => handleUpdateStatus('arriving')}
                   disabled={updatingStatus}
-                  className="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                  className="flex-1 py-3 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
                 >
                   Mark as Arrived
                 </button>
@@ -294,7 +295,7 @@ const Dashboard = () => {
                 <button
                   onClick={() => setShowOtpField(true)}
                   disabled={updatingStatus}
-                  className="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                  className="flex-1 py-3 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
                 >
                   Start Service (OTP)
                 </button>
@@ -303,7 +304,7 @@ const Dashboard = () => {
                 <button
                   onClick={() => handleUpdateStatus('completed')}
                   disabled={updatingStatus}
-                  className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                  className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
                 >
                   Mark as Completed
                 </button>
@@ -312,40 +313,40 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Incoming requests cards section with 30s timers */}
-        <section className="space-y-4">
-          <h3 className="text-base font-bold text-slate-800 tracking-tight">Pending Job Invites ({pendingRequests.length})</h3>
+        {/* Incoming requests cards section */}
+        <section className="space-y-5">
+          <h3 className="text-base font-black text-[#666666] tracking-wider uppercase">Pending Job Invites ({pendingRequests.length})</h3>
           
           {pendingRequests.length > 0 ? (
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {pendingRequests.map((req) => (
                 <div
                   key={req._id}
-                  className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4 animate-scaleUp"
+                  className="bg-white border border-[#EEEEEE] rounded-2xl p-6 space-y-5 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-extrabold text-orange-600 uppercase tracking-wide">
+                    <div className="space-y-1.5 min-w-0">
+                      <h4 className="text-xs font-black text-[#FF4500] uppercase tracking-widest">
                         {req.serviceInfo?.title || 'Home Service'}
                       </h4>
-                      <p className="text-xs text-slate-500 font-semibold">
-                        Client: <span className="text-slate-800 font-bold">{req.customer?.name || 'Local Family'}</span>
+                      <p className="text-xs text-[#666666] font-bold">
+                        Client: <span className="text-[#1A1A1A] font-extrabold">{req.customer?.name || 'Local Family'}</span>
                       </p>
-                      <p className="text-xs text-slate-400 font-medium">{req.address?.fullAddress}</p>
+                      <p className="text-xs text-slate-400 font-semibold leading-relaxed truncate">{req.address?.fullAddress}</p>
                     </div>
-                    <span className="font-extrabold text-slate-800 text-sm">₹{req.totalAmount}</span>
+                    <span className="font-black text-[#FF4500] text-base shrink-0">₹{req.totalAmount}</span>
                   </div>
 
-                  <div className="flex gap-3 border-t border-slate-100 pt-4">
+                  <div className="flex gap-4 border-t border-[#EEEEEE] pt-5">
                     <button
                       onClick={() => handleRequestAction(req._id, 'accept')}
-                      className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                      className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
                     >
                       Accept Job
                     </button>
                     <button
                       onClick={() => handleRequestAction(req._id, 'decline')}
-                      className="flex-1 py-2 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                      className="flex-1 py-3 border border-red-500 text-red-500 bg-white hover:bg-red-50 font-extrabold rounded-xl text-xs transition-colors cursor-pointer"
                     >
                       Decline
                     </button>
@@ -354,33 +355,33 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center flex flex-col items-center justify-center">
-              <Sparkles className="w-10 h-10 text-orange-500 mb-2.5" />
-              <p className="text-xs font-bold text-slate-700">All caught up!</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Waiting for new local job requests near your town.</p>
+            <div className="p-10 bg-white border border-[#EEEEEE] rounded-2xl text-center flex flex-col items-center justify-center shadow-sm">
+              <Sparkles className="w-12 h-12 text-[#FF4500] mb-4" />
+              <p className="text-sm font-extrabold text-[#666666]">All caught up!</p>
+              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">Waiting for new local job requests near your town.</p>
             </div>
           )}
         </section>
 
         {/* Recent Jobs Completed */}
-        <section className="space-y-4">
-          <h3 className="text-base font-bold text-slate-800 tracking-tight">Recent Completed Gigs</h3>
+        <section className="space-y-5">
+          <h3 className="text-base font-black text-[#666666] tracking-wider uppercase">Recent Completed Gigs</h3>
           {recentCompleted.length > 0 ? (
-            <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-sm overflow-hidden">
+            <div className="bg-white border border-[#EEEEEE] rounded-2xl divide-y divide-[#EEEEEE] overflow-hidden shadow-sm">
               {recentCompleted.map((b) => (
-                <div key={b._id} className="p-4 flex justify-between items-center text-xs">
-                  <div>
-                    <h5 className="font-bold text-slate-800">{b.serviceInfo?.title || 'Gig Job'}</h5>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
+                <div key={b._id} className="p-4.5 flex justify-between items-center text-xs">
+                  <div className="space-y-1">
+                    <h5 className="font-extrabold text-[#1A1A1A] text-sm">{b.serviceInfo?.title || 'Gig Job'}</h5>
+                    <p className="text-[10px] text-slate-400 font-semibold">
                       Client: {b.customer?.name} • {new Date(b.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="font-bold text-green-600 text-sm">₹{b.totalAmount}</span>
+                  <span className="font-black text-green-600 text-sm">₹{b.totalAmount}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center text-xs font-semibold text-slate-400">
+            <div className="p-10 bg-white border border-[#EEEEEE] rounded-2xl text-center text-xs font-bold text-slate-400 shadow-sm">
               No completed gigs recorded yet.
             </div>
           )}

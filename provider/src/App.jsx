@@ -1,4 +1,5 @@
 import React from 'react';
+console.log("Provider App.jsx rendering...");
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 

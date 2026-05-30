@@ -140,21 +140,21 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-xl bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+    <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center p-4 text-[#1A1A1A]">
+      <div className="w-full max-w-xl bg-white rounded-2xl border border-[#EEEEEE] p-8 shadow-md">
         
         {/* Progress Tracker Navigation Bar */}
         {step < 4 && (
           <div className="mb-8" aria-label="Progress">
             <div className="flex justify-between items-center text-xs font-bold text-slate-400 mb-3">
-              <span className={step === 1 ? 'text-orange-600' : 'text-slate-800'}>1. Basic Info</span>
-              <span className={step === 2 ? 'text-orange-600' : step > 2 ? 'text-slate-800' : ''}>2. Category</span>
-              <span className={step === 3 ? 'text-orange-600' : ''}>3. Pricing</span>
+              <span className={step === 1 ? 'text-[#FF4500]' : 'text-[#666666]'}>1. Basic Info</span>
+              <span className={step === 2 ? 'text-[#FF4500]' : step > 2 ? 'text-[#666666]' : ''}>2. Category</span>
+              <span className={step === 3 ? 'text-[#FF4500]' : ''}>3. Pricing</span>
             </div>
             
-            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-[#F8F8F8] rounded-full overflow-hidden border border-[#EEEEEE]">
               <div
-                className="h-full bg-orange-600 transition-all duration-300"
+                className="h-full bg-[#FF4500] transition-all duration-300 shadow-sm"
                 style={{ width: `${(step / 3) * 100}%` }}
               />
             </div>
@@ -163,283 +163,54 @@ const Onboarding = () => {
 
         {/* STEP 1: Basic Info & Address */}
         {step === 1 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-                <Briefcase className="w-5 h-5 text-orange-600" />
-                Tell us about your business
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Let local customers know your business name and details.</p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Business / Provider Name *
-              </label>
-              <input
-                type="text"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                placeholder="e.g. Sharma Electric Works"
-                required
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium"
-              />
-            </div>
-
-            <div className="border-t border-slate-100 pt-4 space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-orange-600" />
-                Work Area & Location
-              </h3>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Town / City *</label>
-                  <input
-                    type="text"
-                    value={town}
-                    onChange={(e) => setTown(e.target.value)}
-                    placeholder="e.g. Rohtak"
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">District *</label>
-                  <input
-                    type="text"
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    placeholder="e.g. Rohtak"
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">State *</label>
-                  <input
-                    type="text"
-                    value={stateName}
-                    onChange={(e) => setStateName(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Pincode *</label>
-                  <input
-                    type="text"
-                    maxLength="6"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                    placeholder="e.g. 124001"
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleNextStep}
-              className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-4"
-            >
-              <span>Next</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          <BasicInfoStep
+            businessName={businessName}
+            setBusinessName={setBusinessName}
+            town={town}
+            setTown={setTown}
+            district={district}
+            setDistrict={setDistrict}
+            stateName={stateName}
+            setStateName={setStateName}
+            pincode={pincode}
+            setPincode={setPincode}
+            next={handleNextStep}
+          />
         )}
 
         {/* STEP 2: Category and Bio */}
         {step === 2 && (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-                <Briefcase className="w-5 h-5 text-orange-600" />
-                Category & Experience
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Select the category that best represents your core skills.</p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Business Category *
-              </label>
-              {loadingCats ? (
-                <div className="py-2.5 text-xs text-slate-400 animate-pulse">Loading categories...</div>
-              ) : (
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white font-semibold text-slate-800"
-                >
-                  {categories.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.icon} {c.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Years of Experience
-              </label>
-              <input
-                type="number"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                placeholder="e.g. 5"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white font-medium"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Short Bio (Max 200 chars) *
-              </label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                maxLength="200"
-                rows="3"
-                placeholder="Briefly explain your specialty..."
-                required
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white font-medium"
-              />
-            </div>
-
-            <div className="flex gap-3 mt-4">
-              <button
-                type="button"
-                onClick={handlePrevStep}
-                className="flex-1 py-3 border border-slate-200 text-slate-600 font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleNextStep}
-                className="flex-1 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Next</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          <CategoryStep
+            categoryId={categoryId}
+            setCategoryId={setCategoryId}
+            categories={categories}
+            loadingCats={loadingCats}
+            experience={experience}
+            setExperience={setExperience}
+            bio={bio}
+            setBio={setBio}
+            onPrev={handlePrevStep}
+            next={handleNextStep}
+          />
         )}
 
         {/* STEP 3: Base Pricing & First Service */}
         {step === 3 && (
-          <form onSubmit={handleFormSubmit} className="space-y-5">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-                <BadgeIndianRupee className="w-5 h-5 text-orange-600" />
-                Setup Base Pricing & Package
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Setup your base billing rate and your first service package detail.</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Base Price (₹) *</label>
-                <input
-                  type="number"
-                  value={basePrice}
-                  onChange={(e) => setBasePrice(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Pricing Unit *</label>
-                <select
-                  value={priceUnit}
-                  onChange={(e) => setPriceUnit(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
-                >
-                  <option value="per_hour">Per Hour</option>
-                  <option value="per_job">Per Job</option>
-                  <option value="negotiable">Negotiable</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-100 pt-4 space-y-3.5">
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                Create First Service Package
-              </h3>
-
-              <div>
-                <label className="block text-[10px] font-semibold text-slate-400 mb-1">Package Title *</label>
-                <input
-                  type="text"
-                  value={serviceTitle}
-                  onChange={(e) => setServiceTitle(e.target.value)}
-                  placeholder="e.g. Standard Electrician Visit"
-                  required
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-400 mb-1">Package Price (₹) *</label>
-                  <input
-                    type="number"
-                    value={servicePrice}
-                    onChange={(e) => setServicePrice(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-semibold text-slate-400 mb-1">Est. Duration (Mins) *</label>
-                  <input
-                    type="number"
-                    value={serviceDuration}
-                    onChange={(e) => setServiceDuration(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-4">
-              <button
-                type="button"
-                onClick={handlePrevStep}
-                className="flex-1 py-3.5 border border-slate-200 text-slate-600 font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 py-3.5 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                {submitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <span>Submit & Done</span>
-                    <CheckCircle className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+          <PricingStep
+            basePrice={basePrice}
+            setBasePrice={setBasePrice}
+            priceUnit={priceUnit}
+            setPriceUnit={setPriceUnit}
+            serviceTitle={serviceTitle}
+            setServiceTitle={setServiceTitle}
+            servicePrice={servicePrice}
+            setServicePrice={setServicePrice}
+            serviceDuration={serviceDuration}
+            setServiceDuration={setServiceDuration}
+            onPrev={handlePrevStep}
+            next={handleFormSubmit}
+            submitting={submitting}
+          />
         )}
 
         {/* STEP 4: Completed Onboarding */}
@@ -450,15 +221,15 @@ const Onboarding = () => {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Onboarding Successful!</h2>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto">
+              <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tight">Onboarding Successful!</h2>
+              <p className="text-sm text-[#666666] max-w-sm mx-auto leading-relaxed">
                 Your professional profile has been saved. You can now accept incoming jobs and track your earnings!
               </p>
             </div>
 
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full max-w-xs py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5"
+              className="w-full max-w-xs py-3.5 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-sm shadow-md transition-all cursor-pointer inline-flex items-center justify-center gap-1.5"
             >
               <span>Go to Dashboard</span>
               <ArrowRight className="w-4 h-4" />
@@ -468,6 +239,356 @@ const Onboarding = () => {
 
       </div>
     </div>
+  );
+};
+
+// --- Child Step Components ---
+
+export const BasicInfoStep = ({
+  businessName,
+  setBusinessName,
+  town,
+  setTown,
+  district,
+  setDistrict,
+  stateName,
+  setStateName,
+  pincode,
+  setPincode,
+  onNext,
+  next
+}) => {
+  const handleNext = () => {
+    const handler = onNext || next;
+    if (typeof handler === 'function') {
+      handler();
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-[#FF4500]" />
+          Tell us about your business
+        </h2>
+        <p className="text-xs text-[#666666] font-semibold mt-1">Let local customers know your business name and details.</p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-[#666666] uppercase tracking-widest mb-2.5">
+          Business / Provider Name *
+        </label>
+        <input
+          type="text"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          placeholder="e.g. Sharma Electric Works"
+          required
+          className="w-full px-4 py-3.5 bg-white border border-[#DDDDDD] rounded-xl text-sm placeholder:text-slate-400 focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none transition-all font-medium text-[#1A1A1A]"
+          style={{ minHeight: '44px' }}
+        />
+      </div>
+
+      <div className="border-t border-[#EEEEEE] pt-5 space-y-4">
+        <h3 className="text-sm font-extrabold text-[#1A1A1A] flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-[#FF4500]" />
+          Work Area & Location
+        </h3>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-bold text-[#666666] mb-1.5">Town / City *</label>
+            <input
+              type="text"
+              value={town}
+              onChange={(e) => setTown(e.target.value)}
+              placeholder="e.g. Rohtak"
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-[#666666] mb-1.5">District *</label>
+            <input
+              type="text"
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              placeholder="e.g. Rohtak"
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-[#666666] mb-1.5">State *</label>
+            <input
+              type="text"
+              value={stateName}
+              onChange={(e) => setStateName(e.target.value)}
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-[#666666] mb-1.5">Pincode *</label>
+            <input
+              type="text"
+              maxLength="6"
+              value={pincode}
+              onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+              placeholder="e.g. 124001"
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleNext}
+        className="w-full py-3.5 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-5 shadow-sm"
+      >
+        <span>Next</span>
+        <ArrowRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
+export const CategoryStep = ({
+  categoryId,
+  setCategoryId,
+  categories,
+  loadingCats,
+  experience,
+  setExperience,
+  bio,
+  setBio,
+  onPrev,
+  onNext,
+  next
+}) => {
+  const handleNext = () => {
+    const handler = onNext || next;
+    if (typeof handler === 'function') {
+      handler();
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-[#FF4500]" />
+          Category & Experience
+        </h2>
+        <p className="text-xs text-[#666666] font-semibold mt-1">Select the category that best represents your core skills.</p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-[#666666] uppercase tracking-widest mb-2.5">
+          Business Category *
+        </label>
+        {loadingCats ? (
+          <div className="py-2.5 text-xs text-[#666666] animate-pulse">Loading categories...</div>
+        ) : (
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            required
+            className="w-full px-4 py-3.5 bg-white border border-[#DDDDDD] rounded-xl text-sm focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-semibold text-[#1A1A1A]"
+          >
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.icon} {c.name}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-[#666666] uppercase tracking-widest mb-2.5">
+          Years of Experience
+        </label>
+        <input
+          type="number"
+          value={experience}
+          onChange={(e) => setExperience(e.target.value)}
+          placeholder="e.g. 5"
+          className="w-full px-4 py-3.5 bg-white border border-[#DDDDDD] rounded-xl text-sm placeholder:text-slate-400 focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+          style={{ minHeight: '44px' }}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-[#666666] uppercase tracking-widest mb-2.5">
+          Short Bio (Max 200 chars) *
+        </label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          maxLength="200"
+          rows="3"
+          placeholder="Briefly explain your specialty..."
+          required
+          className="w-full p-4 bg-white border border-[#DDDDDD] rounded-xl text-xs placeholder:text-slate-400 focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+        />
+      </div>
+
+      <div className="flex gap-4 mt-5">
+        <button
+          type="button"
+          onClick={onPrev}
+          className="flex-1 py-3.5 border border-[#DDDDDD] text-[#666666] hover:text-[#1A1A1A] font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer bg-white"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleNext}
+          className="flex-1 py-3.5 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+        >
+          <span>Next</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const PricingStep = ({
+  basePrice,
+  setBasePrice,
+  priceUnit,
+  setPriceUnit,
+  serviceTitle,
+  setServiceTitle,
+  servicePrice,
+  setServicePrice,
+  serviceDuration,
+  setServiceDuration,
+  onPrev,
+  next,
+  submitting
+}) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (typeof next === 'function') {
+      await next(e);
+    } else {
+      console.error('PricingStep: next prop is not a function', next);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight flex items-center gap-2">
+          <BadgeIndianRupee className="w-5 h-5 text-[#FF4500]" />
+          Setup Base Pricing & Package
+        </h2>
+        <p className="text-xs text-[#666666] font-semibold mt-1">Setup your base billing rate and your first service package detail.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-[11px] font-bold text-[#666666] mb-1.5">Base Price (₹) *</label>
+          <input
+            type="number"
+            value={basePrice}
+            onChange={(e) => setBasePrice(e.target.value)}
+            required
+            className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-bold text-[#666666] mb-1.5">Pricing Unit *</label>
+          <select
+            value={priceUnit}
+            onChange={(e) => setPriceUnit(e.target.value)}
+            className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-semibold text-[#1A1A1A]"
+          >
+            <option value="per_hour">Per Hour</option>
+            <option value="per_job">Per Job</option>
+            <option value="negotiable">Negotiable</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="border-t border-[#EEEEEE] pt-5 space-y-4">
+        <h3 className="text-xs font-black text-[#FF4500] uppercase tracking-widest">
+          Create First Service Package
+        </h3>
+
+        <div>
+          <label className="block text-[10px] font-bold text-[#666666] mb-1.5">Package Title *</label>
+          <input
+            type="text"
+            value={serviceTitle}
+            onChange={(e) => setServiceTitle(e.target.value)}
+            placeholder="e.g. Standard Electrician Visit"
+            required
+            className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[10px] font-bold text-[#666666] mb-1.5">Package Price (₹) *</label>
+            <input
+              type="number"
+              value={servicePrice}
+              onChange={(e) => setServicePrice(e.target.value)}
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-[#666666] mb-1.5">Est. Duration (Mins) *</label>
+            <input
+              type="number"
+              value={serviceDuration}
+              onChange={(e) => setServiceDuration(e.target.value)}
+              required
+              className="w-full px-3 py-2.5 bg-white border border-[#DDDDDD] rounded-xl text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium text-[#1A1A1A]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-4 mt-5">
+        <button
+          type="button"
+          onClick={onPrev}
+          className="flex-1 py-3.5 border border-[#DDDDDD] text-[#666666] hover:text-[#1A1A1A] font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer bg-white"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="flex-1 py-3.5 bg-[#FF4500] hover:bg-[#cc3700] disabled:bg-[#FF4500]/50 text-white font-extrabold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+        >
+          {submitting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <span>Submit & Done</span>
+              <CheckCircle className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </div>
+    </form>
   );
 };
 

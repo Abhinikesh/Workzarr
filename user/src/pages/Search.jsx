@@ -124,26 +124,27 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 lg:pb-8">
+    <div className="min-h-screen bg-[#F8F8F8] pb-24 lg:pb-12 text-[#1A1A1A]">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-6">
         
         {/* Search Bar at Top */}
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+        <form onSubmit={handleSearchSubmit} className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search for providers or services..."
-              className="w-full bg-white text-slate-900 pl-11 pr-4 py-3.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+              className="w-full bg-[#FFFFFF] text-[#1A1A1A] pl-12 pr-4 py-4 rounded-xl border border-[#DDDDDD] text-sm focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-medium transition-all"
+              style={{ minHeight: '44px' }}
             />
           </div>
           <button
             type="submit"
-            className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 rounded-lg text-sm transition-colors cursor-pointer"
+            className="bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold px-7 rounded-xl text-sm transition-all duration-200 cursor-pointer shadow-md"
           >
             Search
           </button>
@@ -153,10 +154,10 @@ const SearchPage = () => {
         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           <button
             onClick={() => selectCategory('')}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors cursor-pointer ${
+            className={`px-4.5 py-2 rounded-full text-xs font-extrabold shrink-0 transition-all duration-200 cursor-pointer ${
               !selectedCatId
-                ? 'bg-orange-600 text-white'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-orange-500'
+                ? 'bg-[#FF4500] text-white border border-[#FF4500]'
+                : 'bg-white text-[#666666] border border-[#EEEEEE] hover:border-[#FF4500] hover:text-[#1A1A1A]'
             }`}
           >
             All
@@ -165,10 +166,10 @@ const SearchPage = () => {
             <button
               key={cat._id}
               onClick={() => selectCategory(cat._id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-4.5 py-2 rounded-full text-xs font-extrabold shrink-0 transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
                 selectedCatId === cat._id
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-orange-500'
+                  ? 'bg-[#FF4500] text-white border-[#FF4500]'
+                  : 'bg-white text-[#666666] border-[#EEEEEE] hover:border-[#FF4500] hover:text-[#1A1A1A]'
               }`}
             >
               <span>{cat.icon}</span>
@@ -178,19 +179,19 @@ const SearchPage = () => {
         </div>
 
         {/* Controls Layout */}
-        <div className="flex justify-between items-center bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-          <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
-            <span className="text-slate-800 font-bold">{providers.length} Partners Available</span>
+        <div className="flex justify-between items-center bg-white border border-[#EEEEEE] rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-4 text-xs font-bold text-[#666666]">
+            <span>{providers.length} Partners Available</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {/* Toggle advanced filter pane */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-extrabold border transition-all duration-200 cursor-pointer ${
                 showFilters || maxPrice || minRating
-                  ? 'bg-orange-50 border-orange-200 text-orange-700'
-                  : 'bg-white border-slate-200 text-slate-600 hover:border-orange-500'
+                  ? 'bg-[#FFF0EB] border-[#FFC0AC] text-[#FF4500]'
+                  : 'bg-white border-[#EEEEEE] text-[#666666] hover:border-[#FF4500]'
               }`}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -198,7 +199,7 @@ const SearchPage = () => {
             </button>
 
             {/* Sorting Dropdown */}
-            <div className="relative flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600">
+            <div className="relative flex items-center gap-1.5 px-4 py-2 bg-white border border-[#EEEEEE] rounded-xl text-xs font-extrabold text-[#666666]">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <select
                 value={sortBy}
@@ -216,37 +217,37 @@ const SearchPage = () => {
 
         {/* Advanced Filters Block */}
         {showFilters && (
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4 animate-fadeIn">
+          <div className="bg-white border border-[#EEEEEE] rounded-2xl p-6 shadow-sm space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center">
-              <h4 className="text-sm font-bold text-slate-800">Filter Options</h4>
+              <h4 className="text-sm font-extrabold text-[#1A1A1A]">Filter Options</h4>
               <button
                 onClick={clearFilters}
-                className="text-xs font-semibold text-orange-600 hover:underline"
+                className="text-xs font-extrabold text-[#FF4500] hover:underline"
               >
                 Reset All
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Max Price */}
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Max Budget (₹)</label>
+                <label className="block text-xs font-bold text-[#666666] mb-2">Max Budget (₹)</label>
                 <input
                   type="number"
                   placeholder="e.g. 500"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full bg-[#FFFFFF] border border-[#DDDDDD] rounded-xl px-4 py-3 text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none"
                 />
               </div>
 
               {/* Min Rating */}
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Minimum Rating</label>
+                <label className="block text-xs font-bold text-[#666666] mb-2">Minimum Rating</label>
                 <select
                   value={minRating}
                   onChange={(e) => setMinRating(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full bg-[#FFFFFF] border border-[#DDDDDD] rounded-xl px-4 py-3 text-xs focus:border-[#FF4500] focus:ring-2 focus:ring-[#FF4500]/20 focus:outline-none font-semibold text-[#1A1A1A]"
                 >
                   <option value="">Any Rating</option>
                   <option value="4.5">4.5 ★ & above</option>
@@ -262,12 +263,12 @@ const SearchPage = () => {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-xl p-5 flex gap-4 animate-pulse">
-                <div className="w-16 h-16 bg-slate-200 rounded-full shrink-0" />
-                <div className="space-y-2 flex-1">
-                  <div className="h-4 bg-slate-200 rounded w-1/4" />
-                  <div className="h-3 bg-slate-200 rounded w-1/6" />
-                  <div className="h-3.5 bg-slate-200 rounded w-1/2" />
+              <div key={i} className="bg-white border border-[#EEEEEE] rounded-2xl p-5 flex gap-4 animate-pulse shadow-sm">
+                <div className="w-16 h-16 bg-slate-100 rounded-full shrink-0" />
+                <div className="space-y-3.5 flex-1">
+                  <div className="h-4 bg-slate-100 rounded w-1/4" />
+                  <div className="h-3 bg-slate-100 rounded w-1/6" />
+                  <div className="h-3.5 bg-slate-100 rounded w-1/2" />
                 </div>
               </div>
             ))}
@@ -277,44 +278,44 @@ const SearchPage = () => {
             {providers.map((p) => (
               <div
                 key={p._id}
-                className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-orange-500 hover:shadow-sm transition-all"
+                className="bg-white border border-[#EEEEEE] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-5 hover:border-[#FF4500] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
               >
                 {/* Left Side: Avatar & Details */}
-                <div className="flex gap-4">
+                <div className="flex gap-4.5">
                   {p.profileImage ? (
                     <img
                       src={p.profileImage}
                       alt={p.businessName}
-                      className="w-16 h-16 rounded-full object-cover border border-slate-100 shrink-0"
+                      className="w-16 h-16 rounded-full object-cover border border-[#EEEEEE] shrink-0"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700 font-bold text-lg shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-[#FFF0EB] border border-[#FFC0AC] flex items-center justify-center text-[#FF4500] font-black text-lg shrink-0">
                       {getProviderInitials(p.businessName || p.user?.name)}
                     </div>
                   )}
 
-                  <div className="space-y-1">
+                  <div className="space-y-1.5 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-extrabold text-slate-800 text-base">{p.businessName || p.user?.name}</h4>
+                      <h4 className="font-extrabold text-[#1A1A1A] text-base leading-tight truncate">{p.businessName || p.user?.name}</h4>
                       {p.isVerified && (
-                        <span className="bg-green-50 text-green-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-green-200 uppercase tracking-wide">
+                        <span className="bg-emerald-50 text-emerald-600 text-[9px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
                           Verified
                         </span>
                       )}
                     </div>
                     
-                    <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                    <p className="text-xs font-bold text-[#666666] flex items-center gap-1.5 flex-wrap">
                       <span>{p.category?.name || 'Home Services'}</span>
                       <span>•</span>
-                      <span className="flex items-center gap-0.5 font-bold text-slate-700">
-                        <Star className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                      <span className="flex items-center gap-0.5 font-bold text-[#1A1A1A]">
+                        <Star className="w-3.5 h-3.5 text-[#FF4500] fill-[#FF4500]" />
                         {p.rating?.average ? p.rating.average.toFixed(1) : '5.0'}
                       </span>
-                      <span className="text-slate-400 font-medium">({p.rating?.count || 1} reviews)</span>
+                      <span className="text-slate-400 font-bold">({p.rating?.count || 1} reviews)</span>
                     </p>
 
-                    <p className="text-xs text-slate-400 font-medium line-clamp-1">{p.bio || 'Local experienced service provider.'}</p>
-                    <p className="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-[#666666] font-medium line-clamp-1 leading-relaxed">{p.bio || 'Local experienced service provider.'}</p>
+                    <p className="text-xs text-slate-400 font-bold flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-slate-400" />
                       <span>{p.location?.town}, {p.location?.district}</span>
                     </p>
@@ -322,15 +323,15 @@ const SearchPage = () => {
                 </div>
 
                 {/* Right Side: Pricing & CTA */}
-                <div className="flex md:flex-col items-center md:items-end justify-between border-t md:border-t-0 border-slate-100 pt-3 md:pt-0 shrink-0">
+                <div className="flex md:flex-col items-center md:items-end justify-between border-t md:border-t-0 border-[#EEEEEE] pt-4 md:pt-0 shrink-0">
                   <div className="text-left md:text-right">
-                    <p className="text-xs text-slate-400 font-medium">Charges starting from</p>
-                    <p className="font-extrabold text-orange-600 text-lg">₹{p.pricing?.basePrice || 250}</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Charges starting from</p>
+                    <p className="font-black text-[#FF4500] text-lg">₹{p.pricing?.basePrice || 250}</p>
                   </div>
 
                   <Link
                     to={`/provider/${p._id}`}
-                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs transition-colors flex items-center gap-1 cursor-pointer"
+                    className="py-3 px-5 bg-[#FF4500] hover:bg-[#cc3700] text-white font-extrabold rounded-xl text-xs transition-colors flex items-center gap-1 cursor-pointer shadow-sm hover:shadow-md mt-0 md:mt-4"
                   >
                     <span>View Profile</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -340,12 +341,12 @@ const SearchPage = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center flex flex-col items-center justify-center">
-            <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+          <div className="bg-white border border-[#EEEEEE] rounded-2xl p-14 text-center flex flex-col items-center justify-center shadow-sm">
+            <div className="w-16 h-16 bg-[#FFF0EB] rounded-full flex items-center justify-center text-[#FF4500] mb-4 border border-[#FFC0AC]">
               <Ban className="w-7 h-7" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">No service providers found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mt-1">
+            <h3 className="text-base font-extrabold text-[#1A1A1A]">No service providers found</h3>
+            <p className="text-xs text-[#666666] max-w-sm mt-1.5 leading-relaxed">
               No registered providers matched your search filters. Try widening your price range or category search.
             </p>
           </div>
