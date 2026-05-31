@@ -69,7 +69,15 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
 
   const total = await User.countDocuments(query);
 
-  res.status(200).json(new ApiResponse(200, { users, total, page: parseInt(page), pages: Math.ceil(total / limit) }, 'Users fetched'));
+  res.status(200).json(new ApiResponse(200, {
+    users,
+    pagination: {
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+      limit: parseInt(limit)
+    }
+  }, 'Users fetched'));
 });
 
 exports.getUserById = asyncHandler(async (req, res) => {
