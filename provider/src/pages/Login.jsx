@@ -22,6 +22,55 @@ const Login = () => {
   const otpInputsRef = useRef([]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const refreshToken = params.get('refreshToken');
+    if (token && refreshToken) {
+      setLoading(true);
+      (async () => {
+        try {
+          // Fetch provider profile
+          let providerProfile = null;
+          try {
+            const profileRes = await axiosInstance.get('/providers/me/profile', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            providerProfile = profileRes.data.data.provider;
+          } catch (profileErr) {
+            // Profile not created yet
+          }
+
+          // Fetch user details
+          const meRes = await axiosInstance.get('/auth/me', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const userData = meRes.data.data.user;
+
+          dispatch(setCredentials({
+            user: userData,
+            provider: providerProfile,
+            accessToken: token,
+            refreshToken: refreshToken
+          }));
+
+          connectSocket(token);
+          toast.success('Synced partner session successfully!');
+
+          if (!providerProfile) {
+            navigate('/onboarding', { replace: true });
+          } else {
+            navigate('/dashboard', { replace: true });
+          }
+        } catch (err) {
+          toast.error('Session sync failed. Please sign in again.');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [dispatch, navigate]);
+
+  useEffect(() => {
     if (isAuthenticated) {
       if (!provider) {
         navigate('/onboarding', { replace: true });
